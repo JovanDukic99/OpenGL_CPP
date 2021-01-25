@@ -1,9 +1,6 @@
 #include "OutputStream.h"
 #include "SocketException.h"
 #include "IOErrors.h"
-#include <iostream>
-
-using namespace std;
 
 OutputStream::OutputStream(SOCKET socket) : socket(socket), offset(0), maxSize(capacity)
 {
@@ -13,91 +10,78 @@ OutputStream::OutputStream(SOCKET socket) : socket(socket), offset(0), maxSize(c
 
 void OutputStream::writeByte(unsigned char byte)
 {
-	if (check(sizeof(byte)))
-	{
+	if (check(sizeof(unsigned char))) {
 		bytes[offset++] = byte;
 	}
-	else
-	{
+	else {
 		extend();
 	}
 }
 
 void OutputStream::writeInt(int data)
 {
-	if (check(sizeof(data)))
-	{
-		for (int i = 0; i < sizeof(data); i++) {
+	if (check(sizeof(int))) {
+		for (int i = 0; i < sizeof(int); i++) {
 			bytes[offset++] = data >> (8 * i);
 		}
 	}
-	else
-	{
+	else {
 		extend();
 	}
 }
 
 void OutputStream::writeFloat(float data)
 {
-	if (check(sizeof(data)))
-	{
-		memcpy(bytes, &data, sizeof(data));
-		offset = offset + sizeof(data);
+	if (check(sizeof(float))) {
+		memcpy(&bytes[offset], &data, sizeof(float));
+		offset = offset + sizeof(float);
 	}
-	else
-	{
+	else {
 		extend();
 	}
 }
 
 void OutputStream::writeLong(long data)
 {
-	if (check(sizeof(data)))
-	{
-		memcpy(bytes, &data, sizeof(data));
-		offset = offset + sizeof(data);
+	if (check(sizeof(long))) {
+		memcpy(&bytes[offset], &data, sizeof(long));
+		offset = offset + sizeof(long);
 	}
-	else
-	{
+	else {
 		extend();
 	}
 }
 
 void OutputStream::writeDouble(double data)
 {
-	if (check(sizeof(data)))
-	{
-		memcpy(bytes, &data, sizeof(data));
-		offset = offset + sizeof(data);
+	if (check(sizeof(double))) {
+		memcpy(&bytes[offset], &data, sizeof(double));
+		offset = offset + sizeof(double);
 	}
-	else
-	{
+	else {
 		extend();
 	}
 }
 
 void OutputStream::writeUTF8(std::string data)
 {
-	if (check(sizeof(data)))
-	{
-		// create char array
-		const char* buff = data.c_str();
+	// create char array
+	const char* buff = data.c_str();
 
-		// get size of an array
-		int lenght = size(buff);
+	// get size of an array
+	int lenght = size(buff);
 
-		// write size to stream
-		writeInt(lenght);
+	// write size to stream
+	writeInt(lenght * sizeof(char));
 
-		// write each byte to stream
-		for (int i = 0; i < lenght; i++)
-		{
+	// write each byte to stream
+	if (check(lenght * sizeof(char))) {
+		for (int i = 0; i < lenght; i++) {
 			writeByte(buff[i]);
 		}
 	}
-	else
-	{
-		// extean if neccessary
+	else {
+		// extend if neccessary
 		extend();
 	}
 }
@@ -105,12 +89,9 @@ void OutputStream::writeUTF8(std::string data)
 int OutputStream::size(const char* buff)
 {
 	int t = 0;
-	while (buff[t++] != 0)
-	{
+	while (buff[t++] != 0) {
 
 	}
-
-	// minus EOF char
 	return t;
 }
 
@@ -119,16 +100,13 @@ void OutputStream::flush()
 	int lenght = offset;
 
 	byte* data = bytes;
-	while (lenght > 0)
-	{
+	while (lenght > 0) {
 		int amount = send(socket, (const char*)data, lenght, 0);
 
-		if (amount == SOCKET_ERROR)
-		{
+		if (amount == SOCKET_ERROR) {
 			throw SocketException(OUTPUT_STREAM_ERROR);
 		}
-		else
-		{
+		else {
 			lenght = lenght - amount;
 			data = data + amount;
 		}
@@ -144,8 +122,7 @@ void OutputStream::extend()
 	maxSize = maxSize + increment;
 	byte* newBytes = new byte[maxSize];
 
-	for (int i = 0; i < offset; i++)
-	{
+	for (int i = 0; i < offset; i++) {
 		newBytes[i] = bytes[i];
 	}
 

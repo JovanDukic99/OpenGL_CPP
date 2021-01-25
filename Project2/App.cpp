@@ -13,7 +13,9 @@ int main() {
 		
 		InputStream* inputStream = socket->getInputStream();
 
+		std::cout << inputStream->readFloat() << std::endl;
 		std::cout << inputStream->readUTF8() << std::endl;
+		std::cout << inputStream->readFloat() << std::endl;
 		std::cout << inputStream->readUTF8() << std::endl;
 		std::cout << inputStream->readInt() << std::endl;
 	} catch (SocketException e) {

@@ -18,5 +18,7 @@ public:
 
 private:
 	std::string createString(byte*);
+	void readData(byte*, int, std::string);
+	bool connectionReset(int);
 };
 
