@@ -43,8 +43,6 @@ int InputStream::readInt()
 	int length = sizeof(int);
 	int amount = 0;
 
-	cout << "Integer here" << endl;
-
 	byte* bytes = new byte[length];
 	byte* begin = bytes;
 
@@ -84,7 +82,6 @@ float InputStream::readFloat()
 		}
 		else
 		{
-			cout << amount << endl;
 			length = length - amount;
 			begin = begin + amount;
 		}
@@ -164,18 +161,15 @@ std::string InputStream::readUTF8()
 	int lenght = readInt();
 	int amount = 0;
 
-	cout << lenght << endl;
-
-	byte* bytes = new byte[lenght + 1];
+	byte* bytes = new byte[lenght];
 	byte* begin = bytes;
 
 	memset(bytes, 0, lenght);
 
 	while (lenght > 0)
 	{
-		if ((amount = recv(socket, (char*)begin, lenght + 1, 0) == SOCKET_ERROR))
+		if ((amount = recv(socket, (char*)begin, lenght, 0)) == SOCKET_ERROR)
 		{
-			cout << "Length: " << lenght << ", amount: " << amount << endl;
 			throw SocketException(UTF8_ERROR);
 		}
 		else
@@ -183,7 +177,6 @@ std::string InputStream::readUTF8()
 			lenght = lenght - amount;
 			begin = begin + amount;
 		}
-		cout << amount << endl;
 	}
 
 	std::string result = createString(bytes);

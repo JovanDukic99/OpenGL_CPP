@@ -84,15 +84,13 @@ void OutputStream::writeUTF8(std::string data)
 		const char* buff = data.c_str();
 
 		// get size of an array
-		int val = size(buff);
-
-		cout << val << endl;
+		int lenght = size(buff);
 
 		// write size to stream
-		writeInt(val * sizeof(char));
+		writeInt(lenght);
 
 		// write each byte to stream
-		for (int i = 0; i < val; i++)
+		for (int i = 0; i < lenght; i++)
 		{
 			writeByte(buff[i]);
 		}
@@ -113,14 +111,12 @@ int OutputStream::size(const char* buff)
 	}
 
 	// minus EOF char
-	return t - 1;
+	return t;
 }
 
 void OutputStream::flush()
 {
 	int lenght = offset;
-
-	cout << lenght << endl;
 
 	byte* data = bytes;
 	while (lenght > 0)
@@ -138,8 +134,6 @@ void OutputStream::flush()
 		}
 	}
 
-	cout << lenght << endl;
-	
 	delete[] bytes;
 	bytes = new byte[maxSize];
 	offset = 0;

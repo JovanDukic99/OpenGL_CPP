@@ -13,8 +13,9 @@ int main() {
 
 		OutputStream* outputStream = socket->getOutputStream();
 
-		outputStream->writeFloat(10.0f);
-		outputStream->writeInt(20);
+		outputStream->writeUTF8("LET IT SNOWWWWW");
+		outputStream->writeUTF8("Work finally pls!");
+		outputStream->writeInt(30);
 		outputStream->flush();
 	} catch (SocketException e) {
 		std::cout << e.message() << std::endl;
