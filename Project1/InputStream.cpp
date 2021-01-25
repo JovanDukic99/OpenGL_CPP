@@ -1,6 +1,9 @@
 #include "InputStream.h"
 #include "SocketException.h"
 #include "IOErrors.h"
+#include <iostream>
+
+using namespace std;
 
 InputStream::InputStream(SOCKET socket) : socket(socket)
 {
@@ -39,7 +42,7 @@ int InputStream::readInt()
 {
 	int length = sizeof(int);
 	int amount = 0;
-		
+
 	byte* bytes = new byte[length];
 	byte* begin = bytes;
 
@@ -165,13 +168,13 @@ std::string InputStream::readUTF8()
 
 	while (lenght > 0)
 	{
-		if ((amount = recv(socket, (char*)begin, lenght, 0) == SOCKET_ERROR))
+		if ((amount = recv(socket, (char*)begin, lenght, 0)) == SOCKET_ERROR)
 		{
 			throw SocketException(UTF8_ERROR);
 		}
 		else
 		{
-			lenght = lenght - 1;
+			lenght = lenght - amount;
 			begin = begin + amount;
 		}
 	}
@@ -181,7 +184,7 @@ std::string InputStream::readUTF8()
 	delete[] bytes;
 
 	return result;
- }
+}
 
 std::string InputStream::createString(byte* bytes)
 {
@@ -190,7 +193,7 @@ std::string InputStream::createString(byte* bytes)
 
 	while (bytes[t] != 0)
 	{
-		result = result + (char) bytes[t++];
+		result = result + (char)bytes[t++];
 	}
 
 	return result;

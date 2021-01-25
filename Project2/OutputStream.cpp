@@ -1,6 +1,9 @@
 #include "OutputStream.h"
 #include "SocketException.h"
 #include "IOErrors.h"
+#include <iostream>
+
+using namespace std;
 
 OutputStream::OutputStream(SOCKET socket) : socket(socket), offset(0), maxSize(capacity)
 {
@@ -77,19 +80,24 @@ void OutputStream::writeUTF8(std::string data)
 {
 	if (check(sizeof(data)))
 	{
+		// create char array
 		const char* buff = data.c_str();
 
-		int val = size(buff);
+		// get size of an array
+		int lenght = size(buff);
 
-		writeInt(val * sizeof(char));
+		// write size to stream
+		writeInt(lenght);
 
-		for (int i = 0; i < val; i++)
+		// write each byte to stream
+		for (int i = 0; i < lenght; i++)
 		{
 			writeByte(buff[i]);
 		}
 	}
 	else
 	{
+		// extean if neccessary
 		extend();
 	}
 }
@@ -101,12 +109,15 @@ int OutputStream::size(const char* buff)
 	{
 
 	}
+
+	// minus EOF char
 	return t;
 }
 
 void OutputStream::flush()
 {
 	int lenght = offset;
+
 	byte* data = bytes;
 	while (lenght > 0)
 	{
