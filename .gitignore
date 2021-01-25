@@ -8,3 +8,5 @@
 .vs/Testing/v16/.suo
 *.obj
 *.log
+*.obj
+*.idb
