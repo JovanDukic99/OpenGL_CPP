@@ -1,6 +1,7 @@
 #include "ServerSocket.h"
 #include "SocketException.h"
 #include "IOErrors.h"
+#include <iostream>
 
 ServerSocket::ServerSocket(int portNumber)
 {
@@ -53,6 +54,13 @@ Socket* ServerSocket::acceptConnections() {
 	if (clientSocket == INVALID_SOCKET) {
 		throw SocketException(SOCKET_ERROR_5);
 	}
+
+	char* IP = inet_ntoa(clientAddress.sin_addr);
+	std::cout << IP << std::endl;
+
+	int PORT = ntohs(clientAddress.sin_port);
+	std::cout << PORT << std::endl;
+
 	printMessage(SOCKET_MESSAGE_2);
 	return new Socket(clientSocket);
 }

@@ -2,7 +2,7 @@
 #include "ServerSocket.h"
 #include "Config.h"
 
-int main() {
+int main(int argc, char* argv[]) {
 
 	ServerSocket* serverSocket = nullptr;
 
