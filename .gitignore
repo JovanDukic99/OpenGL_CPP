@@ -4,3 +4,7 @@
 *.db-shm
 *.opendb
 *.ipch
+*.exe
+.vs/Testing/v16/.suo
+*.obj
+*.log
