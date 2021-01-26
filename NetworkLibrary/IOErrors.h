@@ -16,8 +16,10 @@ extern "C" {
 	static const std::string SOCKET_ERROR_3 = "Socket binding has failed!";
 	static const std::string SOCKET_ERROR_4 = "Listening initialization has failed!";
 	static const std::string SOCKET_ERROR_5 = "Failed to accept new client!";
+	static const std::string SOCKET_ERROR_6 = "Failed to connect to the server!";
 
 	static const std::string OUTPUT_STREAM_ERROR = "OutputStream error: Failed to send data.";
+	static const std::string DNS_ERROR = "DNS Error: Can't translate host name to IP adress.";
 	static const std::string BYTE_ERROR = "InputStream error: Failed to read BYTE data type.";
 	static const std::string INTEGER_ERROR = "InputStream error: Failed to read INTEGER data type.";
 	static const std::string FLOAT_ERROR = "InputStream error: Failed to read FLOAT data type.";

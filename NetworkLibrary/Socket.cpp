@@ -41,12 +41,17 @@ void Socket::initServerAddress(int portNumber, std::string hostName) {
 	serverAddress->sin_family = AF_INET;
 	serverAddress->sin_port = htons(portNumber);
 	PHOSTENT phostent = gethostbyname(hostName.c_str());
+
+	if (phostent == nullptr) {
+		throw SocketException(DNS_ERROR);
+	}
+
 	memcpy((char FAR*) & (serverAddress->sin_addr), phostent->h_addr, phostent->h_length);
 }
 
 void Socket::connectToServer() {
 	if (connect(socketID, (PSOCKADDR)serverAddress, sizeof(*serverAddress)) == SOCKET_ERROR) {
-		throw SocketException(SOCKET_ERROR_3);
+		throw SocketException(SOCKET_ERROR_6);
 	}
 }
 
@@ -66,11 +71,11 @@ void Socket::initInfo()
 
 void Socket::setInfo(sockaddr_in* socketAddress)
 {
-	PHOSTENT phostent = gethostbyaddr((char FAR*) & clientAddress->sin_addr, sizeof(*clientAddress), AF_INET);
+	PHOSTENT phostent = gethostbyaddr((char FAR*) & socketAddress->sin_addr, sizeof(*socketAddress), AF_INET);
 	hostName = phostent->h_name;
 
-	IP = inet_ntoa(clientAddress->sin_addr);
-	portNumber = ntohs(clientAddress->sin_port);
+	IP = inet_ntoa(socketAddress->sin_addr);
+	portNumber = ntohs(socketAddress->sin_port);
 }
 
 std::string Socket::getIP()
