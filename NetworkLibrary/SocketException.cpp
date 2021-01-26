@@ -1,3 +1,4 @@
+#pragma once
 #include "SocketException.h"
 
 SocketException::SocketException(std::string error) : error(error)

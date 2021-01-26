@@ -1,3 +1,4 @@
+#pragma once
 #include "OutputStream.h"
 #include "SocketException.h"
 #include "IOErrors.h"

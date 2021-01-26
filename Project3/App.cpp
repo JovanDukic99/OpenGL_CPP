@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <iostream>
-#include <Socket.h>
 
 typedef unsigned char byte;
 
@@ -74,11 +73,6 @@ void foo()
 
 int main() {
 	
-	try {
-		Socket* socket = new Socket(54, "localHost");
-	}
-	catch (SocketException e) {
-		std::cout << e.message() << std::endl;
-	}
+
 	return 0;
 }
