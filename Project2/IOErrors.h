@@ -10,9 +10,6 @@ static const std::string SOCKET_ERROR_3 = "Socket binding has failed!";
 static const std::string SOCKET_ERROR_4 = "Listening initialization has failed!";
 static const std::string SOCKET_ERROR_5 = "Failed to accept new client!";
 
-static const std::string SOCKET_MESSAGE_1 = "Server is listening for new connections...";
-static const std::string SOCKET_MESSAGE_2 = "New client has been accepted!";
-
 static const std::string OUTPUT_STREAM_ERROR = "OutputStream error: Failed to send data.";
 static const std::string BYTE_ERROR = "InputStream error: Failed to read BYTE data type.";
 static const std::string INTEGER_ERROR = "InputStream error: Failed to read INTEGER data type.";

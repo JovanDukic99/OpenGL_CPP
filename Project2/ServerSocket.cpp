@@ -45,29 +45,18 @@ void ServerSocket::initListening() {
 	if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
 		throw SocketException(SOCKET_ERROR_4);
 	}
-	printMessage(SOCKET_MESSAGE_1);
 }
 
 Socket* ServerSocket::acceptConnections() {
+	sockaddr_in clientAddress;
 	int clientAddressSize = sizeof(clientAddress);
+
 	SOCKET clientSocket = accept(serverSocket, (sockaddr*) &clientAddress, &clientAddressSize);
 	if (clientSocket == INVALID_SOCKET) {
 		throw SocketException(SOCKET_ERROR_5);
 	}
 
-	char* IP = inet_ntoa(clientAddress.sin_addr);
-	std::cout << IP << std::endl;
-
-	int PORT = ntohs(clientAddress.sin_port);
-	std::cout << PORT << std::endl;
-
-	printMessage(SOCKET_MESSAGE_2);
-	return new Socket(clientSocket);
-}
-
-void ServerSocket::printMessage(std::string message)
-{
-	std::cout << message << std::endl;
+	return new Socket(clientSocket, &clientAddress);
 }
 
 void ServerSocket::close()

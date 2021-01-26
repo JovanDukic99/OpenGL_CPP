@@ -148,7 +148,6 @@
     <ClCompile Include="SocketException.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Config.h" />
     <ClInclude Include="InputStream.h" />
     <ClInclude Include="IOErrors.h" />
     <ClInclude Include="OutputStream.h" />

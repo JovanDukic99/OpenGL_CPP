@@ -12,7 +12,7 @@ class ServerSocket
 {
 private:
 	SOCKET serverSocket;
-	sockaddr_in serverAddress, clientAddress;
+	sockaddr_in serverAddress;
 
 public:
 	ServerSocket(int portNumber);
@@ -26,6 +26,5 @@ private:
 	void initServerAddress(int portNumber);
 	void initListening();
 	void bindServerAddress();
-	void printMessage(std::string message);
 };
 

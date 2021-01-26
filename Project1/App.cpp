@@ -9,7 +9,7 @@ int main() {
 	Socket* socket = nullptr;
 
 	try {
-		socket = new Socket(PORT_NUMBER, "localhost");
+		socket = new Socket(PORT_NUMBER, "ec2-18-198-208-83.eu-central-1.compute.amazonaws.com");
 
 		OutputStream* outputStream = socket->getOutputStream();
 
@@ -19,6 +19,8 @@ int main() {
 		outputStream->writeUTF8("Work finally pls!");
 		outputStream->writeInt(30);
 		outputStream->flush();
+
+		socket->info();
 	} catch (SocketException e) {
 		std::cout << e.message() << std::endl;
 		socket->close();
