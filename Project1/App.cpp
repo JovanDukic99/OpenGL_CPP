@@ -9,7 +9,7 @@ int main() {
 	Socket* socket = nullptr;
 
 	try {
-		socket = new Socket(PORT_NUMBER, "ec2-18-198-208-83.eu-central-1.compute.amazonaws.com");
+		socket = new Socket(PORT_NUMBER, "ec2-3-122-245-73.eu-central-1.compute.amazonaws.com");
 
 		OutputStream* outputStream = socket->getOutputStream();
 

@@ -2,17 +2,24 @@
 #include "ServerSocket.h"
 #include <iostream>
 
+#pragma comment(lib,"wsock32.lib")
+
 int main(int argc, char* argv[]) {
 
 	ServerSocket* serverSocket = nullptr;
 
 	try {
 
-		std::cout << "Server is listening..." << std::endl;
+		int portNumber = std::stoi(argv[1]);
 
-		serverSocket = new ServerSocket(std::stoi(argv[1]));
+		std::cout << "Server is listening on port: " << portNumber << std::endl;
+
+
+		serverSocket = new ServerSocket(portNumber);
 
 		Socket* socket = serverSocket->acceptConnections();
+
+		socket->info();
 		
 		InputStream* inputStream = socket->getInputStream();
 
@@ -22,7 +29,6 @@ int main(int argc, char* argv[]) {
 		std::cout << inputStream->readUTF8() << std::endl;
 		std::cout << inputStream->readInt() << std::endl;
 
-		socket->info();
 	} catch (SocketException e) {
 		std::cout << e.message() << std::endl;
 		serverSocket->close();

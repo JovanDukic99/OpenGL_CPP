@@ -1,0 +1,2 @@
+D:\Users\Jovan\C++\Testing\x64\Debug\NetworkLibrary.pdb
+D:\Users\Jovan\C++\Testing\NetworkLibrary\x64\Debug\NetworkLibrary.pdb
