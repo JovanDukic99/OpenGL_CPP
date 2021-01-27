@@ -2,10 +2,6 @@
 #ifndef OUTPUT_STREAM
 #define OUTPUT_STREAM
 
-#ifdef _cplusplus
-extern "C" {
-#endif // _cplusplus
-
 #include <winsock.h>
 #include <string>
 #define capacity 4080
@@ -34,9 +30,5 @@ extern "C" {
 		void extend();
 		bool check(int);
 	};
-
-#ifdef _cplusplus
-}
-#endif // _cplusplus
 
 #endif // !OUTPUT_STREAM

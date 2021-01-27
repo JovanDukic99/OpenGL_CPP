@@ -2,7 +2,6 @@
 #include "ServerSocket.h"
 #include "SocketException.h"
 #include "IOErrors.h"
-#include <iostream>
 
 ServerSocket::ServerSocket(int portNumber)
 {

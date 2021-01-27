@@ -1,9 +1,15 @@
-#include <Network/Socket.h> 
+#include <Socket.h> 
+#include <iostream>
 
-int main() {
+int main(int args, char* argv[]) {
 
 	try {
-		Socket* socket = new Socket(54000, "ec2-18-193-123-247.eu-central-1.compute.amazonaws.com");
+		Socket* socket = new Socket(std::stoi(argv[1]), "localhost");
+
+		OutputStream* outputStream = socket->getOutputStream();
+
+		outputStream->writeUTF8("Hello World!");
+		outputStream->flush();
 	}
 	catch (SocketException e) {
 		std::cout << e.message() << std::endl;

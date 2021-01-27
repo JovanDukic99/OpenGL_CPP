@@ -2,13 +2,9 @@
 #ifndef SERVER_SOCKET
 #define SERVERS_SOCKET
 
-#ifdef _cplusplus
-extern "C" {
-#endif // _cplusplus
 
 #include <Windows.h>
 #include <winsock.h>
-#include <iostream>
 #include <string>
 #include "SocketException.h"
 #include "Socket.h"
@@ -35,8 +31,5 @@ extern "C" {
 		void bindServerAddress();
 	};
 
-#ifdef _cplusplus
-}
-#endif // _cplusplus
 
 #endif // !SERVER_SOCKET

@@ -1,4 +1,5 @@
-#include <Network/ServerSocket.h>
+#include <ServerSocket.h>
+#include <iostream>
 
 int main(int args, char* argv[]) {
 
@@ -11,9 +12,10 @@ int main(int args, char* argv[]) {
 		while (1) {
 			Socket* socket = serverSocket->acceptConnections();
 			
-			std::cout << "New client has been accepted!" << std::endl;
+			InputStream* inputStream = socket->getInputStream();
 
-			socket->info();
+			std::cout << "New client has been accepted!" << std::endl;
+			std::cout << inputStream->readUTF8() << std::endl;
 		}
 	}
 	catch (SocketException e) {

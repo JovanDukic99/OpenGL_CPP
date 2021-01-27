@@ -2,12 +2,7 @@
 #ifndef SOCK
 #define SOCK
 
-#ifdef _cplusplus
-extern "C" {
-#endif // _cplusplus
-
 #include <Windows.h>
-#include <iostream>
 #include <winsock.h>
 #include <string>
 #include "InputStream.h"
@@ -35,7 +30,6 @@ extern "C" {
 
 		int getPortNumber();
 
-		void info();
 		void close();
 
 	private:
@@ -49,8 +43,5 @@ extern "C" {
 		bool check();
 	};
 
-#ifdef _cplusplus
-}
-#endif // _cplusplus
 
 #endif // !SOCKET

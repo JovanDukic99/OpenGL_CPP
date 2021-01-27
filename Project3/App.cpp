@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <iostream>
-#include <Network/Socket.h>
+#include <Socket.h>
 
 typedef unsigned char byte;
 

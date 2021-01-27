@@ -2,7 +2,6 @@
 #include "Socket.h"
 #include "SocketException.h"
 #include "IOErrors.h"
-#include <iostream>
 
 #pragma comment(lib,"wsock32.lib")
 
@@ -91,11 +90,6 @@ int Socket::getPortNumber()
 std::string Socket::getHostName()
 {
 	return hostName;
-}
-
-void Socket::info()
-{
-	std::cout << "Host name: " << hostName << ", IP Address: " << IP << ", Port number: " << portNumber << std::endl;
 }
 
 bool Socket::check()

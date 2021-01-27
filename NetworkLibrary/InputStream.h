@@ -2,10 +2,6 @@
 #ifndef INPUT_STREAM
 #define INPUT_STREAM
 
-#ifdef _cplusplus
-extern "C" {
-#endif // _cplusplus
-
 #include <winsock.h>
 #include <string>
 
@@ -29,10 +25,6 @@ extern "C" {
 		void readData(byte*, int, std::string);
 		bool connectionReset(int);
 	};
-
-#ifdef _cplusplus
-}
-#endif // _cplusplus
 
 
 #endif // !INPUT_STREAM

@@ -2,10 +2,6 @@
 #ifndef IO_ERRORS
 #define IO_ERRORS
 
-#ifdef _cplusplus
-extern "C" {
-#endif // _cplusplus
-
 #include <string>
 
 	static const int CONNECTION_RESET_CODE = 10054;
@@ -26,10 +22,6 @@ extern "C" {
 	static const std::string LONG_ERROR = "InputStream error: Failed to read LONG data type.";
 	static const std::string DOUBLE_ERROR = "InputStream error: Failed to read DOUBLE data type.";
 	static const std::string UTF8_ERROR = "InputStream error: Failed to read UTF8 (string) data type.";
-
-#ifdef _cplusplus
-}
-#endif // _cplusplus
 
 
 #endif // !IO_ERRORS
