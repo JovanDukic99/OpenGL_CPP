@@ -1,21 +1,20 @@
-#include <Socket.h> 
+#include <Socket.h>
 #include <iostream>
+#include "MainGame.h"
+#include "Config.h"
 
-int main(int args, char* argv[]) {
+int main(int argc, char* argv[]) {
 
 	try {
-		Socket* socket = new Socket(std::stoi(argv[1]), "localhost");
+		MainGame* mainGame = new MainGame(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-		OutputStream* outputStream = socket->getOutputStream();
-
-		outputStream->writeUTF8("Hello World!");
-		outputStream->flush();
+		mainGame->run();
 	}
-	catch (SocketException e) {
+	catch (SDLException e) {
 		std::cout << e.message() << std::endl;
+		SDL_Quit();
+		exit(EXIT_FAILURE);
 	}
-
-	system("pause");
 
 	return 0;
 }
