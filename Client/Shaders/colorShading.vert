@@ -8,6 +8,7 @@
 // that index we use in our program to fill inputs
 
 in vec2 vertexPosition;
+in vec2 vertexUV;
 in vec4 vertexColor;
 
 // flat for no interpolation
@@ -18,28 +19,32 @@ in vec4 vertexColor;
 // output data (out) to fragment shader
 // smooth means linear interpolation
 out vec2 fragmentPosition;
+out vec2 fragmentUV;
 smooth out vec4 fragmentColor;
 
-uniform float time;
+uniform vec2 offset;
 
 void main() { 
     // set the x,y coordinates of vertex
 
-    float x = (cos(time) - 1) * 0.5f;
-    float y = (sin(time) - 1) * 0.5f;
+    // float x = (cos(time) - 1) * 0.5f;
+    // float y = (sin(time) - 1) * 0.5f;
 
-    gl_Position.xy = vertexPosition + vec2(x, y);
+    gl_Position.xy = vertexPosition + offset;
 
     // z coordinate is 0, bcs we are in 2D space
-    gl_Position.z = 0.0;
+    gl_Position.z = 0.0f;
 
     // indicate that the coordinates are normalized
-    gl_Position.w = 1.0;
+    gl_Position.w = 1.0f;
 
     // setting up fragment position
-    fragmentPosition = vertexPosition + vec2(x, y);
+    fragmentPosition = vertexPosition + offset;
 
     // setting up fragment color
     fragmentColor = vertexColor;
+
+    // setting up fragmentUV
+    fragmentUV = vec2(vertexUV.x, 1.0f - vertexUV.y);
 }
 

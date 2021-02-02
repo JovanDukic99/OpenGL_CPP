@@ -19,7 +19,7 @@ public:
 	void compileShaders(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	void linkShaders();
 	void addAttribute(const std::string& attributeName);
-	GLuint getUniformValueLocation(const std::string& uniformValueName);
+	GLint getUniformValueLocation(const std::string& uniformValueName);
 
 private:
 	void createShader(GLenum shaderType);

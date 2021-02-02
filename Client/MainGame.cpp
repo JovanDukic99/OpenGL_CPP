@@ -15,7 +15,7 @@ void MainGame::init(int screenWidth, int screenHeight)
 	initContext();
 	initGlew();
 	initShaders();
-	initPlayer(PLAYER_X, PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
+	initPlayer(PLAYER_X, PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_TEXTURE);
 	setBackgroundColor(R_CLEAR, G_CLEAR, B_CLEAR, A_CLEAR);
 }
 
@@ -60,11 +60,13 @@ void MainGame::initShaders() {
 	shaderProgram.compileShaders(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
 	shaderProgram.addAttribute("vertexPosition");
 	shaderProgram.addAttribute("vertexColor");
+	shaderProgram.addAttribute("vertexUV");
 	shaderProgram.linkShaders();
 }
 
-void MainGame::initPlayer(float x, float y, float width, float height) {
-	player = new ObjectBase(x, y, width, height);
+void MainGame::initPlayer(float x, float y, float width, float height, std::string textureFilePath) {
+	player = new ObjectBase(x, y, width, height, textureFilePath);
+	enemy = new ObjectBase(-0.5f, -0.5f, 0.25f, 0.25f, textureFilePath);
 }
 
 void MainGame::setBackgroundColor(float r, float g, float b, float a)
@@ -80,6 +82,7 @@ void MainGame::run()
 		processInput();
 		update();
 		drawGame();
+		calculateFPS();
 	}
 
 }
@@ -92,7 +95,7 @@ void MainGame::update() {
 
 	offsetY = denormalize(y, SCREEN_HEIGHT);
 
-	// player->updatePosition(x, y);
+	player->updatePosition(x, y);
 }
 
 void MainGame::processInput()
@@ -126,21 +129,86 @@ void MainGame::drawGame()
 	// start rendering
 	shaderProgram.use();
 
-	// GLuint offsetLocation = shaderProgram.getUniformValueLocation("offset");
-	// GLuint offsetYLocation = shaderProgram.getUniformValueLocation("offsetY");
-	GLuint timeLocation = shaderProgram.getUniformValueLocation("time");
+	GLint offsetLocation = shaderProgram.getUniformValueLocation("offset");
+	GLint offsetYLocation = shaderProgram.getUniformValueLocation("offsetY");
+	GLint assetLocation = shaderProgram.getUniformValueLocation("asset");
+	//GLint timeLocation = shaderProgram.getUniformValueLocation("time");
 
 	// send value of time variable to GPU
 	// 1f means send 1 float
-	//glUniform2f(offsetLocation, player->getX(), player->getY());
-	//glUniform1f(offsetYLocation, offsetY);
-	glUniform1f(timeLocation, elapsedTime);
+	glUniform2f(offsetLocation, player->getX(), player->getY());
+	glUniform1f(offsetYLocation, offsetY);
+
+	// 0 means we are using texture 0
+	glUniform1i(assetLocation, 0);
+	
+	//glUniform1f(timeLocation, elapsedTime);
 
 	player->draw();
+	enemy->draw();
 	
 	// stop rendering
 	shaderProgram.unuse();
 
 	// windows A, B ==> B, A <==> render on B and clear A
 	SDL_GL_SwapWindow(window);
+}
+
+void MainGame::calculateFPS() {
+	// static variable are only once initialized
+	static const const int NUM_SAMPLES = 10;
+	static float frameTimes[NUM_SAMPLES];
+	static int currentFrame = 0;
+
+	// at the beginning previousTicks are equal to current ticks
+	static float previousTicks = SDL_GetTicks();
+	static float currentTicks;
+
+	// get current ticks
+	currentTicks = SDL_GetTicks();
+
+	// calculate frame time
+	frameTime = currentTicks - previousTicks;
+
+	// circular adding of elements to an array
+	frameTimes[currentFrame % NUM_SAMPLES] = frameTime;
+
+	// now previous ticks are equal to current ticks after calculation
+	previousTicks = currentTicks;
+
+	// number of ticks for calculatinf frameTimeAverage
+	int count;
+
+	// if an array is not full set count to  currentFrameTime;
+	if (currentFrame < NUM_SAMPLES) {
+		count = currentFrame;
+	}
+	else {
+		// else set it to full
+		count = NUM_SAMPLES;
+	}
+
+	// initialize frameTimeAverage
+	float frameTimeAverage = 0;
+
+	// get the sum of samples
+	for (int i = 0; i < count; i++) {
+		frameTimeAverage = frameTimeAverage + frameTimes[i];
+	}
+
+	// calculate the average
+	frameTimeAverage = frameTimeAverage / count;
+
+	// calculate the fps
+	if (frameTimeAverage > 0) {
+		fps = 1000.0f / frameTimeAverage;
+	}
+	else {
+		fps = 60.0f;
+	}
+
+	// increase frame index
+	currentFrame++;
+
+	std::cout << fps << std::endl;
 }

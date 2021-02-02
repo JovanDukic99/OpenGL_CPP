@@ -21,23 +21,29 @@
   <ItemGroup>
     <ClCompile Include="ClientApp.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
+    <ClCompile Include="ImageLoader.cpp" />
+    <ClCompile Include="IOManager.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
+    <ClCompile Include="PicoPNG.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SDLException.cpp" />
+    <ClCompile Include="TextureCache.cpp" />
     <ClCompile Include="Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NetworkLibrary\NetworkLibrary.vcxproj">
-      <Project>{3cdc0edb-0905-402e-9c6e-b2cae4c9bda3}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="GLSLProgram.h" />
+    <ClInclude Include="GLTexture.h" />
+    <ClInclude Include="ImageLoader.h" />
+    <ClInclude Include="IOManager.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="ObjectBase.h" />
+    <ClInclude Include="PicoPNG.H" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SDLError.h" />
     <ClInclude Include="SDLException.h" />
+    <ClInclude Include="TextureCache.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

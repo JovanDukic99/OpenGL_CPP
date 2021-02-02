@@ -16,9 +16,12 @@ private:
 	GameState gameState;
 	GLSLProgram shaderProgram;
 	ObjectBase* player;
+	ObjectBase* enemy;
 	float elapsedTime;
 	float loopTime;
 	float offsetY;
+	float fps;
+	float frameTime;
 
 public:
 	MainGame(int screenWidht, int screenHeight);
@@ -30,9 +33,10 @@ private:
 	void initContext();
 	void initGlew();
 	void initShaders();
-	void initPlayer(float x, float y, float width, float height);
+	void initPlayer(float x, float y, float width, float height, std::string textureFilePath);
 	void setBackgroundColor(float r, float g, float b, float a);
 
+	void calculateFPS();
 	void processInput();
 	void drawGame();
 	void update();

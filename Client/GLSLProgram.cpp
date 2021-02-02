@@ -179,8 +179,8 @@ void GLSLProgram::addAttribute(const std::string& attributeName) {
 	glBindAttribLocation(programID, numAttributes++, attributeName.c_str());
 }
 
-GLuint GLSLProgram::getUniformValueLocation(const std::string& uniformValueName) {
-	GLuint location = glGetUniformLocation(programID, uniformValueName.c_str());
+GLint GLSLProgram::getUniformValueLocation(const std::string& uniformValueName) {
+	GLint location = glGetUniformLocation(programID, uniformValueName.c_str());
 	// check for errors
 	if (location == GL_INVALID_INDEX) {
 		throw SDLException(UNIFORM_VALUE_ERRROR + uniformValueName + ".");

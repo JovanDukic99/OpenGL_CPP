@@ -23,3 +23,6 @@ static const float PLAYER_Y = 0.0f;
 static const float PLAYER_WIDTH = 1.0f;
 static const float PLAYER_HEIGHT = 1.0f;
 
+// assets paths
+static const std::string PLAYER_TEXTURE = "Textures/jimmyJump_pack/PNG/CharacterRight_Standing.png";
+

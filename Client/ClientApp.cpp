@@ -2,6 +2,7 @@
 #include <iostream>
 #include "MainGame.h"
 #include "Config.h"
+#include "Socket.h"
 
 int main(int argc, char* argv[]) {
 

@@ -9,6 +9,7 @@
 /* flat */ smooth in vec4 fragmentColor;
 
 in vec2 fragmentPosition;
+in vec2 fragmentUV;
 
 // this is the 3 component float vector that gets outputted to the screen for each pixel
 out vec4 color;
@@ -16,10 +17,17 @@ out vec4 color;
 // uniform variable, unique variable for an entire mesh
 // send just one variable for all vertices unlike copies
 // like fragmentColor 
-uniform float time;
-// uniform float offsetY;
+// uniform float time;
+uniform float offsetY;
+
+// sampler2D is 2D texture
+uniform sampler2D asset;
 
 void main() {
+
+	// texture
+	vec4 textureColor = texture(asset, fragmentUV);
+
 	// setting up the color to red, hardcored
 	// color = vec3(1.0, 0.0, 1.0, 1.0);	
 
@@ -33,10 +41,10 @@ void main() {
 	// 			 fragmentColor.a);
 
     // gl_FragCoord.y and gl_FragCoord.x are window coordinates
-	float loopTime = mod(time, 5.0f);
-	float lerpValue = loopTime / 5.0f;
-    // float lerpValue = (gl_FragCoord.y - offsetY) / 360.0f;
+	// float loopTime = mod(time, 5.0f);
+	// float lerpValue = loopTime / 5.0f;
+    float lerpValue = (gl_FragCoord.y - offsetY) / 360.0f;
     
     color = mix(vec4(0.0f, 0.0f, 1.0f, 1.0f),
-        vec4(1.0f, 0.0f, 0.0f, 1.0f), lerpValue);
+        vec4(1.0f, 0.0f, 0.0f, 1.0f), lerpValue) * textureColor;
 }
