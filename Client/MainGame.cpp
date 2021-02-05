@@ -4,7 +4,7 @@
 #include "Utils.h"
 #include <iostream>
 
-MainGame::MainGame(int screenWidth, int screenHeight) : window(nullptr), gameState(GameState::PLAY), loopTime(5.0f), offsetY(0.0f), elapsedTime(0.0f)
+MainGame::MainGame(int screenWidth, int screenHeight) : window(nullptr), gameState(GameState::PLAY), camera(screenWidth, screenHeight), loopTime(5.0f), offsetY(0.0f), elapsedTime(0.0f), maxFPS(60.0f)
 {
 	init(screenWidth, screenHeight);
 }
@@ -17,6 +17,7 @@ void MainGame::init(int screenWidth, int screenHeight)
 	initShaders();
 	initPlayer(PLAYER_X, PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_TEXTURE);
 	setBackgroundColor(R_CLEAR, G_CLEAR, B_CLEAR, A_CLEAR);
+	initVSYNC();
 }
 
 void MainGame::initWindow(int screenWidth, int screenHeight)
@@ -24,7 +25,7 @@ void MainGame::initWindow(int screenWidth, int screenHeight)
 	// initialize SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	// create windos
+	// create window, use DOUBLEBUFFER window (A, B)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	window = SDL_CreateWindow(TITLE.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
@@ -52,6 +53,10 @@ void MainGame::initGlew()
 	if (error != GLEW_OK) {
 		throw SDLException(GLEW_ERROR);
 	}
+
+	// print OpenGL version
+	// we can use this version in vertex, fragment shader
+	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 }
 
 void MainGame::initShaders() {
@@ -62,6 +67,29 @@ void MainGame::initShaders() {
 	shaderProgram.addAttribute("vertexColor");
 	shaderProgram.addAttribute("vertexUV");
 	shaderProgram.linkShaders();
+
+	geometryProgram.createProgram();
+	geometryProgram.createShaders();
+	geometryProgram.compileShaders(OBJECT_VERTEX_PATH, OBJECT_FRAGMENT_PATH);
+	geometryProgram.addAttribute("vertexPosition");
+	geometryProgram.addAttribute("vertexColor");
+	geometryProgram.linkShaders();
+
+	renderer.drawSquare(0.0f, 0.0f, 0.5f, 0.5f, 45.0f, Color(255, 255, 255, 255));
+	//renderer.drawCircle(0.0f, 0.0f, 0.5f, 3, Color(255, 255, 255, 255));
+
+	// vertical grid lines
+	for (int i = 0; i < 4; i++) {
+		float x = -1.0f + (i * 0.5f);
+		renderer.drawLine(x, -1.0f, x, 1.0f, Color(255, 255, 255, 255));
+	}
+
+	// vertical grid lines
+	for (int i = 0; i < 4; i++) {
+		float y = -1.0f + (i * 0.5f);
+		renderer.drawLine(-1.0f, y, 1.0f, y, Color(255, 255, 255, 255));
+	}
+
 }
 
 void MainGame::initPlayer(float x, float y, float width, float height, std::string textureFilePath) {
@@ -76,18 +104,43 @@ void MainGame::setBackgroundColor(float r, float g, float b, float a)
 	glClearColor(r, g, b, a);
 }
 
+void MainGame::initVSYNC() {
+	// set VSYNC to prevent screen tearing (usually occures in 3D games)
+	// 1 means on
+	SDL_GL_SetSwapInterval(1);
+}
+
 void MainGame::run()
 {
+	int t = 0;
 	while (gameState != GameState::EXIT) {
+		// used to callculate time of loop execution
+		float startTicks = SDL_GetTicks();
+
 		processInput();
 		update();
 		drawGame();
 		calculateFPS();
+
+		// print FPS
+		t++;
+		printFPS(&t);
+
+		// amount of time to execute while loop
+		float frameTicks = SDL_GetTicks() - startTicks;
+
+		// limit the FPS to the max FPS
+		if ((1000.f / maxFPS) > frameTicks) {
+			// delay execution of while loop
+			SDL_Delay((1000.0f / maxFPS) - frameTicks);
+		}
 	}
 
 }
 
 void MainGame::update() {
+	camera.update();
+
 	elapsedTime = SDL_GetTicks() / 1000.0f;
 
 	float x = (cos(elapsedTime) - 1.0f) * 0.5f;
@@ -126,29 +179,35 @@ void MainGame::drawGame()
 	// clear color buffer and depth buffer (after glClearColor is called)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// start rendering
-	shaderProgram.use();
+	geometryProgram.use();
 
-	GLint offsetLocation = shaderProgram.getUniformValueLocation("offset");
-	GLint offsetYLocation = shaderProgram.getUniformValueLocation("offsetY");
-	GLint assetLocation = shaderProgram.getUniformValueLocation("asset");
-	//GLint timeLocation = shaderProgram.getUniformValueLocation("time");
+	renderer.render();
 
-	// send value of time variable to GPU
-	// 1f means send 1 float
-	glUniform2f(offsetLocation, player->getX(), player->getY());
-	glUniform1f(offsetYLocation, offsetY);
+	geometryProgram.unuse();
 
-	// 0 means we are using texture 0
-	glUniform1i(assetLocation, 0);
-	
-	//glUniform1f(timeLocation, elapsedTime);
+	//// start rendering
+	//shaderProgram.use();
 
-	player->draw();
-	enemy->draw();
-	
-	// stop rendering
-	shaderProgram.unuse();
+	//GLint offsetLocation = shaderProgram.getUniformValueLocation("offset");
+	//GLint offsetYLocation = shaderProgram.getUniformValueLocation("offsetY");
+	//GLint assetLocation = shaderProgram.getUniformValueLocation("asset");
+	////GLint timeLocation = shaderProgram.getUniformValueLocation("time");
+
+	//// send value of time variable to GPU
+	//// 1f means send 1 float
+	//glUniform2f(offsetLocation, player->getX(), player->getY());
+	//glUniform1f(offsetYLocation, offsetY);
+
+	//// 0 means we are using texture 0
+	//glUniform1i(assetLocation, 0);
+	//
+	////glUniform1f(timeLocation, elapsedTime);
+
+	//player->draw();
+	//enemy->draw();
+	//
+	//// stop rendering
+	//shaderProgram.unuse();
 
 	// windows A, B ==> B, A <==> render on B and clear A
 	SDL_GL_SwapWindow(window);
@@ -156,7 +215,7 @@ void MainGame::drawGame()
 
 void MainGame::calculateFPS() {
 	// static variable are only once initialized
-	static const const int NUM_SAMPLES = 10;
+	static const int NUM_SAMPLES = 10;
 	static float frameTimes[NUM_SAMPLES];
 	static int currentFrame = 0;
 
@@ -178,6 +237,9 @@ void MainGame::calculateFPS() {
 
 	// number of ticks for calculatinf frameTimeAverage
 	int count;
+
+	// increase frame index
+	currentFrame++;
 
 	// if an array is not full set count to  currentFrameTime;
 	if (currentFrame < NUM_SAMPLES) {
@@ -206,9 +268,11 @@ void MainGame::calculateFPS() {
 	else {
 		fps = 60.0f;
 	}
+}
 
-	// increase frame index
-	currentFrame++;
-
-	std::cout << fps << std::endl;
+void MainGame::printFPS(int* t) {
+	if (*t >= 10) {
+		std::cout << "FPS: " << fps << std::endl;
+		*t = 0;
+	}
 }

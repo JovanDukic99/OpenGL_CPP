@@ -17,6 +17,9 @@ static const float A_CLEAR = 1.0f;
 static const std::string VERTEX_SHADER_PATH = "Shaders/colorShading.vert";
 static const std::string FRAGMENT_SHADER_PATH = "Shaders/colorShading.frag";
 
+static const std::string OBJECT_VERTEX_PATH = "Shaders/baseShader.vert";
+static const std::string OBJECT_FRAGMENT_PATH = "Shaders/baseShader.frag";
+
 // player config
 static const float PLAYER_X = 0.0f;
 static const float PLAYER_Y = 0.0f;
