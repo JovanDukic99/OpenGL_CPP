@@ -25,6 +25,7 @@
     <ClCompile Include="GeometryObject.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="IOManager.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="MainGame.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="ImageLoader.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="IOManager.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="MainGame.h" />

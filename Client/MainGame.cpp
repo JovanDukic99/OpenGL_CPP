@@ -75,26 +75,25 @@ void MainGame::initShaders() {
 	geometryProgram.addAttribute("vertexColor");
 	geometryProgram.linkShaders();
 
-	renderer.drawSquare(0.0f, 0.0f, 0.5f, 0.5f, 45.0f, Color(255, 255, 255, 255));
+	//renderer.drawSquare(0.0f, 0.0f, 60.0f, 60.0f, Color(255, 255, 255, 255));
 	//renderer.drawCircle(0.0f, 0.0f, 0.5f, 3, Color(255, 255, 255, 255));
 
 	// vertical grid lines
-	for (int i = 0; i < 4; i++) {
-		float x = -1.0f + (i * 0.5f);
-		renderer.drawLine(x, -1.0f, x, 1.0f, Color(255, 255, 255, 255));
+	for (int i = 0; i <= 18; i++) {
+		float x = 60.0f * i;
+		renderer.drawLine(x, 0.0f, x, 720.0f, Color(255, 255, 255, 255));
 	}
 
 	// vertical grid lines
-	for (int i = 0; i < 4; i++) {
-		float y = -1.0f + (i * 0.5f);
-		renderer.drawLine(-1.0f, y, 1.0f, y, Color(255, 255, 255, 255));
+	for (int i = 0; i <= 12; i++) {
+		float y = 60.0f * i;
+		renderer.drawLine(0.0f, y, 1080.0f, y, Color(255, 255, 255, 255));
 	}
 
 }
 
 void MainGame::initPlayer(float x, float y, float width, float height, std::string textureFilePath) {
 	player = new ObjectBase(x, y, width, height, textureFilePath);
-	enemy = new ObjectBase(-0.5f, -0.5f, 0.25f, 0.25f, textureFilePath);
 }
 
 void MainGame::setBackgroundColor(float r, float g, float b, float a)
@@ -117,6 +116,7 @@ void MainGame::run()
 		// used to callculate time of loop execution
 		float startTicks = SDL_GetTicks();
 
+		receiveInput();
 		processInput();
 		update();
 		drawGame();
@@ -124,7 +124,7 @@ void MainGame::run()
 
 		// print FPS
 		t++;
-		printFPS(&t);
+		//printFPS(&t);
 
 		// amount of time to execute while loop
 		float frameTicks = SDL_GetTicks() - startTicks;
@@ -140,18 +140,9 @@ void MainGame::run()
 
 void MainGame::update() {
 	camera.update();
-
-	elapsedTime = SDL_GetTicks() / 1000.0f;
-
-	float x = (cos(elapsedTime) - 1.0f) * 0.5f;
-	float y = (sin(elapsedTime) - 1.0f) * 0.5f;
-
-	offsetY = denormalize(y, SCREEN_HEIGHT);
-
-	player->updatePosition(x, y);
 }
 
-void MainGame::processInput()
+void MainGame::receiveInput()
 {
 	SDL_Event event;
 
@@ -162,12 +153,60 @@ void MainGame::processInput()
 			break;
 		}
 		case SDL_MOUSEMOTION: {
-			std::cout << "X: " << event.motion.x << ", Y: " << event.motion.y << std::endl;
+			//std::cout << "X: " << event.motion.xrel << ", Y: " << event.motion.yrel << std::endl;
+			if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
+				std::cout << "Camera X: " << camera.getPosition().x << ", Y: " << camera.getPosition().y << std::endl;
+				camera.setPosition(glm::vec2(camera.getPosition().x - event.motion.xrel, camera.getPosition().y + event.motion.yrel));
+				camera.setChange(true);
+			}
+			break;
+		}
+		case SDL_MOUSEWHEEL: {
+			if (event.wheel.y > 0) {
+				camera.setScale(camera.getScale() + CAMERA_SCALE);
+
+			}
+			else {
+				camera.setScale(camera.getScale() - CAMERA_SCALE);
+			}
+			camera.setChange(true);
+			break;
+		}
+		case SDL_MOUSEBUTTONDOWN: {
+			inputManager.pressKey(event.button.button);
+			break;
+		}
+		case SDL_MOUSEBUTTONUP: {
+			inputManager.releaseKey(event.button.button);
+			break;
+		}
+		case SDL_KEYDOWN: {
+			inputManager.pressKey(event.key.keysym.sym);
+			break;
+		}
+		case SDL_KEYUP: {
+			inputManager.releaseKey(event.key.keysym.sym);
 			break;
 		}
 		default:
 			break;
 		}
+	}
+}
+
+void MainGame::processInput() {
+	if (inputManager.isKeyPressed(SDLK_r)) {		
+		camera.setScale(1.0f);
+		camera.setPosition(glm::vec2(0.0f, 0.0f));
+		camera.setChange(true);
+	}
+
+	if (inputManager.isKeyPressed(SDLK_q)) {
+		
+	}
+
+	if (inputManager.isKeyPressed(SDLK_e)) {
+		
 	}
 }
 
@@ -180,6 +219,9 @@ void MainGame::drawGame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	geometryProgram.use();
+
+	GLuint orthoLocation = geometryProgram.getUniformValueLocation("cameraMatrix");
+	glUniformMatrix4fv(orthoLocation, 1, GL_FALSE, &(camera.getcameraMatrix()[0][0]));
 
 	renderer.render();
 

@@ -6,6 +6,7 @@
 #include "ObjectBase.h"
 #include "Camera2D.h"
 #include "Renderer.h"
+#include "InputManager.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -20,8 +21,8 @@ private:
 	GLSLProgram geometryProgram;
 	Renderer renderer;
 	ObjectBase* player;
-	ObjectBase* enemy;
 	Camera2D camera;
+	InputManager inputManager;
 	float elapsedTime;
 	float loopTime;
 	float offsetY;
@@ -45,6 +46,7 @@ private:
 
 	void calculateFPS();
 	void printFPS(int* t);
+	void receiveInput();
 	void processInput();
 	void drawGame();
 	void update();

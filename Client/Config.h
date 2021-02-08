@@ -6,6 +6,8 @@ static const std::string TITLE = "Game engine";
 
 static const int SCREEN_WIDTH = 1080;
 static const int SCREEN_HEIGHT = 720;
+static const int HALF_WIDTH = SCREEN_WIDTH / 2.0f;
+static const int HALF_HEIGHT = SCREEN_HEIGHT / 2.0f;
 
 // rgba clear values
 static const float R_CLEAR = 0.0f;
@@ -25,6 +27,10 @@ static const float PLAYER_X = 0.0f;
 static const float PLAYER_Y = 0.0f;
 static const float PLAYER_WIDTH = 1.0f;
 static const float PLAYER_HEIGHT = 1.0f;
+
+// camera config
+static const float CAMERA_SPEED = 10.0f;
+static const float CAMERA_SCALE = 0.05f;
 
 // assets paths
 static const std::string PLAYER_TEXTURE = "Textures/jimmyJump_pack/PNG/CharacterRight_Standing.png";

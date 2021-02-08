@@ -21,7 +21,8 @@ public:
 
 	// setters
 	void setPosition(const glm::vec2& position);
-	void secScale(float scale);
+	void setScale(float scale);
+	void setChange(bool change);
 
 	// getters
 	glm::vec2 getPosition();
