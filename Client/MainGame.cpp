@@ -163,11 +163,10 @@ void MainGame::receiveInput()
 		}
 		case SDL_MOUSEWHEEL: {
 			if (event.wheel.y > 0) {
-				camera.setScale(camera.getScale() + CAMERA_SCALE);
-
-			}
-			else {
 				camera.setScale(camera.getScale() - CAMERA_SCALE);
+
+			}else {
+				camera.setScale(camera.getScale() + CAMERA_SCALE);
 			}
 			camera.setChange(true);
 			break;
@@ -197,7 +196,7 @@ void MainGame::receiveInput()
 void MainGame::processInput() {
 	if (inputManager.isKeyPressed(SDLK_r)) {		
 		camera.setScale(1.0f);
-		camera.setPosition(glm::vec2(0.0f, 0.0f));
+		camera.setPosition(glm::vec2(HALF_WIDTH, HALF_HEIGHT));
 		camera.setChange(true);
 	}
 

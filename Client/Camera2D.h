@@ -31,5 +31,6 @@ public:
 
 private:
 	void init();
+	void updateOrthoMatrix();
 };
 
