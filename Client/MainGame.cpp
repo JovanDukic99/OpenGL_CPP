@@ -2,6 +2,8 @@
 #include "Config.h"
 #include "SDLException.h"
 #include "Utils.h"
+#include "ImageLoader.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 MainGame::MainGame(int screenWidth, int screenHeight) : window(nullptr), gameState(GameState::PLAY), camera(screenWidth, screenHeight), loopTime(5.0f), offsetY(0.0f), elapsedTime(0.0f), maxFPS(60.0f)
@@ -14,8 +16,9 @@ void MainGame::init(int screenWidth, int screenHeight)
 	initWindow(screenWidth, screenHeight);
 	initContext();
 	initGlew();
-	initShaders();
 	initPlayer(PLAYER_X, PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_TEXTURE);
+	initShaders();
+	initLevel(LEVEL_PATH);
 	setBackgroundColor(R_CLEAR, G_CLEAR, B_CLEAR, A_CLEAR);
 	initVSYNC();
 }
@@ -75,25 +78,58 @@ void MainGame::initShaders() {
 	geometryProgram.addAttribute("vertexColor");
 	geometryProgram.linkShaders();
 
-	//renderer.drawSquare(0.0f, 0.0f, 60.0f, 60.0f, Color(255, 255, 255, 255));
-	//renderer.drawCircle(0.0f, 0.0f, 0.5f, 3, Color(255, 255, 255, 255));
-
-	// vertical grid lines
-	for (int i = 0; i <= 18; i++) {
-		float x = 60.0f * i;
-		renderer.drawLine(x, 0.0f, x, 720.0f, Color(255, 255, 255, 255));
-	}
-
-	// vertical grid lines
-	for (int i = 0; i <= 12; i++) {
-		float y = 60.0f * i;
-		renderer.drawLine(0.0f, y, 1080.0f, y, Color(255, 255, 255, 255));
-	}
-
+	lightProgram.createProgram();
+	lightProgram.createShaders();
+	lightProgram.compileShaders(LIGHT_VERTEX_PATH, LIGHT_FRAGMENT_PATH);
+	lightProgram.addAttribute("vertexPosition");
+	lightProgram.addAttribute("vertexColor");
+	lightProgram.linkShaders();
 }
 
 void MainGame::initPlayer(float x, float y, float width, float height, std::string textureFilePath) {
-	player = new ObjectBase(x, y, width, height, textureFilePath);
+	spriteBatch.init();
+	player = new Player(x, y, width, height);
+}
+
+void MainGame::initLevel(std::string filePath) {
+	Image image = ImageLoader::loadImage(filePath);
+
+	for (int i = 0; i < image.getHeight(); i++) {
+		for (int j = 0; j < image.getWidth(); j++) {
+			int pixel = image[i][j];
+			int r = (pixel >> 24) & 0xff;
+			int g = (pixel >> 16) & 0xff;
+			int b = (pixel >> 8) & 0xff;
+			int a = pixel & 0xff;
+
+			int x = j * BLOCK_WIDTH;
+			int y = 2*SCREEN_HEIGHT - (i * BLOCK_HEIGHT) - BLOCK_HEIGHT;
+
+			if((r == 0) && (g == 0) && (b == 0) && (a == 255)){
+				renderer.drawSquare(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, Color(0, 255, 0, 255));
+			}
+		}
+	}
+
+	particleRenderer.drawPointLight(120.0f, 120.0f, 2*UNIT_WIDTH, 60, Color(255, 0, 255, 255));
+
+	drawGrid(image.getWidth(), image.getHeight());
+
+	image.clear();
+}
+
+void MainGame::drawGrid(int width, int height) {
+	// vertical grid lines
+	for (int i = 0; i <= width; i++) {
+		float x = UNIT_WIDTH * i;
+		renderer.drawLine(x, 0.0f, x, 2 * SCREEN_HEIGHT, Color(255, 255, 255, 255));
+	}
+
+	// horizontal grid lines
+	for (int i = 0; i <= height; i++) {
+		float y = UNIT_HEIGHT * i;
+		renderer.drawLine(0.0f, y, 2 * SCREEN_WIDTH, y, Color(255, 255, 255, 255));
+	}
 }
 
 void MainGame::setBackgroundColor(float r, float g, float b, float a)
@@ -101,6 +137,9 @@ void MainGame::setBackgroundColor(float r, float g, float b, float a)
 	// every time we call glClead(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 	// set background color to one below
 	glClearColor(r, g, b, a);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 }
 
 void MainGame::initVSYNC() {
@@ -140,6 +179,9 @@ void MainGame::run()
 
 void MainGame::update() {
 	camera.update();
+	for (int i = 0; i < bullets.size(); i++) {
+		bullets[i].update();
+	}
 }
 
 void MainGame::receiveInput()
@@ -153,9 +195,10 @@ void MainGame::receiveInput()
 			break;
 		}
 		case SDL_MOUSEMOTION: {
-			//std::cout << "X: " << event.motion.xrel << ", Y: " << event.motion.yrel << std::endl;
+			//std::cout << "X: " << event.motion.x << ", Y: " << event.motion.y << std::endl;
+			inputManager.setMouseCoords(glm::vec2(event.motion.x, SCREEN_HEIGHT - event.motion.y));
 			if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
-				std::cout << "Camera X: " << camera.getPosition().x << ", Y: " << camera.getPosition().y << std::endl;
+				std::cout << "Camera X: " << camera.getPosition().x << ", Camera Y: " << camera.getPosition().y << std::endl;
 				camera.setPosition(glm::vec2(camera.getPosition().x - event.motion.xrel, camera.getPosition().y + event.motion.yrel));
 				camera.setChange(true);
 			}
@@ -200,12 +243,31 @@ void MainGame::processInput() {
 		camera.setChange(true);
 	}
 
-	if (inputManager.isKeyPressed(SDLK_q)) {
-		
+	if (inputManager.isKeyPressed(SDLK_a)) {
+		player->update(player->getX() - PLAYER_SPEED, player->getY());
 	}
 
-	if (inputManager.isKeyPressed(SDLK_e)) {
-		
+	if (inputManager.isKeyPressed(SDLK_d)) {
+		player->update(player->getX() + PLAYER_SPEED, player->getY());
+	}
+
+	if (inputManager.isKeyPressed(SDLK_w)) {
+		player->update(player->getX(), player->getY() + PLAYER_SPEED);
+	}
+
+	if (inputManager.isKeyPressed(SDLK_s)) {
+		player->update(player->getX(), player->getY() - PLAYER_SPEED);
+	}
+
+	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
+		glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+		std::cout << "x: " << mouseCoords.x << ", y: " << mouseCoords.y << std::endl;
+	
+		glm::vec2 playerPosition(120.0f, 120.0f);
+		glm::vec2 direction = mouseCoords - playerPosition;
+		direction = glm::normalize(direction);
+
+		bullets.emplace_back(playerPosition, direction, 1.0f, PLAYER_TEXTURE);
 	}
 }
 
@@ -217,38 +279,52 @@ void MainGame::drawGame()
 	// clear color buffer and depth buffer (after glClearColor is called)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// geometry program
 	geometryProgram.use();
 
-	GLuint orthoLocation = geometryProgram.getUniformValueLocation("cameraMatrix");
-	glUniformMatrix4fv(orthoLocation, 1, GL_FALSE, &(camera.getcameraMatrix()[0][0]));
+	GLuint location = geometryProgram.getUniformValueLocation("cameraMatrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &(camera.getcameraMatrix()[0][0]));
 
 	renderer.render();
 
 	geometryProgram.unuse();
 
-	//// start rendering
-	//shaderProgram.use();
+	// light program
+	lightProgram.use();
 
-	//GLint offsetLocation = shaderProgram.getUniformValueLocation("offset");
-	//GLint offsetYLocation = shaderProgram.getUniformValueLocation("offsetY");
-	//GLint assetLocation = shaderProgram.getUniformValueLocation("asset");
-	////GLint timeLocation = shaderProgram.getUniformValueLocation("time");
+	location = lightProgram.getUniformValueLocation("cameraMatrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &(camera.getcameraMatrix()[0][0]));
 
-	//// send value of time variable to GPU
-	//// 1f means send 1 float
-	//glUniform2f(offsetLocation, player->getX(), player->getY());
-	//glUniform1f(offsetYLocation, offsetY);
+	particleRenderer.render();
 
-	//// 0 means we are using texture 0
-	//glUniform1i(assetLocation, 0);
-	//
-	////glUniform1f(timeLocation, elapsedTime);
+	lightProgram.unuse();
 
-	//player->draw();
-	//enemy->draw();
-	//
-	//// stop rendering
-	//shaderProgram.unuse();
+	// shader program
+	shaderProgram.use();
+
+	location = shaderProgram.getUniformValueLocation("cameraMatrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &(camera.getcameraMatrix()[0][0]));
+
+	location = shaderProgram.getUniformValueLocation("asset");
+	glUniform1f(location, 0);
+
+	// sprite batch 
+	spriteBatch.begin();
+
+	glm::vec4 pos(120.0f, 180.0f, 60.0f, 60.0f);
+	glm::vec4 uv(0.0f, 0.0f, 1.0f, 1.0f);
+	GLTexture texture = ResourceManager::getTexture(PLAYER_TEXTURE);
+	spriteBatch.draw(pos, uv, 0.0f, texture.ID, Color(255,255,255,255));
+
+	for (int i = 0; i < bullets.size(); i++) {
+		bullets[i].draw(spriteBatch);
+	}
+
+	spriteBatch.end();
+
+	spriteBatch.renderBatch();
+
+	shaderProgram.unuse();
 
 	// windows A, B ==> B, A <==> render on B and clear A
 	SDL_GL_SwapWindow(window);
@@ -316,4 +392,11 @@ void MainGame::printFPS(int* t) {
 		std::cout << "FPS: " << fps << std::endl;
 		*t = 0;
 	}
+}
+
+void MainGame::clear() {
+	if (player != nullptr) {
+		delete player;
+	}
+	renderer.clear();
 }

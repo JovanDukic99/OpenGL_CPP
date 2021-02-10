@@ -71,9 +71,20 @@ GLuint Renderer::drawCircle(float x, float y, float radius, int segments, Color 
 	return circle.getObjectID();
 }
 
+GLuint Renderer::drawLight(float x, float y, float width, float height, Color color) {
+
+	return GLuint();
+}
+
 
 void Renderer::render() {
 	for (GeometryObject object : objects) {
 		object.draw();
+	}
+}
+
+void Renderer::clear(){
+	for (GeometryObject object : objects) {
+		object.clear();
 	}
 }

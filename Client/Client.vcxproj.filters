@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Geometry">
       <UniqueIdentifier>{1d6e7f04-548a-4ba1-a051-ddcdfd9e3ed7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\entity">
+      <UniqueIdentifier>{59488ee5-56e9-4f9d-b911-cafb4bd0ba0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entity">
+      <UniqueIdentifier>{23901e00-b5ae-4ace-b30d-79056b365f96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientApp.cpp">
@@ -101,6 +107,27 @@
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteBatch.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source Files\entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +196,27 @@
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteBatch.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Header Files\entity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

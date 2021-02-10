@@ -14,6 +14,7 @@ public:
 	GeometryObject(GLenum mode, int vertexNumber);
 	GLuint getObjectID();
 	void draw();
+	void clear();
 
 private:
 	void init();

@@ -20,3 +20,11 @@ bool InputManager::isKeyPressed(unsigned int keyID) {
 
 	return false;
 }
+
+glm::vec2 InputManager::getMouseCoords() {
+	return mouseCoordinates;
+}
+
+void InputManager::setMouseCoords(glm::vec2 mouseCoordinates){
+	this->mouseCoordinates = mouseCoordinates;
+}

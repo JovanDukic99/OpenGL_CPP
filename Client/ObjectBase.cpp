@@ -160,3 +160,4 @@ float ObjectBase::getY()
 {
 	return y;
 }
+

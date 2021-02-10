@@ -25,6 +25,19 @@ void Camera2D::update() {
 	}
 }
 
+glm::vec2 Camera2D::convertScreenToWorld(glm::vec2 screenCoords) {
+	// make (0, 0) center of screen
+	screenCoords = screenCoords - glm::vec2(screenWidth / 2, screenHeight / 2);
+
+	// scale the coordinates
+	screenCoords = screenCoords / scale;
+
+	// translate with the camera position
+	screenCoords = screenCoords + position;
+
+	return screenCoords;
+}
+
 void Camera2D::setPosition(const glm::vec2& position) {
 	this->position = position;
 }

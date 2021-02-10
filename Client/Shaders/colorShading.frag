@@ -18,7 +18,7 @@ out vec4 color;
 // send just one variable for all vertices unlike copies
 // like fragmentColor 
 // uniform float time;
-uniform float offsetY;
+// uniform float offsetY;
 
 // sampler2D is 2D texture
 uniform sampler2D asset;
@@ -43,8 +43,10 @@ void main() {
     // gl_FragCoord.y and gl_FragCoord.x are window coordinates
 	// float loopTime = mod(time, 5.0f);
 	// float lerpValue = loopTime / 5.0f;
-    float lerpValue = (gl_FragCoord.y - offsetY) / 360.0f;
+    // float lerpValue = (gl_FragCoord.y - offsetY) / 360.0f;
     
-    color = mix(vec4(0.0f, 0.0f, 1.0f, 1.0f),
-        vec4(1.0f, 0.0f, 0.0f, 1.0f), lerpValue) * textureColor;
+    // color = mix(vec4(0.0f, 0.0f, 1.0f, 1.0f),
+    //     vec4(1.0f, 0.0f, 0.0f, 1.0f), lerpValue) * textureColor;
+
+	color = fragmentColor * textureColor;
 }

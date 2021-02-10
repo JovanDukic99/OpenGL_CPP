@@ -22,7 +22,8 @@ out vec2 fragmentPosition;
 out vec2 fragmentUV;
 smooth out vec4 fragmentColor;
 
-uniform vec2 offset;
+// uniform vec2 offset;
+uniform mat4 cameraMatrix;
 
 void main() { 
     // set the x,y coordinates of vertex
@@ -30,16 +31,16 @@ void main() {
     // float x = (cos(time) - 1) * 0.5f;
     // float y = (sin(time) - 1) * 0.5f;
 
-    gl_Position.xy = vertexPosition + offset;
+    gl_Position = cameraMatrix * vec4(vertexPosition, 0.0f, 1.0f);
 
     // z coordinate is 0, bcs we are in 2D space
-    gl_Position.z = 0.0f;
+    // gl_Position.z = 0.0f;
 
     // indicate that the coordinates are normalized
-    gl_Position.w = 1.0f;
+    // gl_Position.w = 1.0f;
 
     // setting up fragment position
-    fragmentPosition = vertexPosition + offset;
+    fragmentPosition = vertexPosition;
 
     // setting up fragment color
     fragmentColor = vertexColor;

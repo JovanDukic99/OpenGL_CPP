@@ -2,6 +2,7 @@
 #include "PicoPNG.H"
 #include "IOManager.h"
 #include "SDLException.h"
+#include <iostream>
 
 GLTexture ImageLoader::loadTexture(std::string filePath) {
     // initialize struct components to 0 (use {})
@@ -54,4 +55,49 @@ GLTexture ImageLoader::loadTexture(std::string filePath) {
     glBindTexture(GL_TEXTURE_2D, 0);
 
     return texture;
+}
+
+Image ImageLoader::loadImage(std::string filePath) {
+    std::vector<unsigned char> input;
+    std::vector<unsigned char> output;
+
+    // image props
+    unsigned long width;
+    unsigned long height;
+
+    // read data to input buffer
+    if (IOManager::readFileToBuffer(filePath, input) == false) {
+        throw SDLException("Failed to read PNG file to buffer.");
+    }
+
+    int errorCode = decodePNG(output, width, height, &(input[0]), input.size());
+
+    // check for errors
+    if (errorCode != 0) {
+        throw SDLException("Decode PNG failed with error: " + std::to_string(errorCode));
+    }
+
+    // create image
+    Image image(width, height);
+
+    int row = 0;
+    int col = 0;
+
+    for (int i = 0; i < output.size(); i = i + 4) {
+        int r = output[i];
+        int g = output[i+1];
+        int b = output[i+2];
+        int a = output[i+3];
+
+        int pixel = (r << 24) | (g << 16) | (b << 8) | a;
+
+        image[row][col++] = pixel;
+
+        if (col == width) {
+            row++;
+            col = 0;
+        }
+    }
+
+    return image;
 }

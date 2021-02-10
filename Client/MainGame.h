@@ -6,7 +6,12 @@
 #include "ObjectBase.h"
 #include "Camera2D.h"
 #include "Renderer.h"
+#include "ParticleRenderer.h"
 #include "InputManager.h"
+#include "Player.h"
+#include "Block.h"
+#include "SpriteBatch.h"
+#include "Bullet.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -19,10 +24,14 @@ private:
 	GameState gameState;
 	GLSLProgram shaderProgram;
 	GLSLProgram geometryProgram;
+	GLSLProgram lightProgram;
 	Renderer renderer;
-	ObjectBase* player;
+	ParticleRenderer particleRenderer;
 	Camera2D camera;
 	InputManager inputManager;
+	Player* player;
+	SpriteBatch spriteBatch;
+	std::vector<Bullet> bullets;
 	float elapsedTime;
 	float loopTime;
 	float offsetY;
@@ -33,6 +42,7 @@ private:
 public:
 	MainGame(int screenWidht, int screenHeight);
 	void run();
+	void clear();
 
 private:
 	void init(int screenWidth, int screenHeight);
@@ -41,6 +51,8 @@ private:
 	void initGlew();
 	void initShaders();
 	void initPlayer(float x, float y, float width, float height, std::string textureFilePath);
+	void initLevel(std::string filePath);
+	void drawGrid(int width, int height);
 	void setBackgroundColor(float r, float g, float b, float a);
 	void initVSYNC();
 

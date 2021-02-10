@@ -15,6 +15,8 @@ public:
 	GLuint drawSquare(float x, float y, float width, float height, Color color);
 	GLuint drawSquare(float x, float y, float width, float height, float angle, Color color);
 	GLuint drawCircle(float x, float y, float radius, int segments, Color color);
+	GLuint drawLight(float x, float y, float width, float height, Color color);
 	void render();
+	void clear();
 };
 

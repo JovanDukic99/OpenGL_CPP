@@ -5,8 +5,10 @@
 
 int main(int argc, char* argv[]) {
 
+	MainGame* mainGame = nullptr;
+
 	try {
-		MainGame* mainGame = new MainGame(SCREEN_WIDTH, SCREEN_HEIGHT);
+		mainGame = new MainGame(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 		mainGame->run();
 	}
@@ -15,6 +17,8 @@ int main(int argc, char* argv[]) {
 		SDL_Quit();
 		exit(EXIT_FAILURE);
 	}
+
+	mainGame->clear();
 
 	return 0;
 }

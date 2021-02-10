@@ -33,10 +33,17 @@ void GeometryObject::draw() {
 	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 	
 	glDrawArrays(mode, 0, vertexNumber);
+
 	glDisableVertexAttribArray(0);
-	
 	glDisableVertexAttribArray(1);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void GeometryObject::clear() {
+	if (vertexData != nullptr) {
+		delete[] vertexData;
+	}
 }
 
 
