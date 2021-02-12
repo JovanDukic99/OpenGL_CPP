@@ -1,22 +1,7 @@
 #pragma once
 #include <GL/glew.h>
+#include "Color.h"
 
-struct Color {
-	GLubyte r;
-	GLubyte g;
-	GLubyte b;
-	GLubyte a;
-
-	Color() : r(0), g(0), b(0), a(0)
-	{
-
-	}
-
-	Color(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha) : r(red), g(green), b(blue), a(alpha)
-	{
-
-	}
-};
 
 struct Position {
 	float x;
@@ -34,6 +19,17 @@ struct Vertex {
 	Position position;
 	Color color;
 	UV uv;
+
+	Vertex() {
+		position.x = 0.0;
+		position.y = 0.0f;
+		uv.u = 0.0f;
+		uv.v = 0.0f;
+	}
+
+	Vertex(float x, float y, Color color) : color(color) {
+		setPosition(x, y);
+	}
 
 	// public setters
 	void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a) {

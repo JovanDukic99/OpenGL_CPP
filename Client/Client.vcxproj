@@ -19,14 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Circle.cpp" />
-    <ClCompile Include="ClientApp.cpp" />
-    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FPS.cpp" />
     <ClCompile Include="GeometryObject.cpp" />
-    <ClCompile Include="GLSLProgram.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -34,9 +32,7 @@
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
-    <ClCompile Include="ParticleRenderer.cpp" />
     <ClCompile Include="PicoPNG.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -45,16 +41,17 @@
     <ClCompile Include="Square.cpp" />
     <ClCompile Include="TextureCache.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Block.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Circle.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="EngineConfig.h" />
+    <ClInclude Include="FPS.h" />
     <ClInclude Include="GeometryObject.h" />
-    <ClInclude Include="GLSLProgram.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageLoader.h" />
@@ -63,9 +60,7 @@
     <ClInclude Include="Line.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="ObjectBase.h" />
-    <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="PicoPNG.H" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -76,6 +71,7 @@
     <ClInclude Include="TextureCache.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -86,7 +82,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -149,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)NetworkLibrary/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +153,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)deps/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

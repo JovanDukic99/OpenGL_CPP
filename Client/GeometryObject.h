@@ -4,22 +4,19 @@
 
 class GeometryObject
 {
-protected:
-	GLuint objectID;
+private:
 	GLenum mode;
 	int vertexNumber;
-	Vertex* vertexData;
-
+	int offset;
 public:
-	GeometryObject(GLenum mode, int vertexNumber);
-	GLuint getObjectID();
-	void draw();
-	void clear();
+	GeometryObject(GLenum mode, int vertexNumber, int offset);
 
-private:
-	void init();
+	// setters
+	void updateOffset(int& offset);
 
-protected:
-	void uploadVertexData();
+	// getters
+	int getOffset();
+	int getVertexNumber();
+	GLenum getMode();
 };
 

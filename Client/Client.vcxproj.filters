@@ -16,9 +16,6 @@
     <Filter Include="Source Files\game">
       <UniqueIdentifier>{75299388-2b90-46e6-9abd-2f8fbfb5985e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\app">
-      <UniqueIdentifier>{c8b6934d-5c0a-438e-86cd-4ae3805a7cb2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\game">
       <UniqueIdentifier>{3e1906ac-c67f-49dd-9b45-b19be884fc34}</UniqueIdentifier>
     </Filter>
@@ -51,17 +48,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClientApp.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="MainGame.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="SDLException.cpp">
       <Filter>Source Files\exception</Filter>
-    </ClCompile>
-    <ClCompile Include="GLSLProgram.cpp">
-      <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="ObjectBase.cpp">
       <Filter>Source Files\game</Filter>
@@ -108,43 +99,34 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Block.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
     <ClCompile Include="Image.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
     <ClCompile Include="SpriteBatch.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleRenderer.cpp">
-      <Filter>Source Files\game</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="FPS.cpp">
+      <Filter>Source Files\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>Header Files\config</Filter>
-    </ClInclude>
     <ClInclude Include="SDLException.h">
       <Filter>Header Files\exception</Filter>
     </ClInclude>
     <ClInclude Include="SDLError.h">
       <Filter>Header Files\exception</Filter>
-    </ClInclude>
-    <ClInclude Include="GLSLProgram.h">
-      <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="ObjectBase.h">
       <Filter>Header Files\game</Filter>
@@ -200,23 +182,26 @@
     <ClInclude Include="Image.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Block.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
     <ClInclude Include="SpriteBatch.h">
-      <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleRenderer.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="FPS.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConfig.h">
+      <Filter>Header Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Header Files\game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

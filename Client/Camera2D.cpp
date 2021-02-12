@@ -1,17 +1,16 @@
 #include "Camera2D.h"
-#include "Config.h"
 
-Camera2D::Camera2D(int screenWidth, int screenHeight) : screenWidth(screenWidth), screenHeight(screenHeight), position((float) HALF_WIDTH, (float) HALF_HEIGHT), cameraMatrix(1.0f), orthoMatrix(1.0f), scale(1.0f), change(true)
-{
+Camera2D::Camera2D(float halfWidth, float halfHeight, float cameraX, float cameraY) : halfWidth(halfWidth), halfHeight(halfHeight), position(cameraX, cameraY), cameraMatrix(1.0f), orthoMatrix(1.0f), scale(1.0f), change(true) {
 	init();
 }
 
 void Camera2D::init() {
-	orthoMatrix = glm::ortho((float)-HALF_WIDTH, (float)HALF_WIDTH, (float)-HALF_HEIGHT, (float)HALF_HEIGHT, -1.0f, 1.0f);
+	orthoMatrix = glm::ortho((float)-halfWidth, (float)halfWidth, (float)-halfHeight, (float)halfHeight, -1.0f, 1.0f);
+	position = glm::clamp(position, glm::vec2(halfWidth, halfHeight), glm::vec2(3 * halfWidth, 3 * halfHeight));
 }
 
 void Camera2D::updateOrthoMatrix() {
-	orthoMatrix = glm::ortho((float)-HALF_WIDTH * scale, (float)HALF_WIDTH * scale, (float)-HALF_HEIGHT * scale, (float)HALF_HEIGHT * scale, -1.0f, 1.0f);
+	orthoMatrix = glm::ortho((float)-halfWidth * scale, (float)halfWidth * scale, (float)-halfHeight * scale, (float)halfHeight * scale, -1.0f, 1.0f);
 }
 
 void Camera2D::update() {
@@ -27,10 +26,10 @@ void Camera2D::update() {
 
 glm::vec2 Camera2D::convertScreenToWorld(glm::vec2 screenCoords) {
 	// make (0, 0) center of screen
-	screenCoords = screenCoords - glm::vec2(screenWidth / 2, screenHeight / 2);
+	screenCoords = screenCoords - glm::vec2(halfWidth, halfHeight);
 
 	// scale the coordinates
-	screenCoords = screenCoords / scale;
+	screenCoords = screenCoords * scale;
 
 	// translate with the camera position
 	screenCoords = screenCoords + position;
@@ -39,22 +38,29 @@ glm::vec2 Camera2D::convertScreenToWorld(glm::vec2 screenCoords) {
 }
 
 void Camera2D::setPosition(const glm::vec2& position) {
-	this->position = position;
+	this->position = glm::clamp(position, glm::vec2(halfWidth, halfHeight), glm::vec2(3 * halfWidth, 3  *halfHeight));
+	setChange(true);
 }
 
 void Camera2D::setScale(float scale) {
 	this->scale = scale;
+	setChange(true);
 }
 
 void Camera2D::setChange(bool change) {
 	this->change = change;
 }
 
+void Camera2D::reset(float x, float y) {
+	scale = 1.0f;
+	setPosition(glm::vec2(x, y));
+}
+
 glm::vec2 Camera2D::getPosition() {
 	return position;
 }
 
-glm::mat4 Camera2D::getcameraMatrix() {
+glm::mat4 Camera2D::getCameraMatrix() {
 	return cameraMatrix;
 }
 

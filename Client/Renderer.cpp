@@ -6,85 +6,75 @@
 #include <GL/glew.h>
 #include <iostream>
 
-Renderer::Renderer() {
-
+Renderer::Renderer() : vertexArrayID(0), vertexBufferID(0), offset(0) {
+	init();
 }
 
-GLuint Renderer::drawLine(float x, float y, float x1, float y1, Color color) {
-	// create line
-	Line line(x, y, x1, y1, color);
-
-	// add to an array
-	objects.push_back(line);
-
-	// return objectID
-	return line.getObjectID();
+void Renderer::init() {
+	initVertexArray();
 }
 
-GLuint Renderer::drawLine(float x, float y, float x1, float y1, float angle, Color color) {
-	// create line
-	Line line(x, y, x1, y1, angle, color);
+void Renderer::initVertexArray() {
+	glGenVertexArrays(1, &vertexArrayID);
+	glGenBuffers(1, &vertexBufferID);
 
-	// add to an array
-	objects.push_back(line);
+	glBindVertexArray(vertexArrayID);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 
-	// return objectID
-	return line.getObjectID();
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+
+	glBindVertexArray(0);
 }
 
-GLuint Renderer::drawPoint(float x, float y, Color color) {
-	// create point
-	Point point(x, y, color);
-
-	// add to an array
-	objects.push_back(point);
-
-	// return objectID
-	return point.getObjectID();
+void Renderer::begin() {
+	reset();
 }
 
-GLuint Renderer::drawSquare(float x, float y, float width, float height, Color color) {
-	// create square
-	Square square(x, y, width, height, color);
-
-	// add to an array
-	objects.push_back(square);
-
-	// return objectID
-	return square.getObjectID();
+void Renderer::end() {
+	uploadVertexData();
+	draw();
 }
 
-GLuint Renderer::drawSquare(float x, float y, float width, float height, float angle, Color color) {
-	// create square
-	Square square(x, y, width, height, angle ,color);
-
-	// add to an array
-	objects.push_back(square);
-
-	// return objectID
-	return square.getObjectID();
+void Renderer::uploadVertexData() {
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-GLuint Renderer::drawCircle(float x, float y, float radius, int segments, Color color) {
-	Circle circle(x, y, radius, segments, color);
-	objects.push_back(circle);
-	return circle.getObjectID();
-}
-
-GLuint Renderer::drawLight(float x, float y, float width, float height, Color color) {
-
-	return GLuint();
-}
-
-
-void Renderer::render() {
-	for (GeometryObject object : objects) {
-		object.draw();
+void Renderer::draw() {
+	glBindVertexArray(vertexArrayID);
+	for (int i = 0; i < geometryObjects.size(); i++) {
+		GeometryObject object = geometryObjects[i];
+		glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
 	}
+	glBindVertexArray(0);
 }
 
-void Renderer::clear(){
-	for (GeometryObject object : objects) {
-		object.clear();
-	}
+// drawing functions
+void Renderer::drawSquare(float x, float y, float width, float height, Color color) {
+	geometryObjects.emplace_back(Square(x, y, width, height, color, offset, vertices));
 }
+
+void Renderer::drawCircle(float x, float y, float radius, int segments, Color color) {
+	geometryObjects.emplace_back(Circle(x, y, radius, segments, color, offset, vertices));
+}
+
+void Renderer::drawLine(float x, float y, float x1, float y1, Color color) {
+	geometryObjects.emplace_back(Line(x, y, x1, y1, color, offset, vertices));
+}
+
+void Renderer::drawPoint(float x, float y, Color color) {
+	geometryObjects.push_back(Point(x, y, color, offset, vertices));
+}
+
+void Renderer::reset() {
+	vertices.clear();
+	geometryObjects.clear();
+	offset = 0;
+}
+

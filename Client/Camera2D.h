@@ -10,28 +10,33 @@ private:
 	glm::vec2 position;
 	glm::mat4 cameraMatrix;
 	glm::mat4 orthoMatrix;
-	bool change;
+
 	float scale;
-	int screenWidth;
-	int screenHeight;
+	int halfWidth;
+	int halfHeight;
+
+	bool change;
 
 public:
-	Camera2D(int screenWidth, int screenHeight);
-	void update();
+	Camera2D(float halfWidth, float halfHeight, float cameraX, float cameraY);
+
 	glm::vec2 convertScreenToWorld(glm::vec2 screenCoords);
+
+	void reset(float x, float y);
+	void update();
 
 	// setters
 	void setPosition(const glm::vec2& position);
 	void setScale(float scale);
-	void setChange(bool change);
 
 	// getters
 	glm::vec2 getPosition();
-	glm::mat4 getcameraMatrix();
+	glm::mat4 getCameraMatrix();
 	float getScale();
 
 private:
 	void init();
 	void updateOrthoMatrix();
+	void setChange(bool change);
 };
 

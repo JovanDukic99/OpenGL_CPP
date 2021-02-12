@@ -1,5 +1,5 @@
 #include "Utils.h"
-#include "Config.h"
+#include "EngineConfig.h"
 
 float normalize(float x, float y) {
 	return ((x / y) * 2.0f) - 1.0f;

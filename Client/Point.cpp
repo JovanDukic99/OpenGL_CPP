@@ -1,16 +1,16 @@
 #include "Point.h"
 
-Point::Point(float x, float y, Color color) : GeometryObject(GL_POINTS, 1) {
-	init(x, y, color);
+Point::Point(float x, float y, Color color, int& offset, std::vector<Vertex>& vertices) : GeometryObject(GL_POINTS, 1, offset) {
+	init(x, y, color, offset, vertices);
 }
 
-void Point::init(float x, float y, Color color) {
-	generateVertecies(x, y, color);
-	uploadVertexData();
+void Point::init(float x, float y, Color color, int& offset, std::vector<Vertex>& vertices) {
+	generateVertecies(x, y, color, vertices);
+	updateOffset(offset);
 }
 
-void Point::generateVertecies(float x, float y, Color color) {
+void Point::generateVertecies(float x, float y, Color color, std::vector<Vertex>& vertices) {
 	// one point
-	vertexData[0].setPosition(x, y);
-	vertexData[0].setColor(color);
+	vertices.emplace_back(x, y, color);
 }
+
