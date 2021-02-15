@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Config.h"
 #include "Utils.h"
+#include <ResourceManager.h>
 #include <Collision.h>
 #include <GL/glew.h>
 #include <iostream>
@@ -30,6 +31,7 @@ void Game::initBackgroundProps(float r, float g, float b, float a) {
 void Game::initComponents() {
 	player = new Player(START_PLAYER_X, START_PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
 	camera.setPosition(getCameraPosition(camera.getPosition()));
+	texture = ResourceManager::getTexture("Textures/jimmyJump_pack/PNG/CharacterRight_Standing.png");
 	renderer.init(camera);
 }
 
@@ -206,6 +208,8 @@ void Game::draw() {
 	drawBlocks();
 	drawPlayer();
 	drawGrid();
+
+	renderer.drawTexture(100.0f, 100.0f, 60.0f, 60.0f, texture);
 
 	renderer.end();
 

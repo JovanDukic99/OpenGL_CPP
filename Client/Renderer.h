@@ -4,17 +4,24 @@
 #include "Square.h"
 #include "Circle.h"
 #include "GLSL_Object.h"
+#include "GLSL_Texture.h"
 #include "ShaderProgram.h"
+#include "GLTexture.h"
 #include <vector>
 class Renderer
 {
 private:
 	std::vector<GLSL_Object> geometryObjects;
+	std::vector<GLSL_Texture> textureObjects;
 	std::vector<Vertex> vertices;
+	std::vector<Vertex> textureVetrices;
 	ShaderProgram shaderProgram;
+	ShaderProgram textureProgram;
 	GLuint vertexArrayID;
 	GLuint vertexBufferID;
+	GLuint textureBufferID;
 	int offset;
+	int textureOffset;
 public:
 	Renderer();
 	Renderer(Camera2D& camera);
@@ -31,6 +38,8 @@ public:
 	void drawCircle(Circle circle);
 	void drawLine(Line line);
 	void drawPoint(Point point);
+	void drawTexture(float x, float y, float width, float height, GLTexture texture);
+	void drawTexture(Square square, GLTexture texture);
 	void begin();
 	void end();
 private:
@@ -39,6 +48,9 @@ private:
 	void initShaderProgram(Camera2D& camera);
 	void draw();
 	void drawGeometry();
+	void drawTexture();
+	void bindVertexArray();
+	void unbindVertexArray();
 	void uploadVertexData();
 	void reset();
 	bool check();

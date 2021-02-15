@@ -27,6 +27,7 @@ private:
 	Renderer renderer;
 	GameState gameState;
 	WindowState windowState;
+	GLTexture texture;
 	Camera2D camera;
 	InputManager inputManager;
 	FPS fpsCounter;

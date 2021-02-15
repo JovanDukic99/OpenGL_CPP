@@ -9,7 +9,12 @@ ShaderProgram::ShaderProgram() : numAttributes(0), programID(0), vertexShaderID(
 
 }
 
-ShaderProgram::ShaderProgram(Camera2D& camera, std::string vertexPath, std::string fragmenPath) : numAttributes(0), programID(0), vertexShaderID(0), fragmenShaderID(0), cameraMatrix(&camera.getCameraReference()) {
+ShaderProgram::ShaderProgram(Camera2D& camera, std::string vertexPath, std::string fragmenPath) : numAttributes(0), programID(0), vertexShaderID(0), fragmenShaderID(0), cameraMatrix(nullptr) {
+	initShaders(camera, vertexPath, fragmenPath);
+}
+
+void ShaderProgram::initShaders(Camera2D& camera, std::string vertexPath, std::string fragmenPath) {
+	setCamera(camera);
 	init(vertexPath, fragmenPath);
 }
 
@@ -18,15 +23,7 @@ void ShaderProgram::init(std::string vertexPath, std::string fragmenPath) {
 		createProgram();
 		createShaders();
 		compileShaders(vertexPath, fragmenPath);
-		addAttribute("vertexPosition");
-		addAttribute("vertexColor");
-		linkShaders();
 	}
-}
-
-void ShaderProgram::init(Camera2D& camera, std::string vertexPath, std::string fragmenPath) {
-	setCamera(camera);
-	init(vertexPath, fragmenPath);
 }
 
 void ShaderProgram::createProgram() {

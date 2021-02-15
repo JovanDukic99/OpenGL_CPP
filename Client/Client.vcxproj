@@ -27,6 +27,7 @@
     <ClCompile Include="GLSL_Circle.cpp" />
     <ClCompile Include="FPS.cpp" />
     <ClCompile Include="GLSL_Object.cpp" />
+    <ClCompile Include="GLSL_Texture.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="ParticleEngine2D.cpp" />
@@ -61,6 +62,7 @@
     <ClInclude Include="EngineConfig.h" />
     <ClInclude Include="FPS.h" />
     <ClInclude Include="GLSL_Object.h" />
+    <ClInclude Include="GLSL_Texture.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="ParticleEngine2D.h" />

@@ -159,6 +159,9 @@
     <ClCompile Include="ParticleEngine2D.cpp">
       <Filter>Source Files\particles</Filter>
     </ClCompile>
+    <ClCompile Include="GLSL_Texture.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="ParticleEngine2D.h">
       <Filter>Header Files\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Texture.h">
+      <Filter>Header Files\GLSL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,8 +8,6 @@ private:
 
 public:
 	static GLTexture getTexture(std::string texturePath);
-	
-	static GLuint boundTexture;
 
 };
 
