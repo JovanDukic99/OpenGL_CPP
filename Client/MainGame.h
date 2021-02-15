@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include <SDL/SDL.h>
 #include <GL/glew.h>
@@ -20,8 +21,6 @@ class MainGame
 private:
 	SDL_Window* window;
 	GameState gameState;
-	ShaderProgram geometryProgram;
-	ShaderProgram lightProgram;
 	Renderer* renderer;
 	Camera2D camera;
 	InputManager inputManager;
@@ -52,4 +51,5 @@ private:
 	void drawGame();
 	void update();
 };
+*/
 

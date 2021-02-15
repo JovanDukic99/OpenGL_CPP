@@ -45,12 +45,6 @@
     <ClCompile Include="Game.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
-    <ClCompile Include="EntityBase.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Block.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\entity</Filter>
     </ClCompile>
@@ -64,12 +58,6 @@
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Header Files\config</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityBase.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Block.h">
-      <Filter>Header Files\entity</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files\entity</Filter>

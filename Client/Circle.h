@@ -1,13 +1,23 @@
 #pragma once
-#include "GeometryObject.h"
-#include <vector>
-
-class Circle : public GeometryObject
+#include "GeometryBase.h"
+#define SEGMENT_NUMBER 60
+class Circle : public GeometryBase
 {
-public:
-	Circle(float x, float y, float radius, int segments, Color color, int& offset, std::vector<Vertex>& vertices);
 private:
-	void init(float x, float y, float radius, int segments, Color color, int& offset, std::vector<Vertex>& vertices);
-	void generateVertices(float x, float y, float radius, int segments, Color color, std::vector<Vertex>& vertices);
+	float radius;
+	int segments;
+public:
+	Circle();
+	Circle(float x, float y, float radius, Color color, int segments);
+
+	// getters
+	float getRadius();
+	int getSegments();
+
+	// setters
+	void setProps(float x, float y, float radius, int segments);
+	void setProps(float x, float y, float radius, int segments, Color color);
+	void setRadius(float radius);
+	void setSegments(int segments);
 };
 

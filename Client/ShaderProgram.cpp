@@ -1,12 +1,32 @@
 #include "ShaderProgram.h"
 #include "SDLException.h"
+#include "EngineConfig.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-ShaderProgram::ShaderProgram() : numAttributes(0), programID(0), vertexShaderID(0), fragmenShaderID(0)
-{
+ShaderProgram::ShaderProgram() : numAttributes(0), programID(0), vertexShaderID(0), fragmenShaderID(0), cameraMatrix(nullptr) {
 
+}
+
+ShaderProgram::ShaderProgram(Camera2D& camera, std::string vertexPath, std::string fragmenPath) : numAttributes(0), programID(0), vertexShaderID(0), fragmenShaderID(0), cameraMatrix(&camera.getCameraReference()) {
+	init(vertexPath, fragmenPath);
+}
+
+void ShaderProgram::init(std::string vertexPath, std::string fragmenPath) {
+	if (check()) {
+		createProgram();
+		createShaders();
+		compileShaders(vertexPath, fragmenPath);
+		addAttribute("vertexPosition");
+		addAttribute("vertexColor");
+		linkShaders();
+	}
+}
+
+void ShaderProgram::init(Camera2D& camera, std::string vertexPath, std::string fragmenPath) {
+	setCamera(camera);
+	init(vertexPath, fragmenPath);
 }
 
 void ShaderProgram::createProgram() {
@@ -196,6 +216,9 @@ void ShaderProgram::use() {
 	for (int i = 0; i < numAttributes; i++) {
 		glEnableVertexAttribArray(i);
 	}
+
+	// upload camera
+	uploadCameraMatrix();
 }
 
 void ShaderProgram::unuse() {
@@ -207,3 +230,16 @@ void ShaderProgram::unuse() {
 		glDisableVertexAttribArray(i);
 	}
 }
+
+void ShaderProgram::uploadCameraMatrix() {
+	glUniformMatrix4fv(getUniformValueLocation("cameraMatrix"), 1, GL_FALSE, &(*cameraMatrix)[0][0]);
+}
+
+void ShaderProgram::setCamera(Camera2D& camera) {
+	cameraMatrix = &camera.getCameraReference();
+}
+
+bool ShaderProgram::check() {
+	return programID == 0;
+}
+

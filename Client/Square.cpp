@@ -1,33 +1,41 @@
-#define _USE_MATH_DEFINES
 #include "Square.h"
-#include <cmath>
 
-Square::Square(float x, float y, float width, float height, Color color, int& offset, std::vector<Vertex>& vertices) : GeometryObject(GL_TRIANGLES, 6, offset) {
-	init(x, y, width, height, color, offset, vertices);
+Square::Square() : GeometryBase(), width(0.0f), height(0.0f) {
+
 }
 
-void Square::init(float x, float y, float width, float height, Color color, int& offset, std::vector<Vertex>& vertices) {
-	generateVertecies(x, y, width, height, color, vertices);
-	updateOffset(offset);
+Square::Square(float x, float y, float width, float height, Color color) : GeometryBase(x, y, color), width(width), height(height) {
+
 }
 
-void Square::generateVertecies(float x, float y, float width, float height, Color color, std::vector<Vertex>& vertices) {
-	// top-right corner
-	vertices.emplace_back(x + width, y + height, color);
-	
-	// top-left corner
-	vertices.emplace_back(x, y + height, color);
+float Square::getWidth() {
+	return width;
+}
 
-	// bottom-left corner
-	vertices.emplace_back(x, y, color);
+float Square::getHeight() {
+	return height;
+}
 
-	// top-right corner
-	vertices.emplace_back(x + width, y + height, color);
+void Square::setProps(float x, float y, float width, float height) {
+	GeometryBase::setPosition(x, y);
+	setDimensions(width, height);
+}
 
-	// bottom-right corner
-	vertices.emplace_back(x + width, y, color);
+void Square::setProps(float x, float y, float width, float height, Color color) {
+	GeometryBase::setProps(x, y, color);
+	setDimensions(width, height);
+}
 
-	// bottom-left corner
-	vertices.emplace_back(x, y, color);
+void Square::setDimensions(float width, float height) {
+	setWidth(width);
+	setHeight(height);
+}
+
+void Square::setWidth(float width) {
+	this->width = width;
+}
+
+void Square::setHeight(float height) {
+	this->height = height;
 }
 

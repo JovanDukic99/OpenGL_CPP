@@ -1,3 +1,4 @@
+/*
 #include "MainGame.h"
 #include "EngineConfig.h"
 #include "SDLException.h"
@@ -30,7 +31,7 @@ void MainGame::initShaders() {
 	// we can use this version in vertex, fragment shader
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-	geometryProgram.createProgram();
+	/*geometryProgram.createProgram();
 	geometryProgram.createShaders();
 	geometryProgram.compileShaders(OBJECT_VERTEX_PATH, OBJECT_FRAGMENT_PATH);
 	geometryProgram.addAttribute("vertexPosition");
@@ -229,23 +230,23 @@ void MainGame::drawGame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// geometry program
-	geometryProgram.use();
+	//geometryProgram.use();
 
-	GLuint location = geometryProgram.getUniformValueLocation("cameraMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &(camera.getCameraMatrix()[0][0]));
+	//GLuint location = geometryProgram.getUniformValueLocation("cameraMatrix");
+	//glUniformMatrix4fv(location, 1, GL_FALSE, &(camera.getCameraMatrix()[0][0]));
 
 	renderer->begin();
 
 	/*for (int i = 0; i < blocks.size(); i++) {
 		Block block = blocks[i];
 		renderer->drawSquare(block.getX(), block.getY(), block.getWidth(), block.getHeight(), Color(0, 255, 0, 255));
-	}*/
+	}
 
 	drawGrid(imgWidth, imgHeight);
 
 	renderer->end();
 
-	geometryProgram.unuse();
+	//geometryProgram.unuse();
 
 	// windows A, B ==> B, A <==> render on B and clear A
 	SDL_GL_SwapWindow(window);
@@ -262,5 +263,7 @@ void MainGame::clear() {
 	/*if (player != nullptr) {
 		delete player;
 		delete renderer;
-	}*/
+	}
 }
+
+*/

@@ -1,13 +1,23 @@
 #pragma once
-#include "GeometryObject.h"
-#include <vector>
-
-class Square : public GeometryObject
+#include "GeometryBase.h"
+class Square : public GeometryBase
 {
-public:
-	Square(float x, float y, float width, float height, Color color, int& offset, std::vector<Vertex>& vertices);
 private:
-	void init(float x, float y, float width, float height, Color color, int& offset, std::vector<Vertex>& vertices);
-	void generateVertecies(float x, float y, float width, float height, Color color, std::vector<Vertex>& vertices);
+	float width;
+	float height;
+public:
+	Square();
+	Square(float x, float y, float width, float height, Color color = WHITE);
+
+	// getters
+	float getWidth();
+	float getHeight();
+
+	// setters
+	void setProps(float x, float y, float width, float height);
+	void setProps(float x, float y, float width, float height, Color color);
+	void setDimensions(float width, float height);
+	void setWidth(float width);
+	void setHeight(float height);
 };
 

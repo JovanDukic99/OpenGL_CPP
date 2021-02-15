@@ -1,14 +1,21 @@
 #pragma once
-#include "GeometryObject.h"
-#include <vector>
-
-class Line : public GeometryObject 
+#include "Graphics.h"
+class Line
 {
-public:
-	Line(float x, float y, float x1, float y1, Color color, int& offset, std::vector<Vertex>& vertices);
-
 private:
-	void init(float x, float y, float x1, float y1, Color color, int& offset, std::vector<Vertex>& vertices);
-	void generateVertecies(float x, float y, float x1, float y1, Color color, std::vector<Vertex>& vertices);
+	float points[4];
+	Color color;
+public:
+	Line();
+	Line(float x, float y, float x1, float y1, Color color);
+
+	// getters
+	float* getPoints();
+	Color getColor();
+
+	// setters
+	void setPoints(float x, float y, float x1, float y1);
+	void setPoints(float x, float y, float x1, float y1, Color color);
+	void setColor(Color color);
 };
 

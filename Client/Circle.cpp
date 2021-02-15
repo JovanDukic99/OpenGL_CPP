@@ -1,32 +1,37 @@
-#define _USE_MATH_DEFINES
 #include "Circle.h"
-#include <cmath>
 
-Circle::Circle(float x, float y, float radius, int segments, Color color, int& offset, std::vector<Vertex>& vertices) : GeometryObject(GL_TRIANGLES, 3 * segments, offset) {
-	init(x, y, radius, segments, color, offset, vertices);
+Circle::Circle() : GeometryBase(), radius(0.0f), segments(0) {
+
 }
 
-void Circle::init(float x, float y, float radius, int segments, Color color, int& offset, std::vector<Vertex>& vertices) {
-	generateVertices(x, y, radius, segments, color, vertices);
-	updateOffset(offset);
+Circle::Circle(float x, float y, float radius, Color color, int segments = SEGMENT_NUMBER) : GeometryBase(x, y, color), radius(radius), segments(segments) {
+
 }
 
-void Circle::generateVertices(float x, float y, float radius, int segments, Color color, std::vector<Vertex>& vertices) {
-	double increment = (2 * M_PI) / segments;
-	double radians = increment;;
-	double stepBack = 0.0;
+float Circle::getRadius() {
+	return radius;
+}
 
-	int index = 0;
+int Circle::getSegments() {
+	return segments;
+}
 
-	for (int i = 0; i < segments; i++) {
-		// origin
-		vertices.emplace_back(x, y, color);
+void Circle::setProps(float x, float y, float radius, int segments) {
+	GeometryBase::setPosition(x, y);
+	setRadius(radius);
+	setSegments(segments);
+}
 
-		// other two vertices
-		vertices.emplace_back((float) (x + (radius * cos(radians))), (float) (y + (radius * sin(radians))), color);
-		vertices.emplace_back((float) (x + (radius * cos(stepBack))), (float) (y + (radius * sin(stepBack))), color);
+void Circle::setProps(float x, float y, float radius, int segments, Color color) {
+	GeometryBase::setProps(x, y, color);
+	setRadius(radius);
+	setSegments(segments);
+}
 
-		stepBack = radians;
-		radians = radians + increment;
-	}
+void Circle::setRadius(float radius) {
+	this->radius = radius;
+}
+
+void Circle::setSegments(int segments) {
+	this->segments = segments;
 }

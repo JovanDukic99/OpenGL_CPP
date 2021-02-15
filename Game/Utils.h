@@ -1,12 +1,10 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Block.h"
-#include "EntityBase.h"
+#include <Square.h>
 class Utils
 {
 public:
-	static void loadMap(std::string filePath, std::vector<Block>& blocks);
-	static bool squareCollision(EntityBase e1, EntityBase e2);
+	static void loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight);
 };
 

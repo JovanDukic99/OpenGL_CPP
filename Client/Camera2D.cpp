@@ -6,7 +6,7 @@ Camera2D::Camera2D(float halfWidth, float halfHeight, float cameraX, float camer
 
 void Camera2D::init() {
 	orthoMatrix = glm::ortho((float)-halfWidth, (float)halfWidth, (float)-halfHeight, (float)halfHeight, -1.0f, 1.0f);
-	position = glm::clamp(position, glm::vec2(halfWidth, halfHeight), glm::vec2(3 * halfWidth, 3 * halfHeight));
+	bounds.setProps(0.0f, 0.0f, 2*halfWidth, 2*halfHeight);
 }
 
 void Camera2D::updateOrthoMatrix() {
@@ -16,6 +16,7 @@ void Camera2D::updateOrthoMatrix() {
 void Camera2D::update() {
 	if (change) {
 		updateOrthoMatrix();
+		updateBounds();
 
 		glm::vec3 translate(-position.x, -position.y, 0.0f);
 		cameraMatrix = glm::translate(orthoMatrix, translate);
@@ -37,8 +38,22 @@ glm::vec2 Camera2D::convertScreenToWorld(glm::vec2 screenCoords) {
 	return screenCoords;
 }
 
+bool Camera2D::isBlockInView(float x, float y, float width, float height) {
+	return false;
+}
+
 void Camera2D::setPosition(const glm::vec2& position) {
-	this->position = glm::clamp(position, glm::vec2(halfWidth, halfHeight), glm::vec2(3 * halfWidth, 3  *halfHeight));
+	this->position = position;
+	setChange(true);
+}
+
+void Camera2D::updateBounds() {
+	bounds.setPosition(position.x - halfWidth, position.y - halfHeight);
+}
+
+void Camera2D::setDimiension(float halfWidth, float halfHeight) {
+	this->halfWidth = halfWidth;
+	this->halfHeight = halfHeight;
 	setChange(true);
 }
 
@@ -51,9 +66,9 @@ void Camera2D::setChange(bool change) {
 	this->change = change;
 }
 
-void Camera2D::reset(float x, float y) {
-	scale = 1.0f;
-	setPosition(glm::vec2(x, y));
+void Camera2D::reset(glm::vec2 position) {
+	setScale(1.0f);
+	setPosition(position);
 }
 
 glm::vec2 Camera2D::getPosition() {
@@ -64,6 +79,14 @@ glm::mat4 Camera2D::getCameraMatrix() {
 	return cameraMatrix;
 }
 
+glm::mat4& Camera2D::getCameraReference() {
+	return cameraMatrix;
+}
+
 float Camera2D::getScale() {
 	return scale;
+}
+
+Square Camera2D::getBounds() const {
+	return bounds;
 }

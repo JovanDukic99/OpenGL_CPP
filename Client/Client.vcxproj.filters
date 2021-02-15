@@ -34,17 +34,35 @@
     <Filter Include="Source Files\utils">
       <UniqueIdentifier>{a95d06e8-c74e-429f-a94e-0bc1c20bc831}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Geometry">
-      <UniqueIdentifier>{7dba4241-0fef-471a-bddc-d208634eb63f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Geometry">
-      <UniqueIdentifier>{1d6e7f04-548a-4ba1-a051-ddcdfd9e3ed7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\entity">
       <UniqueIdentifier>{59488ee5-56e9-4f9d-b911-cafb4bd0ba0a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\entity">
       <UniqueIdentifier>{23901e00-b5ae-4ace-b30d-79056b365f96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\particles">
+      <UniqueIdentifier>{6388c150-e70c-45bc-ad3e-6727668ff628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\particles">
+      <UniqueIdentifier>{0aefb65b-ebcb-4b40-b0c5-e58965398d51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{020f5b31-6f54-4b4f-8bd6-c2ea793f4d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{b96be55a-536d-4afd-bf29-35c770332595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GLSL">
+      <UniqueIdentifier>{7dba4241-0fef-471a-bddc-d208634eb63f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLSL">
+      <UniqueIdentifier>{1d6e7f04-548a-4ba1-a051-ddcdfd9e3ed7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\geometry">
+      <UniqueIdentifier>{40e27695-c8a4-4abd-8af4-3d119e844af0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\geometry">
+      <UniqueIdentifier>{435b6072-34bb-4ae5-ae39-988b0c6b8c33}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,9 +74,6 @@
     </ClCompile>
     <ClCompile Include="ObjectBase.cpp">
       <Filter>Source Files\game</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
-      <Filter>Source Files\utils</Filter>
     </ClCompile>
     <ClCompile Include="IOManager.cpp">
       <Filter>Source Files\utils</Filter>
@@ -77,24 +92,6 @@
     </ClCompile>
     <ClCompile Include="Camera2D.cpp">
       <Filter>Source Files\game</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files\game</Filter>
-    </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryObject.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Point.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Square.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Circle.cpp">
-      <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\utils</Filter>
@@ -117,6 +114,51 @@
     <ClCompile Include="FPS.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Circle.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Object.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Circle.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Square.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryBase.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Square.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Point.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Line.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Point.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEngine2D.cpp">
+      <Filter>Source Files\particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -130,12 +172,6 @@
     </ClInclude>
     <ClInclude Include="ObjectBase.h">
       <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="IOManager.h">
       <Filter>Header Files\utils</Filter>
@@ -157,24 +193,6 @@
     </ClInclude>
     <ClInclude Include="Camera2D.h">
       <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="GeometryObject.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Point.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Square.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Circle.h">
-      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Header Files\utils</Filter>
@@ -200,8 +218,50 @@
     <ClInclude Include="EngineConfig.h">
       <Filter>Header Files\config</Filter>
     </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Header Files\game</Filter>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Circle.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Object.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Square.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryBase.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Square.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Point.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Line.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEngine2D.h">
+      <Filter>Header Files\particles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
