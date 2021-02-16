@@ -11,7 +11,7 @@ Renderer::Renderer() : vertexArrayID(0), vertexBufferID(0), textureBufferID(0), 
 
 }
 
-Renderer::Renderer(Camera2D& camera) : vertexArrayID(0), vertexBufferID(0), offset(0), shaderProgram(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH) {
+Renderer::Renderer(Camera2D& camera) : vertexArrayID(0), textureArrayID(0), vertexBufferID(0), offset(0), shaderProgram(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH) {
 	init();
 }
 
@@ -28,6 +28,7 @@ void Renderer::init(Camera2D& camera) {
 
 void Renderer::initVertexArray() {
 	glGenVertexArrays(1, &vertexArrayID);
+	glGenVertexArrays(1, &textureArrayID);
 	glGenBuffers(1, &vertexBufferID);
 	glGenBuffers(1, &textureBufferID);
 
@@ -41,8 +42,11 @@ void Renderer::initVertexArray() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
+	glBindVertexArray(0);
+
 	// bind textureProgram buffer
-	glBindBuffer(1, textureBufferID);
+	glBindVertexArray(textureArrayID);
+	glBindBuffer(GL_ARRAY_BUFFER, textureBufferID);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -64,8 +68,8 @@ void Renderer::initShaderProgram(Camera2D& camera) {
 
 	textureProgram.initShaders(camera, TEXTURE_VERTEX_PATH, TEXTURE_FRAGMENT_PATH);
 	textureProgram.addAttribute("vertexPosition");
-	textureProgram.addAttribute("vertexUV");
 	textureProgram.addAttribute("vertexColor");
+	textureProgram.addAttribute("vertexUV");
 	textureProgram.linkShaders();
 }
 
@@ -91,8 +95,7 @@ void Renderer::uploadVertexData() {
 }
 
 void Renderer::draw() {
-	bindVertexArray();
-
+	bindVertexArray(vertexArrayID);
 	// draw geometry
 	shaderProgram.use();
 	drawGeometry();
@@ -100,15 +103,12 @@ void Renderer::draw() {
 
 	unbindVertexArray();
 
-	bindVertexArray();
-
+	bindVertexArray(textureArrayID);
 	// draw texture
 	textureProgram.use();
-
-	/*glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
 	GLuint textureLocation = textureProgram.getUniformValueLocation("asset");
-	glUniform1i(textureLocation, 0);*/
-
+	glUniform1i(textureLocation, 0);
 	drawTexture();
 	textureProgram.unuse();
 
@@ -125,12 +125,12 @@ void Renderer::drawGeometry() {
 void Renderer::drawTexture() {
 	for (int i = 0; i < textureObjects.size(); i++) {
 		GLSL_Texture texture = textureObjects[i];
-		//glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+		glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
 		glDrawArrays(texture.getMode(), texture.getOffset(), texture.getVertexNumber());
 	}
 }
 
-void Renderer::bindVertexArray() {
+void Renderer::bindVertexArray(GLuint vertexArrayID) {
 	glBindVertexArray(vertexArrayID);
 }
 
@@ -208,6 +208,6 @@ void Renderer::reset() {
 }
 
 bool Renderer::check() {
-	return (vertexArrayID == 0) && (vertexBufferID == 0) && (textureBufferID == 0);
+	return (vertexArrayID == 0) && (vertexBufferID == 0) && (textureBufferID == 0) && (textureArrayID == 0);
 }
 

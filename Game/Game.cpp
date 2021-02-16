@@ -19,7 +19,7 @@ void Game::init(std::string title, int screenWidth, int screenHeight) {
 }
 
 void Game::initWindow(std::string title, int screenWidth, int screenHeight) {
-	window = Window::init(title, screenWidth, screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+	window = Window::init(title, screenWidth, screenHeight, SDL_WINDOW_OPENGL);
 }
 
 void Game::initBackgroundProps(float r, float g, float b, float a) {

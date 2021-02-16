@@ -12,5 +12,5 @@ uniform sampler2D asset;
 
 void main() {
     vec4 textureColor = texture(asset, fragmentUV);
-    color = fragmentColor;
+    color = fragmentColor * textureColor;
 }

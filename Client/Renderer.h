@@ -19,6 +19,7 @@ private:
 	ShaderProgram textureProgram;
 	GLuint vertexArrayID;
 	GLuint vertexBufferID;
+	GLuint textureArrayID;
 	GLuint textureBufferID;
 	int offset;
 	int textureOffset;
@@ -49,7 +50,7 @@ private:
 	void draw();
 	void drawGeometry();
 	void drawTexture();
-	void bindVertexArray();
+	void bindVertexArray(GLuint vertexArrayID);
 	void unbindVertexArray();
 	void uploadVertexData();
 	void reset();

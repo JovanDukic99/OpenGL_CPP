@@ -2,8 +2,8 @@
 
 // input
 in vec2 vertexPosition;
-in vec2 vertexUV;
 in vec4 vertexColor;
+in vec2 vertexUV;
 
 // uniform
 uniform mat4 cameraMatrix;

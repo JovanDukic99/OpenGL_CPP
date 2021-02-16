@@ -2,8 +2,8 @@
 
 // screen config
 static const std::string TITLE = "Game";
-static const int SCREEN_WIDTH = 1980;
-static const int SCREEN_HEIGHT = 1080;
+static const int SCREEN_WIDTH = 1080;
+static const int SCREEN_HEIGHT = 720;
 static const float HALF_WIDTH = SCREEN_WIDTH / 2.0f;
 static const float HALF_HEIGHT = SCREEN_HEIGHT / 2.0f;
 
