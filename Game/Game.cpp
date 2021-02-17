@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "Config.h"
-#include "Utils.h"
+#include <Utils.h>
 #include <ResourceManager.h>
 #include <Collision.h>
 #include <GL/glew.h>
@@ -32,11 +32,13 @@ void Game::initComponents() {
 	player = new Player(START_PLAYER_X, START_PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
 	camera.setPosition(getCameraPosition(camera.getPosition()));
 	texture = ResourceManager::getTexture("Textures/jimmyJump_pack/PNG/CharacterRight_Standing.png");
+	bubbleTexture = ResourceManager::getTexture("Textures/jimmyJump_pack/PNG/CharacterLeft_Jump.png");
 	renderer.init(camera);
 }
 
 void Game::initLevel(std::string filePath) {
-	Utils::loadMap(filePath, blocks, UNIT_WIDTH, UNIT_HEIGHT);
+	// and A*
+	Utils::loadMap(filePath, blocks, algorithm, UNIT_WIDTH, UNIT_HEIGHT);
 }
 
 void Game::run() {
@@ -209,7 +211,8 @@ void Game::draw() {
 	drawPlayer();
 	drawGrid();
 
-	renderer.drawTexture(100.0f, 100.0f, 60.0f, 60.0f, texture);
+	renderer.drawTexture(*player, texture);
+	renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
 
 	renderer.end();
 

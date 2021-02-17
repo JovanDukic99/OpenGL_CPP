@@ -4,6 +4,7 @@
 #include <Renderer.h>
 #include <InputManager.h>
 #include <ShaderProgram.h>
+#include <AStarAlgorithm.h>
 #include <Square.h>
 #include <FPS.h>
 #include <string>
@@ -27,12 +28,15 @@ private:
 	Renderer renderer;
 	GameState gameState;
 	WindowState windowState;
+	AStarAlgorithm algorithm;
 	GLTexture texture;
+	GLTexture bubbleTexture;
 	Camera2D camera;
 	InputManager inputManager;
 	FPS fpsCounter;
 	Player* player;
 	std::vector<Square> blocks;
+
 public:
 	Game(std::string title, int screenWidth, int screenHeight);
 	void clear();

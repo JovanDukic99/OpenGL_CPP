@@ -17,10 +17,8 @@ private:
 	std::vector<Vertex> textureVetrices;
 	ShaderProgram shaderProgram;
 	ShaderProgram textureProgram;
-	GLuint vertexArrayID;
-	GLuint vertexBufferID;
-	GLuint textureArrayID;
-	GLuint textureBufferID;
+	GLuint vertexArrays[2];
+	GLuint vertexBuffers[2];
 	int offset;
 	int textureOffset;
 public:
@@ -52,6 +50,7 @@ private:
 	void drawTexture();
 	void bindVertexArray(GLuint vertexArrayID);
 	void unbindVertexArray();
+	void uploadTextureUnit();
 	void uploadVertexData();
 	void reset();
 	bool check();

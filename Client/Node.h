@@ -1,0 +1,39 @@
+#pragma once
+#include <iostream>
+// g - how far is node from start point
+// h - how far is node from end point
+class Node
+{
+private:
+	int g;
+	int h;
+	int rowIndex;
+	int columnIndex;
+	bool block;
+	Node* predecessor;
+public:
+	Node();
+	Node(int rowIndex, int columnIndex, bool block = false);
+	void reset();
+	friend std::ostream& operator<<(std::ostream& outputStream, Node& node);
+	bool operator==(Node node);
+	bool operator!=(Node node);
+
+	// getters
+	int getF();
+	int getG();
+	int getH();
+	int getRowIndex();
+	int getColumnIndex();
+	bool isBlock();
+	Node* getPredecessor();
+
+	// setters
+	void setG(int g);
+	void setH(int h);
+	void setRowIndex(int rowIndex);
+	void setColumnIndex(int columnIndex);
+	void setBlock(bool block);
+	void setPredecessor(Node* predecessor);
+};
+

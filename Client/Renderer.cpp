@@ -4,14 +4,15 @@
 #include "GLSL_Square.h"
 #include "GLSL_Circle.h"
 #include "EngineConfig.h"
+#include <TTF/SDL_ttf.h>
 #include <GL/glew.h>
 #include <iostream>
 
-Renderer::Renderer() : vertexArrayID(0), vertexBufferID(0), textureBufferID(0), offset(0), textureOffset(0), shaderProgram(), textureProgram() {
+Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), shaderProgram(), textureProgram() {
 
 }
 
-Renderer::Renderer(Camera2D& camera) : vertexArrayID(0), textureArrayID(0), vertexBufferID(0), offset(0), shaderProgram(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH) {
+Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), shaderProgram(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH) {
 	init();
 }
 
@@ -27,14 +28,12 @@ void Renderer::init(Camera2D& camera) {
 }
 
 void Renderer::initVertexArray() {
-	glGenVertexArrays(1, &vertexArrayID);
-	glGenVertexArrays(1, &textureArrayID);
-	glGenBuffers(1, &vertexBufferID);
-	glGenBuffers(1, &textureBufferID);
+	glGenVertexArrays(2, &vertexArrays[0]);
+	glGenBuffers(2, &vertexBuffers[0]);
 
 	// bind shaderProgram buffer
-	glBindVertexArray(vertexArrayID);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	glBindVertexArray(vertexArrays[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[0]);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -45,8 +44,8 @@ void Renderer::initVertexArray() {
 	glBindVertexArray(0);
 
 	// bind textureProgram buffer
-	glBindVertexArray(textureArrayID);
-	glBindBuffer(GL_ARRAY_BUFFER, textureBufferID);
+	glBindVertexArray(vertexArrays[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[1]);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -61,6 +60,7 @@ void Renderer::initVertexArray() {
 }
 
 void Renderer::initShaderProgram(Camera2D& camera) {
+	// the order of attributes must be the same as order used in shaders
 	shaderProgram.initShaders(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
 	shaderProgram.addAttribute("vertexPosition");
 	shaderProgram.addAttribute("vertexColor");
@@ -83,32 +83,28 @@ void Renderer::end() {
 }
 
 void Renderer::uploadVertexData() {
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[0]);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, textureBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[1]);
 	glBufferData(GL_ARRAY_BUFFER, textureVetrices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, textureVetrices.size() * sizeof(Vertex), textureVetrices.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Renderer::draw() {
-	bindVertexArray(vertexArrayID);
+	bindVertexArray(vertexArrays[0]);
 	// draw geometry
 	shaderProgram.use();
 	drawGeometry();
 	shaderProgram.unuse();
 
-	unbindVertexArray();
-
-	bindVertexArray(textureArrayID);
+	bindVertexArray(vertexArrays[1]);
 	// draw texture
 	textureProgram.use();
-	glActiveTexture(GL_TEXTURE0);
-	GLuint textureLocation = textureProgram.getUniformValueLocation("asset");
-	glUniform1i(textureLocation, 0);
+	uploadTextureUnit();
 	drawTexture();
 	textureProgram.unuse();
 
@@ -136,6 +132,12 @@ void Renderer::bindVertexArray(GLuint vertexArrayID) {
 
 void Renderer::unbindVertexArray() {
 	glBindVertexArray(0);
+}
+
+void Renderer::uploadTextureUnit() {
+	glActiveTexture(GL_TEXTURE0);
+	GLuint textureLocation = textureProgram.getUniformValueLocation("asset");
+	glUniform1i(textureLocation, 0);
 }
 
 // GLSL drawing functions
@@ -191,11 +193,11 @@ void Renderer::drawPoint(Point point) {
 
 // draw texture
 void Renderer::drawTexture(float x, float y, float width, float height, GLTexture texture) {
-	textureObjects.emplace_back(GLSL_Texture(x, y, width, height, texture, textureOffset, textureVetrices));
+	textureObjects.emplace_back(x, y, width, height, texture, textureOffset, textureVetrices);
 }
 
 void Renderer::drawTexture(Square square, GLTexture texture) {
-	textureObjects.emplace_back(GLSL_Texture(square, texture, textureOffset, textureVetrices));
+	textureObjects.emplace_back(square, texture, textureOffset, textureVetrices);
 }
 
 void Renderer::reset() {
@@ -208,6 +210,6 @@ void Renderer::reset() {
 }
 
 bool Renderer::check() {
-	return (vertexArrayID == 0) && (vertexBufferID == 0) && (textureBufferID == 0) && (textureArrayID == 0);
+	return vertexArrays[0] == 0;
 }
 

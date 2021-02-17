@@ -19,10 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AStarAlgorithm.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Element.cpp" />
     <ClCompile Include="GeometryBase.cpp" />
     <ClCompile Include="GLSL_Circle.cpp" />
     <ClCompile Include="FPS.cpp" />
@@ -30,8 +32,11 @@
     <ClCompile Include="GLSL_Texture.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="NodeComparator.cpp" />
     <ClCompile Include="ParticleEngine2D.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Queue.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
@@ -49,14 +54,17 @@
     <ClCompile Include="GLSL_Square.cpp" />
     <ClCompile Include="Square.cpp" />
     <ClCompile Include="TextureCache.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AStarAlgorithm.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="Element.h" />
     <ClInclude Include="GeometryBase.h" />
     <ClInclude Include="GLSL_Circle.h" />
     <ClInclude Include="EngineConfig.h" />
@@ -65,8 +73,13 @@
     <ClInclude Include="GLSL_Texture.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="NodeComparator.h" />
     <ClInclude Include="ParticleEngine2D.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Queue.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="Image.h" />
@@ -86,6 +99,7 @@
     <ClInclude Include="GLSL_Square.h" />
     <ClInclude Include="Square.h" />
     <ClInclude Include="TextureCache.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -170,7 +184,7 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

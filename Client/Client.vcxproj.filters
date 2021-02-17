@@ -64,6 +64,18 @@
     <Filter Include="Source Files\geometry">
       <UniqueIdentifier>{435b6072-34bb-4ae5-ae39-988b0c6b8c33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\A%2a">
+      <UniqueIdentifier>{384ecbbe-c519-4ffa-8e1b-0d91757e47ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A%2a">
+      <UniqueIdentifier>{719e49cb-b735-4c21-a8d5-c0da19c7f93a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Algorithm">
+      <UniqueIdentifier>{5e03e3c8-9b85-46a5-a07e-31587d9d90a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Algorithm">
+      <UniqueIdentifier>{42b02219-6a41-450b-aabd-d162e9104c34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame.cpp">
@@ -161,6 +173,24 @@
     </ClCompile>
     <ClCompile Include="GLSL_Texture.cpp">
       <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="AStarAlgorithm.cpp">
+      <Filter>Source Files\A%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source Files\A%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeComparator.cpp">
+      <Filter>Source Files\A%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Element.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="Queue.cpp">
+      <Filter>Source Files\Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +298,30 @@
     </ClInclude>
     <ClInclude Include="GLSL_Texture.h">
       <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="AStarAlgorithm.h">
+      <Filter>Header Files\A%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files\A%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeComparator.h">
+      <Filter>Header Files\A%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedList.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Element.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Queue.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
