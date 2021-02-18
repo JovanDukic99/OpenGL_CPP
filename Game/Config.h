@@ -15,7 +15,7 @@ static const int HORIZONTAL_UNITS = SCREEN_HEIGHT / UNIT_HEIGHT;
 
 // map config
 static const float MAP_WIDTH = UNIT_WIDTH * 36.0f;
-static const float MAP_HEIGHT = UNIT_WIDTH * 24.0f;
+static const float MAP_HEIGHT = UNIT_HEIGHT * 24.0f;
 
 // player config
 static const float START_PLAYER_X = 60.1f;

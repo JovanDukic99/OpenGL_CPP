@@ -9,6 +9,10 @@ private:
 	friend class List;
 	template <typename T>
 	friend class LinkedList;
+	template <typename T>
+	friend class Queue;
+	template <typename T, typename F>
+	friend class PriorityQueue;
 public:
 	Element<T>(T data);
 };

@@ -1,10 +1,10 @@
 #pragma once
 #include <Window.h>
 #include <Camera2D.h>
-#include <Renderer.h>
 #include <InputManager.h>
 #include <ShaderProgram.h>
 #include <AStarAlgorithm.h>
+#include <Renderer.h>
 #include <Square.h>
 #include <FPS.h>
 #include <string>

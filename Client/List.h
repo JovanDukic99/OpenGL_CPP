@@ -19,6 +19,8 @@ public:
 	bool empty();
 private:
 	void removebegin();
+protected:
+	void increment();
 };
 
 template<class T>
@@ -130,5 +132,10 @@ inline void List<T>::removebegin() {
 	delete begin;
 	begin = temp;
 }
+template<class T>
+inline void List<T>::increment() {
+	length++;
+}
+
 
 

@@ -189,9 +189,6 @@
     <ClCompile Include="Element.cpp">
       <Filter>Source Files\Algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="Queue.cpp">
-      <Filter>Source Files\Algorithm</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -321,6 +318,9 @@
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
     <ClInclude Include="List.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorityQueue.h">
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
   </ItemGroup>

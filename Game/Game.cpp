@@ -50,7 +50,6 @@ void Game::run() {
 
 	while (gameState == GameState::PLAY) {
 		calculateFPS();
-		printFPS();
 		receiveInput();
 		processInput();
 		update(fpsCounter.getDeltaTime());
@@ -111,6 +110,30 @@ void Game::processInput() {
 
 	if (inputManager.isKeyPressed(SDLK_ESCAPE)) {
 		gameState = GameState::EXIT;
+	}
+
+	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
+		glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+
+		int endX = (int) mouseCoords.x / UNIT_WIDTH;
+		int endY = (int) (MAP_HEIGHT - mouseCoords.y) / UNIT_HEIGHT;
+		std::cout << "End X: " << endX << ", End Y: " << endY << std::endl;
+
+
+		int startX = (int) player->getX() / UNIT_WIDTH;
+		int startY = (int) (MAP_HEIGHT - player->getY()) / UNIT_HEIGHT;
+
+		std::cout << "Start X: " << startX << ", Start Y: " << startY << std::endl;
+
+		algorithm.setStartNode(startY, startX);
+		algorithm.setFinalNode(endY, endX);
+
+		inputManager.releaseKey(SDL_BUTTON_RIGHT);
+	}
+
+	if (inputManager.isKeyPressed(SDLK_r)) {
+		algorithm.search();
+		inputManager.releaseKey(SDLK_r);
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
