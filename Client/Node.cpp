@@ -22,7 +22,7 @@ bool Node::operator!=(Node node) {
 }
 
 int Node::getF() {
-	return g << h;
+	return g + h;
 }
 
 int Node::getG() {

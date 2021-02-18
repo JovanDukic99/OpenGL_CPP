@@ -31,12 +31,6 @@
     <Filter Include="Source Files\entity">
       <UniqueIdentifier>{bb03c0cf-9a61-4ec2-9353-d8308da32686}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\utils">
-      <UniqueIdentifier>{1a81ce99-5641-4e0a-a3fe-3b75c8b22216}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\utils">
-      <UniqueIdentifier>{7bb5576e-ee56-4b51-b17d-a42266365637}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

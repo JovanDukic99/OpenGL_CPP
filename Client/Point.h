@@ -4,6 +4,6 @@ class Point : public GeometryBase
 {
 public:
 	Point();
-	Point(float x, float y, Color color);
+	Point(float x, float y, Color color = WHITE);
 };
 

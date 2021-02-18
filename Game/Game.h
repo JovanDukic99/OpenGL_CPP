@@ -6,6 +6,7 @@
 #include <AStarAlgorithm.h>
 #include <Renderer.h>
 #include <Square.h>
+#include <Point.h>
 #include <FPS.h>
 #include <string>
 #include <vector>
@@ -36,6 +37,7 @@ private:
 	FPS fpsCounter;
 	Player* player;
 	std::vector<Square> blocks;
+	std::vector<Square> squarePath;
 
 public:
 	Game(std::string title, int screenWidth, int screenHeight);
@@ -51,6 +53,7 @@ private:
 	void calculateFPS();
 	void updateCameraPosition(int xrel, int yrel);
 	void updatePlayer(float deltaTime);
+	void updateCamera();
 	void updateWindowState(Uint32 flag);
 	void zoom(int zoomY);
 	void update(float deltaTime);
@@ -61,6 +64,7 @@ private:
 	void drawGrid();
 	void drawBlocks();
 	void drawPlayer();
+	void createPath(std::vector<Point> path);
 	bool checkCollision(float x, float y);
 	bool cameraCulling(Square& square);
 	glm::vec2 getCameraPosition(glm::vec2 position);

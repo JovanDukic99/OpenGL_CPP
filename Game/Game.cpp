@@ -121,19 +121,24 @@ void Game::processInput() {
 
 
 		int startX = (int) player->getX() / UNIT_WIDTH;
-		int startY = (int) (MAP_HEIGHT - player->getY()) / UNIT_HEIGHT;
+		int startY = (int) (MAP_HEIGHT - player->getY() - UNIT_HEIGHT) / UNIT_HEIGHT;
 
 		std::cout << "Start X: " << startX << ", Start Y: " << startY << std::endl;
 
 		algorithm.setStartNode(startY, startX);
 		algorithm.setFinalNode(endY, endX);
 
-		inputManager.releaseKey(SDL_BUTTON_RIGHT);
-	}
+		std::vector<Point> path = algorithm.search();
 
-	if (inputManager.isKeyPressed(SDLK_r)) {
-		algorithm.search();
-		inputManager.releaseKey(SDLK_r);
+		inputManager.releaseKey(SDL_BUTTON_RIGHT);
+
+		algorithm.reset();
+
+		if (path.empty()) {
+			return;
+		}
+		
+		createPath(path);
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
@@ -159,7 +164,8 @@ void Game::updateCameraPosition(int xrel, int yrel) {
 }
 
 void Game::updatePlayer(float deltaTime) {
-	if (inputManager.isKeyPressed(SDLK_a)) {
+	player->update(deltaTime);
+	/*if (inputManager.isKeyPressed(SDLK_a)) {
 		if (!checkCollision(player->getX() - PLAYER_SPEED * deltaTime, player->getY())) {
 			player->update(-PLAYER_SPEED, 0.0f, deltaTime);
 			camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
@@ -185,7 +191,12 @@ void Game::updatePlayer(float deltaTime) {
 			player->update(0.0f, -PLAYER_SPEED, deltaTime);
 			camera.setPosition((getCameraPosition(glm::vec2(player->getX(), player->getY()))));
 		}
-	}
+	}*/
+}
+
+void Game::updateCamera() {
+	camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
+	camera.update();
 }
 
 void Game::updateWindowState(Uint32 flag) {
@@ -218,7 +229,7 @@ void Game::update(float deltaTime) {
 	while (deltaTime > 0.0f && i < MAX_STEPS) {
 		float time = glm::min(deltaTime, 1.0f);
 		updatePlayer(time);
-		camera.update();
+		updateCamera();
 		deltaTime -= time;
 		i++;
 	}
@@ -264,10 +275,26 @@ void Game::drawBlocks() {
 			renderer.drawSquare(blocks[i], GREEN);
 		}
 	}
+
+	if (!squarePath.empty()) {
+		for (int i = 0; i < squarePath.size(); i++) {
+			renderer.drawSquare(squarePath[i]);
+		}
+	}
 }
 
 void Game::drawPlayer() {
 	renderer.drawSquare(*player, BLUE);
+}
+
+void Game::createPath(std::vector<Point> path) {
+	squarePath.clear();
+	for (int i = 0; i < path.size(); i++) {
+		Point point = path[i];
+		squarePath.emplace_back(point.getX() * UNIT_WIDTH, MAP_HEIGHT - (point.getY() * UNIT_HEIGHT) - UNIT_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT, YELLOW);
+	}
+	player->setPath(path);
+	player->setPlayerState(PlayerState::MOVE);
 }
 
 bool Game::checkCollision(float x, float y) {

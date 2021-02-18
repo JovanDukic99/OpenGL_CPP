@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "NodeComparator.h"
 #include "PriorityQueue.h"
+#include "Point.h"
 #include <vector>
 #include <queue>
 class AStarAlgorithm
@@ -10,8 +11,8 @@ private:
 	Node** searchSpace;
 	Node* startNode;
 	Node* finalNode;
-	std::vector<Node> closedSet;
-	PriorityQueue<Node, NodeComparator> openSet;
+	std::vector<Node*> closedSet;
+	PriorityQueue<Node*, NodeComparator> openSet;
 	int rowNumber;
 	int columnNumber;
 public:
@@ -22,8 +23,8 @@ public:
 	void setFinalNode(int rowIndex, int columnIndex);
 	bool check();
 	bool checkNode(int rowIndex, int columnIndex);
-	void search();
-	std::vector<Node> getAllNeighbors(Node node);
+	std::vector<Point> search();
+	std::vector<Node*> getAllNeighbors(Node node);
 	void reset();
 	Node* operator[](int index);
 private:
@@ -31,6 +32,7 @@ private:
 	void setRowNumber(int rowNumber);
 	void setColumnNumber(int columnNumber);
 	void printPath();
+	std::vector<Point> getPath();
 	bool isNull();
 	int manhattanHeuristics(Node node1, Node node2);
 };

@@ -18,10 +18,10 @@ static const float MAP_WIDTH = UNIT_WIDTH * 36.0f;
 static const float MAP_HEIGHT = UNIT_HEIGHT * 24.0f;
 
 // player config
-static const float START_PLAYER_X = 60.1f;
-static const float START_PLAYER_Y = 60.1f;
-static const float PLAYER_WIDTH = 59.8f;
-static const float PLAYER_HEIGHT = 59.8f;
+static const float START_PLAYER_X = 60.0f;
+static const float START_PLAYER_Y = 60.0f;
+static const float PLAYER_WIDTH = 60.0f;
+static const float PLAYER_HEIGHT = 60.0f;
 static const float PLAYER_SPEED = 10.0f;
 
 // clear color values

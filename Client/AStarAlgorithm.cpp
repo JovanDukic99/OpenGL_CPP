@@ -37,7 +37,21 @@ void AStarAlgorithm::setColumnNumber(int columnNumber) {
 }
 
 void AStarAlgorithm::printPath() {
+	Node* temp = finalNode;
+	while (temp != nullptr) {
+		std::cout << *temp << std::endl;
+		temp = temp->getPredecessor();
+	}
+}
 
+std::vector<Point> AStarAlgorithm::getPath() {
+	std::vector<Point> path;
+	Node* temp = finalNode;
+	while (temp != nullptr) {
+		path.emplace_back((float)temp->getColumnIndex(), (float)temp->getRowIndex());
+		temp = temp->getPredecessor();
+	}
+	return path;
 }
 
 bool AStarAlgorithm::isNull() {
@@ -51,22 +65,19 @@ bool AStarAlgorithm::check() {
 // setting up nodes
 void AStarAlgorithm::setStartNode(int rowIndex, int columnIndex) {
 	if (checkNode(rowIndex, columnIndex)) {
-		startNode = new Node(rowIndex, columnIndex, false);
+		startNode = &searchSpace[rowIndex][columnIndex];
 	}
 }
 
 void AStarAlgorithm::setFinalNode(int rowIndex, int columnIndex) {
 	if (checkNode(rowIndex, columnIndex)) {
-		finalNode = new Node(rowIndex, columnIndex, false);
+		finalNode = &searchSpace[rowIndex][columnIndex];
 	}
 }
 
 bool AStarAlgorithm::checkNode(int rowIndex, int columnIndex) {
-	if (isNull()) {
-		return true;
-	}
 	Node node = searchSpace[rowIndex][columnIndex];
-	return (node != *startNode) && (node != *finalNode) && !node.isBlock();
+	return !node.isBlock();
 }
 
 // reset
@@ -76,38 +87,37 @@ void AStarAlgorithm::reset() {
 			searchSpace[i][j].reset();
 		}
 	}
-	delete startNode;
-	delete finalNode;
+	startNode = nullptr;
+	finalNode = nullptr;
 	openSet.clear();
 	closedSet.clear();
 }
 
 // search for path
-void AStarAlgorithm::search() {
+std::vector<Point> AStarAlgorithm::search() {
 	if (isNull()) {
 		std::cout << "Can't start" << std::endl;
-		return;
+		return std::vector<Point>();
 	}
 	startNode->setH(manhattanHeuristics(*startNode, *startNode));
-	openSet.push(*startNode);
+	openSet.push(startNode);
 
 	while (!openSet.empty()) {
-		Node node = openSet.pop();
+		Node* node = openSet.pop();
 
-		std::cout << node;
-
-		if (node == *finalNode) {
-			std::cout << "Found";
-			return;
-		}
+		//std::cout << *node << std::endl;
 
 		closedSet.push_back(node);
 
-		std::vector<Node> neighbors = getAllNeighbors(node);
+		if (node == finalNode) {
+			std::cout << "Found" << std::endl;
+			//printPath();
+			return getPath();
+		}
+
+		std::vector<Node*> neighbors = getAllNeighbors(*node);
 		for (int i = 0; i < neighbors.size(); i++) {
-			Node temp = neighbors[i];
-			// set predecessor
-			temp.setPredecessor(&node);
+			Node* temp = neighbors[i];
 
 			// check if closedSet contains this node
 			if (Utils::contains(closedSet, temp)) {
@@ -118,63 +128,106 @@ void AStarAlgorithm::search() {
 			if (!openSet.contains(temp)) {
 				openSet.push(temp);
 			}
+
+			// set predecessor
+			temp->setPredecessor(node);
 		}
 	}
+
+	return std::vector<Point>();
 }
 
-std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
-	std::vector<Node> neighbors;
+std::vector<Node*> AStarAlgorithm::getAllNeighbors(Node node) {
+	std::vector<Node*> neighbors;
 
 	int row = node.getRowIndex();
 	int column = node.getColumnIndex();
 
 	// node above
-	if (row - 1 >= 0 && !searchSpace[row - 1][column].isBlock()) {
-		Node temp = searchSpace[row - 1][column];
+	if ((row - 1 >= 0) && !searchSpace[row - 1][column].isBlock()) {
+		Node* temp = &searchSpace[row - 1][column];
 
-		temp.setG(node.getG() + 10);
-		temp.setH(manhattanHeuristics(temp, *finalNode));
+		temp->setG(node.getG() + 10);
+		temp->setH(manhattanHeuristics(*temp, *finalNode));
 
 		neighbors.push_back(temp);
 	}
 
 	// node below
 	if (row + 1 < rowNumber && !searchSpace[row + 1][column].isBlock()) {
-		Node temp = searchSpace[row + 1][column];
+		Node* temp = &searchSpace[row + 1][column];
 
-		temp.setG(node.getG() + 10);
-		temp.setH(manhattanHeuristics(temp, *finalNode));
+		temp->setG(node.getG() + 10);
+		temp->setH(manhattanHeuristics(*temp, *finalNode));
 
 		neighbors.push_back(temp);
 	}
 
 	// node to the left
 	if (column - 1 >= 0 && !searchSpace[row][column - 1].isBlock()) {
-		Node temp = searchSpace[row][column - 1];
+		Node* temp = &searchSpace[row][column - 1];
 
-		temp.setG(node.getG() + 10);
-		temp.setH(manhattanHeuristics(temp, *finalNode));
+		temp->setG(node.getG() + 10);
+		temp->setH(manhattanHeuristics(*temp, *finalNode));
 
 		neighbors.push_back(temp);
 	}
 
-	// node to the rigth
+	// node to the right
 	if (column + 1 < columnNumber && !searchSpace[row][column + 1].isBlock()) {
-		Node temp = searchSpace[row][column + 1];
+		Node* temp = &searchSpace[row][column + 1];
 
-		temp.setG(node.getG() + 10);
-		temp.setH(manhattanHeuristics(temp, *finalNode));
+		temp->setG(node.getG() + 10);
+		temp->setH(manhattanHeuristics(*temp, *finalNode));
 
 		neighbors.push_back(temp);
 	}
+
+	//// node at upper right corner
+	//if ((row - 1 >= 0) && (column + 1 < columnNumber) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row - 1][column + 1].isBlock()) {
+	//	Node* temp = &searchSpace[row - 1][column + 1];
+
+	//	temp->setG(node.getG() + 14);
+	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+
+	//	neighbors.push_back(temp);
+	//}
+
+	//// node at bottom right corner
+	//if ((row + 1 < rowNumber) && (column + 1 < columnNumber) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row + 1][column + 1].isBlock()) {
+	//	Node* temp = &searchSpace[row + 1][column + 1];
+
+	//	temp->setG(node.getG() + 14);
+	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+
+	//	neighbors.push_back(temp);
+	//}
+
+	//// node at upper left corner
+	//if ((row - 1 >= 0) && (column - 1 >= 0) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row - 1][column - 1].isBlock()) {
+	//	Node* temp = &searchSpace[row - 1][column - 1];
+
+	//	temp->setG(node.getG() + 14);
+	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+
+	//	neighbors.push_back(temp);
+	//}
+
+	//// node at bottom left corner
+	//if ((row + 1 < rowNumber) && (column - 1 >= 0) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row + 1][column - 1].isBlock()) {
+	//	Node* temp = &searchSpace[row + 1][column - 1];
+
+	//	temp->setG(node.getG() + 14);
+	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+
+	//	neighbors.push_back(temp);
+	//}
 
 	return neighbors;
 }
 
 int AStarAlgorithm::manhattanHeuristics(Node node1, Node node2) {
-	int x = pow((node1.getRowIndex() - node2.getRowIndex()), 2);
-	int y = pow((node1.getColumnIndex() - node2.getColumnIndex()), 2);
-	return sqrt(x + y);
+	return abs(node2.getRowIndex() - node1.getRowIndex()) + abs(node2.getColumnIndex() - node1.getColumnIndex()) * 10;
 }
 
 Node* AStarAlgorithm::operator[](int index) {
