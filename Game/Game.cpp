@@ -160,7 +160,7 @@ void Game::updateCameraPosition(int xrel, int yrel) {
 	if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
 		std::cout << "Camera X: " << camera.getPosition().x << ", Camera Y: " << camera.getPosition().y << std::endl;
 		camera.setPosition(getCameraPosition(glm::vec2(camera.getPosition().x - xrel, camera.getPosition().y + yrel)));
-	}	
+	}
 }
 
 void Game::updatePlayer(float deltaTime) {
@@ -194,8 +194,31 @@ void Game::updatePlayer(float deltaTime) {
 	}*/
 }
 
-void Game::updateCamera() {
-	camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
+void Game::updateCamera(float deltaTime) {
+	if (inputManager.isKeyPressed(SDLK_SPACE)) {
+		camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
+		camera.update();
+		return;
+	}
+	//camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
+	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+	glm::vec2 cameraCoords = camera.getPosition();
+
+	if (mouseCoords.x >= cameraCoords.x + HALF_WIDTH - CAMERA_MOVE_OFFSET_HORIZONTAL) {
+		camera.setPosition(getCameraPosition(glm::vec2(cameraCoords.x + CAMERA_SPEED * deltaTime, cameraCoords.y)));
+	}else if (mouseCoords.x <= cameraCoords.x - HALF_WIDTH + CAMERA_MOVE_OFFSET_HORIZONTAL) {
+		camera.setPosition(getCameraPosition(glm::vec2(cameraCoords.x - CAMERA_SPEED * deltaTime, cameraCoords.y)));
+	}
+
+	cameraCoords = camera.getPosition();
+
+	if (mouseCoords.y >= cameraCoords.y + HALF_HEIGHT - CAMERA_MOVE_OFFSET_VERTICAL) {
+		camera.setPosition(getCameraPosition(glm::vec2(cameraCoords.x, cameraCoords.y + CAMERA_SPEED * deltaTime)));
+	}
+	else if (mouseCoords.y <= cameraCoords.y - HALF_HEIGHT + CAMERA_MOVE_OFFSET_VERTICAL) {
+		camera.setPosition(getCameraPosition(glm::vec2(cameraCoords.x, cameraCoords.y - CAMERA_SPEED * deltaTime)));
+	}
+
 	camera.update();
 }
 
@@ -229,7 +252,7 @@ void Game::update(float deltaTime) {
 	while (deltaTime > 0.0f && i < MAX_STEPS) {
 		float time = glm::min(deltaTime, 1.0f);
 		updatePlayer(time);
-		updateCamera();
+		updateCamera(time);
 		deltaTime -= time;
 		i++;
 	}

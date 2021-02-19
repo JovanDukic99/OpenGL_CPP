@@ -53,7 +53,7 @@ private:
 	void calculateFPS();
 	void updateCameraPosition(int xrel, int yrel);
 	void updatePlayer(float deltaTime);
-	void updateCamera();
+	void updateCamera(float deltaTime);
 	void updateWindowState(Uint32 flag);
 	void zoom(int zoomY);
 	void update(float deltaTime);

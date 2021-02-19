@@ -111,7 +111,7 @@ std::vector<Point> AStarAlgorithm::search() {
 	while (!openSet.empty()) {
 		Node node = openSet.top();
 
-		std::cout << node << std::endl;
+		//std::cout << node << std::endl;
 
 		openSet.pop();
 		closedSet.push_back(node);

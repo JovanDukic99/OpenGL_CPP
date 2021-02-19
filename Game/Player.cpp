@@ -52,7 +52,7 @@ void Player::setDestination() {
 	int y = MAP_HEIGHT - (path[index--].getY() * UNIT_HEIGHT) - UNIT_HEIGHT;
 	destination = glm::vec2(x, y);
 	setNormalizedSpeed();
-	std::cout << "X: " << x << ", Y: " << y << std::endl;
+	//std::cout << "X: " << x << ", Y: " << y << std::endl;
 }
 
 void Player::setNormalizedSpeed() {
