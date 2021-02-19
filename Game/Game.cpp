@@ -130,9 +130,10 @@ void Game::processInput() {
 
 		std::vector<Point> path = algorithm.search();
 
+		algorithm.reset();
+
 		inputManager.releaseKey(SDL_BUTTON_RIGHT);
 
-		algorithm.reset();
 
 		if (path.empty()) {
 			return;
@@ -270,14 +271,14 @@ void Game::drawGrid() {
 }
 
 void Game::drawBlocks() {
-	for (int i = 0; i < blocks.size(); i++) {
+	for (size_t i = 0; i < blocks.size(); i++) {
 		if (cameraCulling(blocks[i])) {
 			renderer.drawSquare(blocks[i], GREEN);
 		}
 	}
 
 	if (!squarePath.empty()) {
-		for (int i = 0; i < squarePath.size(); i++) {
+		for (size_t i = 0; i < squarePath.size(); i++) {
 			renderer.drawSquare(squarePath[i]);
 		}
 	}
@@ -289,7 +290,7 @@ void Game::drawPlayer() {
 
 void Game::createPath(std::vector<Point> path) {
 	squarePath.clear();
-	for (int i = 0; i < path.size(); i++) {
+	for (size_t i = 0; i < path.size(); i++) {
 		Point point = path[i];
 		squarePath.emplace_back(point.getX() * UNIT_WIDTH, MAP_HEIGHT - (point.getY() * UNIT_HEIGHT) - UNIT_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT, YELLOW);
 	}
@@ -299,7 +300,7 @@ void Game::createPath(std::vector<Point> path) {
 
 bool Game::checkCollision(float x, float y) {
 	Square square(x, y, player->getWidth(), player->getHeight());
-	for (int i = 0; i < blocks.size(); i++) {
+	for (size_t i = 0; i < blocks.size(); i++) {
 		if (Collision::squareCollision(square, blocks[i])) {
 			return true;
 		}

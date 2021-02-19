@@ -14,7 +14,7 @@ void Node::reset() {
 }
 
 bool Node::operator==(Node node) {
-	return (rowIndex == node.rowIndex) && (columnIndex == node.columnIndex);
+	return (this->rowIndex == node.rowIndex) && (this->columnIndex == node.columnIndex);
 }
 
 bool Node::operator!=(Node node) {
