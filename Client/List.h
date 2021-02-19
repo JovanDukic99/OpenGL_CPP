@@ -31,7 +31,7 @@ inline List<T>::List() : begin(nullptr), end(nullptr), length(0) {
 template<class T>
 inline T List<T>::operator[](int index) {
 	if (empty()) {
-		return -1;
+		return T();
 	}
 
 	int t = 0;
@@ -45,7 +45,7 @@ inline T List<T>::operator[](int index) {
 		temp = temp->next;
 	}
 
-	return -1;
+	return T();
 }
 
 template<class T>
@@ -117,6 +117,7 @@ inline void List<T>::clear() {
 		delete current;
 		current = temp;
 	}
+	List::length = 0;
 	begin = nullptr;
 	end = nullptr;
 }

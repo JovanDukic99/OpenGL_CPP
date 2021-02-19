@@ -3,6 +3,6 @@
 class NodeComparator
 {
 public:
-	bool operator()(Node n1, Node n2);
+	int operator()(Node n1, Node n2);
 };
 

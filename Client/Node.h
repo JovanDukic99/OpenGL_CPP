@@ -16,8 +16,8 @@ public:
 	Node(int rowIndex, int columnIndex, bool block = false);
 	void reset();
 	friend std::ostream& operator<<(std::ostream& outputStream, Node& node);
-	bool operator==(Node node);
-	bool operator!=(Node node);
+	bool operator==(const Node& node);
+	bool operator!=(const Node& node);
 
 	// getters
 	int getF();

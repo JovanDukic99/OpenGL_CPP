@@ -13,11 +13,11 @@ void Node::reset() {
 	setPredecessor(nullptr);
 }
 
-bool Node::operator==(Node node) {
-	return (this->rowIndex == node.rowIndex) && (this->columnIndex == node.columnIndex);
+bool Node::operator==(const Node& node) {
+	return (rowIndex == node.rowIndex) && (columnIndex == node.columnIndex);
 }
 
-bool Node::operator!=(Node node) {
+bool Node::operator!=(const Node& node) {
 	return !operator==(node);
 }
 

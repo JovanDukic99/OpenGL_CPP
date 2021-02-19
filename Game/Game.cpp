@@ -134,7 +134,6 @@ void Game::processInput() {
 
 		inputManager.releaseKey(SDL_BUTTON_RIGHT);
 
-
 		if (path.empty()) {
 			return;
 		}

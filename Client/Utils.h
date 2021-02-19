@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include "PriorityQueue.h"
 #include "Square.h"
 #include "AStarAlgorithm.h"
 class Utils

@@ -111,20 +111,19 @@ std::vector<Point> AStarAlgorithm::search() {
 	while (!openSet.empty()) {
 		Node node = openSet.top();
 
+		std::cout << node << std::endl;
+
 		openSet.pop();
-
-		//std::cout << *node << std::endl;
-
 		closedSet.push_back(node);
 
 		if (node == *finalNode) {
 			std::cout << "Found" << std::endl;
-			printPath();
+			//printPath();
 			return getPath();
 		}
 
 		std::vector<Node> neighbors = getAllNeighbors(node);
-		for (int i = 0; i < neighbors.size(); i++) {
+		for(size_t i = 0; i < neighbors.size(); i++) {
 			Node temp = neighbors[i];
 
 			// check if closedSet contains this node
@@ -135,10 +134,12 @@ std::vector<Point> AStarAlgorithm::search() {
 			// check if openSet does not contain this node
 			if (!Utils::contains(openSet, temp)) {
 				openSet.push(temp);
+				setPredecessor(temp, node);
 			}
 
 			// set predecessor
-			setPredecessor(temp, node);
+			
+			//temp.setPredecessor(node);
 		}
 	}
 
@@ -162,7 +163,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	}
 
 	// node below
-	if (row + 1 < rowNumber && !searchSpace[row + 1][column].isBlock()) {
+	if ((row + 1 < rowNumber) && !searchSpace[row + 1][column].isBlock()) {
 		Node temp = searchSpace[row + 1][column];
 
 		temp.setG(node.getG() + 10);
@@ -172,7 +173,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	}
 
 	// node to the left
-	if (column - 1 >= 0 && !searchSpace[row][column - 1].isBlock()) {
+	if ((column - 1 >= 0) && !searchSpace[row][column - 1].isBlock()) {
 		Node temp = searchSpace[row][column - 1];
 
 		temp.setG(node.getG() + 10);
@@ -182,7 +183,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	}
 
 	// node to the right
-	if (column + 1 < columnNumber && !searchSpace[row][column + 1].isBlock()) {
+	if ((column + 1 < columnNumber) && !searchSpace[row][column + 1].isBlock()) {
 		Node temp = searchSpace[row][column + 1];
 
 		temp.setG(node.getG() + 10);
@@ -191,8 +192,8 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 		neighbors.push_back(temp);
 	}
 
-	//// node at upper right corner
-	//if ((row - 1 >= 0) && (column + 1 < columnNumber) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row - 1][column + 1].isBlock()) {
+	//// node at upper rigth corner
+	//if ((row - 1 >= 0) && (column + 1 < columnNumber) && !searchSpace[row - 1][column + 1].isBlock()) {
 	//	Node temp = searchSpace[row - 1][column + 1];
 
 	//	temp.setG(node.getG() + 14);
@@ -202,7 +203,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	//}
 
 	//// node at bottom right corner
-	//if ((row + 1 < rowNumber) && (column + 1 < columnNumber) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row + 1][column + 1].isBlock()) {
+	//if ((row + 1 < rowNumber) && (column + 1 < columnNumber) && !searchSpace[row + 1][column + 1].isBlock()) {
 	//	Node temp = searchSpace[row + 1][column + 1];
 
 	//	temp.setG(node.getG() + 14);
@@ -212,7 +213,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	//}
 
 	//// node at upper left corner
-	//if ((row - 1 >= 0) && (column - 1 >= 0) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row - 1][column - 1].isBlock()) {
+	//if ((row - 1 >= 0) && (column - 1 >= 0) && !searchSpace[row - 1][column - 1].isBlock()) {
 	//	Node temp = searchSpace[row - 1][column - 1];
 
 	//	temp.setG(node.getG() + 14);
@@ -222,7 +223,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	//}
 
 	//// node at bottom left corner
-	//if ((row + 1 < rowNumber) && (column - 1 >= 0) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row + 1][column - 1].isBlock()) {
+	//if ((row + 1 < rowNumber) && (column - 1 >= 0) && !searchSpace[row + 1][column - 1].isBlock()) {
 	//	Node temp = searchSpace[row + 1][column - 1];
 
 	//	temp.setG(node.getG() + 14);
@@ -231,11 +232,144 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	//	neighbors.push_back(temp);
 	//}
 
+	// node at upper right corner
+	if ((row - 1 >= 0) && (column + 1 < columnNumber) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row - 1][column + 1].isBlock()) {
+		Node temp = searchSpace[row - 1][column + 1];
+
+		temp.setG(node.getG() + 14);
+		temp.setH(manhattanHeuristics(temp, *finalNode));
+
+		neighbors.push_back(temp);
+	}
+
+	// node at bottom right corner
+	if ((row + 1 < rowNumber) && (column + 1 < columnNumber) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row + 1][column + 1].isBlock()) {
+		Node temp = searchSpace[row + 1][column + 1];
+
+		temp.setG(node.getG() + 14);
+		temp.setH(manhattanHeuristics(temp, *finalNode));
+
+		neighbors.push_back(temp);
+	}
+
+	// node at upper left corner
+	if ((row - 1 >= 0) && (column - 1 >= 0) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row - 1][column - 1].isBlock()) {
+		Node temp = searchSpace[row - 1][column - 1];
+
+		temp.setG(node.getG() + 14);
+		temp.setH(manhattanHeuristics(temp, *finalNode));
+
+		neighbors.push_back(temp);
+	}
+
+	// node at bottom left corner
+	if ((row + 1 < rowNumber) && (column - 1 >= 0) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row + 1][column - 1].isBlock()) {
+		Node temp = searchSpace[row + 1][column - 1];
+
+		temp.setG(node.getG() + 14);
+		temp.setH(manhattanHeuristics(temp, *finalNode));
+
+		neighbors.push_back(temp);
+	}
+
 	return neighbors;
 }
 
+//std::vector<Node*> AStarAlgorithm::getAllNeighbors(Node* node) {
+//	std::vector<Node*> neighbors;
+//
+//	int row = node->getRowIndex();
+//	int column = node->getColumnIndex();
+//
+//	// node above
+//	if ((row - 1 >= 0) && !searchSpace[row - 1][column].isBlock()) {
+//		Node* temp = &searchSpace[row - 1][column];
+//
+//		temp->setG(node->getG() + 10);
+//		temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//		neighbors.push_back(temp);
+//	}
+//
+//	// node below
+//	if ((row + 1 < rowNumber) && !searchSpace[row + 1][column].isBlock()) {
+//		Node* temp = &searchSpace[row + 1][column];
+//
+//		temp->setG(node->getG() + 10);
+//		temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//		neighbors.push_back(temp);
+//	}
+//
+//	// node to the left
+//	if ((column - 1 >= 0) && !searchSpace[row][column - 1].isBlock()) {
+//		Node* temp = &searchSpace[row][column - 1];
+//
+//		temp->setG(node->getG() + 10);
+//		temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//		neighbors.push_back(temp);
+//	}
+//
+//	// node to the right
+//	if ((column + 1 < columnNumber) && !searchSpace[row][column + 1].isBlock()) {
+//		Node* temp = &searchSpace[row][column + 1];
+//
+//		temp->setG(node->getG() + 10);
+//		temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//		neighbors.push_back(temp);
+//	}
+//
+//	//// node at upper right corner
+//	//if ((row - 1 >= 0) && (column + 1 < columnNumber) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row - 1][column + 1].isBlock()) {
+//	//	Node* temp = &searchSpace[row - 1][column + 1];
+//
+//	//	temp->setG(node->getG() + 14);
+//	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//	//	neighbors.push_back(temp);
+//	//}
+//
+//	//// node at bottom right corner
+//	//if ((row + 1 < rowNumber) && (column + 1 < columnNumber) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column + 1].isBlock() && !searchSpace[row + 1][column + 1].isBlock()) {
+//	//	Node* temp = &searchSpace[row + 1][column + 1];
+//
+//	//	temp->setG(node->getG() + 14);
+//	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//	//	neighbors.push_back(temp);
+//	//}
+//
+//	//// node at upper left corner
+//	//if ((row - 1 >= 0) && (column - 1 >= 0) && !searchSpace[row - 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row - 1][column - 1].isBlock()) {
+//	//	Node* temp = &searchSpace[row - 1][column - 1];
+//
+//	//	temp->setG(node->getG() + 14);
+//	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//	//	neighbors.push_back(temp);
+//	//}
+//
+//	//// node at bottom left corner
+//	//if ((row + 1 < rowNumber) && (column - 1 >= 0) && !searchSpace[row + 1][column].isBlock() && !searchSpace[row][column - 1].isBlock() && !searchSpace[row + 1][column - 1].isBlock()) {
+//	//	Node* temp = &searchSpace[row + 1][column - 1];
+//
+//	//	temp->setG(node->getG() + 14);
+//	//	temp->setH(manhattanHeuristics(*temp, *finalNode));
+//
+//	//	neighbors.push_back(temp);
+//	//}
+//
+//	return neighbors;
+//}
+
 int AStarAlgorithm::manhattanHeuristics(Node node1, Node node2) {
-	return abs(node2.getRowIndex() - node1.getRowIndex()) + abs(node2.getColumnIndex() - node1.getColumnIndex()) * 10;
+	//int x = pow(node2.getRowIndex() - node1.getRowIndex(), 2);
+	//int y = pow(node2.getColumnIndex() - node1.getColumnIndex(), 2);
+	//return (abs(node2.getRowIndex() - node1.getRowIndex()) + abs(node2.getColumnIndex() - node1.getColumnIndex())) * 10;
+	//return sqrt(x + y);
+	return std::max(abs(node2.getRowIndex() - node1.getRowIndex()), abs(node2.getColumnIndex() - node1.getColumnIndex())) * 10;
 }
 
 Node* AStarAlgorithm::operator[](int index) {

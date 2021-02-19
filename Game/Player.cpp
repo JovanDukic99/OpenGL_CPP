@@ -72,7 +72,7 @@ void Player::setUp() {
 
 void Player::updatePosition(float deltaTime) {
 	setPosition(getX() + PLAYER_SPEED * normalizedSpeed.x * deltaTime, getY() + PLAYER_SPEED * normalizedSpeed.y * deltaTime);
-	std::cout << "X: " << getX() << ", Y: " << getY() << std::endl;
+	//std::cout << "X: " << getX() << ", Y: " << getY() << std::endl;
 }
 
 bool Player::isMoving() {

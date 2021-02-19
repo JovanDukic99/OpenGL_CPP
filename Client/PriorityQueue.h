@@ -7,7 +7,6 @@ private:
 	F test;
 public:
 	PriorityQueue<T, F>();
-	PriorityQueue<T,F>(F funtion);
 	void push(T node);
 private:
 	void insertAtBegin(T node);
@@ -29,7 +28,7 @@ inline void PriorityQueue<T, F>::push(T node) {
 		return;
 	}
 	else {
-		if (test(List<T>::begin->data, node)) { // 2 1 
+		if (test(List<T>::begin->data, node)) { // 1 3
 			insertAtBegin(node);
 			return;
 		}
