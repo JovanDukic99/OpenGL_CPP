@@ -1,39 +1,53 @@
 #pragma once
-#include "Node.h"
+#include "SearchSpace.h"
 #include "NodeComparator.h"
 #include "Point.h"
 #include <vector>
 #include <queue>
+
+#define SEARCH_SPACE (*searchSpace)
+#define START_NODE searchSpace->getStartNode()
+#define FINAL_NODE searchSpace->getFinalNode()
+
+enum class AlgorithmState {
+	SEARCHING,
+	NONE
+};
+
 class AStarAlgorithm
 {
 private:
-	Node** searchSpace;
-	Node* startNode;
-	Node* finalNode;
+	SearchSpace* searchSpace;
+	AlgorithmState algorithmState;
 	std::vector<Node> closedSet;
 	std::priority_queue<Node, std::vector<Node>, NodeComparator> openSet;
-	int rowNumber;
-	int columnNumber;
 public:
+	// constructors / destructors
 	AStarAlgorithm();
-	AStarAlgorithm(int rowNumber, int columnNumber);
-	void init(int rowNumber, int columnNumber);
-	void setStartNode(int rowIndex, int columnIndex);
-	void setFinalNode(int rowIndex, int columnIndex);
-	bool check();
-	bool checkNode(int rowIndex, int columnIndex);
-	std::vector<Point> search();
-	std::vector<Node> getAllNeighbors(Node node);
+	AStarAlgorithm(SearchSpace* searchSpace);
+
+	// setters
+	void setSearchSpace(SearchSpace* searchSpace);
+
+	// getters
+	bool isSearching();
+
+	// helpers
+	bool search();
 	void reset();
-	Node* operator[](int index);
 private:
-	void initSpace(int rowNumber, int columnNumber);
-	void setRowNumber(int rowNumber);
-	void setColumnNumber(int columnNumber);
-	void setPredecessor(Node node, Node predecessor);
-	void printPath();
-	std::vector<Point> getPath();
-	bool isNull();
+	// setters
+	void setAlgorithmState(AlgorithmState algorithmState);
+	void setPredecessor(Node ancestor, Node predecessor);
+	void setG(Node node, int g);
+	void setH(Node node, int h);
+
+	// getters
+	std::vector<Node> getAllNeighbors(Node node);
+
+	// helpers
+	bool canStart();
+
 	int manhattanHeuristics(Node node1, Node node2);
 };
 

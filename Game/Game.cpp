@@ -5,9 +5,14 @@
 #include <Collision.h>
 #include <GL/glew.h>
 #include <iostream>
+#include <thread>
 
-Game::Game(std::string title, int screenWidth, int screenHeight) : gameState(GameState::PLAY), windowState(WindowState::MAXIMIZED), renderer(), camera(HALF_WIDTH, HALF_HEIGHT, START_PLAYER_X, START_PLAYER_Y) {
+Game::Game(std::string title, int screenWidth, int screenHeight) : gameState(GameState::PLAY), windowState(WindowState::MAXIMIZED), renderer(), camera(HALF_WIDTH, HALF_HEIGHT, START_PLAYER_X, START_PLAYER_Y), searchSpace() {
 	init(title, screenWidth, screenHeight);
+}
+
+Game::~Game() {
+	delete player;
 }
 
 void Game::init(std::string title, int screenWidth, int screenHeight) {
@@ -37,17 +42,11 @@ void Game::initComponents() {
 }
 
 void Game::initLevel(std::string filePath) {
-	// and A*
-	Utils::loadMap(filePath, blocks, algorithm, UNIT_WIDTH, UNIT_HEIGHT);
+	Utils::loadMASP(filePath, blocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
+	algorithm.setSearchSpace(&searchSpace);
 }
 
 void Game::run() {
-	/*const float DESIRED_FPS = 60.0f;
-	const float MS_PER_SECOND = 1000;
-	const float DESIRED_FRAMETIME = MS_PER_SECOND / 60.0f;
-	const int MAX_STEPS = 6;
-	float previousTicks = SDL_GetTicks();*/
-
 	while (gameState == GameState::PLAY) {
 		calculateFPS();
 		receiveInput();
@@ -113,39 +112,51 @@ void Game::processInput() {
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
-		glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-
-		int endX = (int) mouseCoords.x / UNIT_WIDTH;
-		int endY = (int) (MAP_HEIGHT - mouseCoords.y) / UNIT_HEIGHT;
-		std::cout << "End X: " << endX << ", End Y: " << endY << std::endl;
-
-
-		int startX = (int) player->getX() / UNIT_WIDTH;
-		int startY = (int) (MAP_HEIGHT - player->getY() - UNIT_HEIGHT) / UNIT_HEIGHT;
-
-		std::cout << "Start X: " << startX << ", Start Y: " << startY << std::endl;
-
-		algorithm.setStartNode(startY, startX);
-		algorithm.setFinalNode(endY, endX);
-
-		std::vector<Point> path = algorithm.search();
-
-		algorithm.reset();
-
 		inputManager.releaseKey(SDL_BUTTON_RIGHT);
-
-		if (path.empty()) {
-			return;
+		if (!algorithm.isSearching()) {
+			std::thread(&Game::search, this).detach();
 		}
-		
-		createPath(path);
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
 		glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
 		std::cout << "Mouse X: " << mouseCoords.x << ", Mouse Y: " << mouseCoords.y << std::endl;
 	}
+}
 
+void Game::search() {
+	std::cout << std::endl;
+
+	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+
+	int endX = (int)mouseCoords.x / UNIT_WIDTH;
+	int endY = (int)(MAP_HEIGHT - mouseCoords.y) / UNIT_HEIGHT;
+	std::cout << "End X: " << endX << ", End Y: " << endY << std::endl;
+
+	int startX = (int)player->getX() / UNIT_WIDTH;
+	int startY = (int)(MAP_HEIGHT - player->getY() - UNIT_HEIGHT) / UNIT_HEIGHT;
+
+	std::cout << "Start X: " << startX << ", Start Y: " << startY << std::endl;
+
+	if (!searchSpace.setStartNode(startY, startX)) {
+		std::cout << "Start node is a block." << std::endl;
+		return;
+	}
+
+	if (!searchSpace.setFinalNode(endY, endX)) {
+		std::cout << "End node is a block." << std::endl;
+		return;
+	}
+
+	if (algorithm.search()) {
+		std::cout << "Path has been found." << std::endl;
+		createPath(searchSpace.getPath());
+	}
+	else {
+		std::cout << "No path has been found." << std::endl;
+	}
+
+	algorithm.reset();
 }
 
 void Game::calculateFPS() {
@@ -332,9 +343,5 @@ bool Game::checkCollision(float x, float y) {
 
 bool Game::cameraCulling(Square& square) {
 	return Collision::squareCollision(camera.getBounds(), square);
-}
-
-void Game::clear() {
-	delete player;
 }
 

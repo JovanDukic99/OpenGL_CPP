@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include "ImageLoader.h"
+#include "Node.h"
 #include <iostream>
 
 void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight) {
@@ -23,16 +24,14 @@ void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, float uni
 			}
 		}
 	}
-
-	image.clear();
 }
 
-void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, AStarAlgorithm& algorithm, float unitWidth, float unitHeight) {
+void Utils::loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
 	Image image = ImageLoader::loadImage(filePath);
 
 	float mapHeight = image.getHeight() * unitHeight;
 
-	algorithm.init(image.getHeight(), image.getWidth());
+	searchSpace.init(image.getHeight(), image.getWidth());
 
 	for (int i = 0; i < image.getHeight(); i++) {
 		for (int j = 0; j < image.getWidth(); j++) {
@@ -47,13 +46,11 @@ void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, AStarAlgo
 				float y = mapHeight - unitHeight * (i + 1);
 				float x = j * unitWidth;
 				blocks.emplace_back(x, y, unitWidth, unitHeight);
-				algorithm[i][j] = Node(i, j, true);
+				searchSpace[i][j] = Node(i, j, true);
 			}
 			else {
-				algorithm[i][j] = Node(i, j, false);
+				searchSpace[i][j] = Node(i, j, false);
 			}
 		}
 	}
-
-	image.clear();
 }

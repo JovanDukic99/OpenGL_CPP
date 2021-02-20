@@ -15,6 +15,8 @@ public:
 	Node();
 	Node(int rowIndex, int columnIndex, bool block = false);
 	void reset();
+
+	// operator overloading
 	friend std::ostream& operator<<(std::ostream& outputStream, Node& node);
 	bool operator==(const Node& node);
 	bool operator!=(const Node& node);

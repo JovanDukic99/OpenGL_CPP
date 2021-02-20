@@ -7,6 +7,8 @@
 #include <Renderer.h>
 #include <Square.h>
 #include <Point.h>
+#include <SearchSpace.h>
+#include <AStarAlgorithm.h>
 #include <FPS.h>
 #include <string>
 #include <vector>
@@ -29,19 +31,20 @@ private:
 	Renderer renderer;
 	GameState gameState;
 	WindowState windowState;
-	AStarAlgorithm algorithm;
 	GLTexture texture;
 	GLTexture bubbleTexture;
 	Camera2D camera;
 	InputManager inputManager;
 	FPS fpsCounter;
 	Player* player;
+	SearchSpace searchSpace;
+	AStarAlgorithm algorithm;
 	std::vector<Square> blocks;
 	std::vector<Square> squarePath;
 
 public:
 	Game(std::string title, int screenWidth, int screenHeight);
-	void clear();
+	~Game();
 private:
 	void init(std::string title, int screenWidth, int screenHeight);
 	void initWindow(std::string title, int screenWidth, int screenHeight);
@@ -64,6 +67,7 @@ private:
 	void drawGrid();
 	void drawBlocks();
 	void drawPlayer();
+	void search();
 	void createPath(std::vector<Point> path);
 	bool checkCollision(float x, float y);
 	bool cameraCulling(Square& square);

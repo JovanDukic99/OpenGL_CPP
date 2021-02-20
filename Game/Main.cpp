@@ -4,8 +4,21 @@
 #include <iostream>
 #include <PriorityQueue.h>
 
-int main(int argc, char* argv[]) {
+//void print(char* array) {
+//	std::cout << array[0];
+//}
+//
+//class Test {
+//public:
+//	Test() {
+//
+//	}
+//	void operator()(char* array) {
+//		std::cout << array[0];
+//	}
+//};
 
+void test1() {
 	Game* game = nullptr;
 
 	try {
@@ -17,9 +30,28 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	game->clear();
-
 	delete game;
+}
+
+int main(int argc, char* argv[]) {
+
+	test1();
+
+	/*Game* game = nullptr;
+
+	std::thread t1(test1);
+	std::thread t2(&Game::test, game);
+
+	t1.join();
+	t2.join();*/
+
+	//void(*foo)(char* array) = print;
+
+	//Test a;
+
+	//Thread<Test, std::string> a(Test(), "a");
+
+	
 
 	return 0;
 }

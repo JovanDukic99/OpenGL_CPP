@@ -33,8 +33,8 @@ static const float CLEAR_A = 0.0f;
 // camera config
 static const float SCALE_FACTOR = 0.1f;
 static const float CAMERA_SPEED = 15.0f;
-static const float CAMERA_MOVE_OFFSET_HORIZONTAL = 40.0f;
-static const float CAMERA_MOVE_OFFSET_VERTICAL = 40.0f;
+static const float CAMERA_MOVE_OFFSET_HORIZONTAL = 25.0f;
+static const float CAMERA_MOVE_OFFSET_VERTICAL = 25.0f;
 
 // shader info
 static const std::string VERTEX_SHADER_PATH = "Shaders/baseShader.vert";

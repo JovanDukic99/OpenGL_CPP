@@ -70,11 +70,17 @@
     <Filter Include="Header Files\A%2a">
       <UniqueIdentifier>{719e49cb-b735-4c21-a8d5-c0da19c7f93a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Algorithm">
+    <Filter Include="Header Files\Collections">
       <UniqueIdentifier>{5e03e3c8-9b85-46a5-a07e-31587d9d90a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Algorithm">
+    <Filter Include="Source Files\Colections">
       <UniqueIdentifier>{42b02219-6a41-450b-aabd-d162e9104c34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Thread">
+      <UniqueIdentifier>{03007500-be1e-4bfc-a81c-33b096bf95cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Thread">
+      <UniqueIdentifier>{98d12fde-a47c-48ae-9fcc-c5e31da097b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -187,7 +193,10 @@
       <Filter>Source Files\utils</Filter>
     </ClCompile>
     <ClCompile Include="Element.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Colections</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchSpace.cpp">
+      <Filter>Source Files\A%2a</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,19 +318,22 @@
       <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="LinkedList.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Collections</Filter>
     </ClInclude>
     <ClInclude Include="Element.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Collections</Filter>
     </ClInclude>
     <ClInclude Include="Queue.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Collections</Filter>
     </ClInclude>
     <ClInclude Include="List.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Collections</Filter>
     </ClInclude>
     <ClInclude Include="PriorityQueue.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Collections</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchSpace.h">
+      <Filter>Header Files\A%2a</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

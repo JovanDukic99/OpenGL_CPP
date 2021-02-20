@@ -3,13 +3,13 @@
 #include <vector>
 #include <queue>
 #include "PriorityQueue.h"
+#include "SearchSpace.h"
 #include "Square.h"
-#include "AStarAlgorithm.h"
 class Utils
 {
 public:
 	static void loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight);
-	static void loadMap(std::string filePath, std::vector<Square>& blocks, AStarAlgorithm& algorithm, float unitWidth, float unitHeight);
+	static void loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSpace& searchSpace, float unitWidth, float unitHeight);
 	template <typename T, typename F, typename G>
 	static bool contains(std::priority_queue<T, F, G> queue, T node);
 	template <typename T>

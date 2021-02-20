@@ -36,6 +36,7 @@
     <ClCompile Include="NodeComparator.cpp" />
     <ClCompile Include="ParticleEngine2D.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="SearchSpace.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
@@ -80,6 +81,7 @@
     <ClInclude Include="Point.h" />
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="SearchSpace.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="Image.h" />
