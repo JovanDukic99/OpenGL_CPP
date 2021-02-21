@@ -30,7 +30,6 @@ void Game::initWindow(std::string title, int screenWidth, int screenHeight) {
 void Game::initBackgroundProps(float r, float g, float b, float a) {
 	glClearColor(r, g, b, a);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Game::initComponents() {
@@ -103,10 +102,6 @@ void Game::receiveInput() {
 }
 
 void Game::processInput() {
-	if (inputManager.isKeyPressed(SDLK_r)) {
-		camera.reset(getCameraPosition(glm::vec2(player->getX(), player->getY())));
-	}
-
 	if (inputManager.isKeyPressed(SDLK_ESCAPE)) {
 		gameState = GameState::EXIT;
 	}
@@ -284,8 +279,10 @@ void Game::draw() {
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
 	renderer.begin();
 
+	drawLights();
 	drawBlocks();
 	drawPlayer();
 	drawGrid();
@@ -295,11 +292,13 @@ void Game::draw() {
 
 	renderer.end();
 
+
 	SDL_GL_SwapWindow(window);
 }
 
 void Game::drawLights() {
-
+	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+	renderer.drawLight(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT, 8 * UNIT_WIDTH, 8 * UNIT_HEIGHT, RED);
 }
 
 void Game::drawGrid() {

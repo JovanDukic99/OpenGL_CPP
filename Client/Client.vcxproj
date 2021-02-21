@@ -28,6 +28,7 @@
     <ClCompile Include="GeometryBase.cpp" />
     <ClCompile Include="GLSL_Circle.cpp" />
     <ClCompile Include="FPS.cpp" />
+    <ClCompile Include="GLSL_Light.cpp" />
     <ClCompile Include="GLSL_Object.cpp" />
     <ClCompile Include="GLSL_Texture.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="GLSL_Circle.h" />
     <ClInclude Include="EngineConfig.h" />
     <ClInclude Include="FPS.h" />
+    <ClInclude Include="GLSL_Light.h" />
     <ClInclude Include="GLSL_Object.h" />
     <ClInclude Include="GLSL_Texture.h" />
     <ClInclude Include="Graphics.h" />

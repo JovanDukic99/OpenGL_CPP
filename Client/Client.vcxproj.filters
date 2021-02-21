@@ -76,12 +76,6 @@
     <Filter Include="Source Files\Colections">
       <UniqueIdentifier>{42b02219-6a41-450b-aabd-d162e9104c34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Thread">
-      <UniqueIdentifier>{03007500-be1e-4bfc-a81c-33b096bf95cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Thread">
-      <UniqueIdentifier>{98d12fde-a47c-48ae-9fcc-c5e31da097b8}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame.cpp">
@@ -197,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="SearchSpace.cpp">
       <Filter>Source Files\A%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Light.cpp">
+      <Filter>Source Files\GLSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -334,6 +331,9 @@
     </ClInclude>
     <ClInclude Include="SearchSpace.h">
       <Filter>Header Files\A%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Light.h">
+      <Filter>Header Files\GLSL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

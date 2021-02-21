@@ -8,11 +8,11 @@
 #include <GL/glew.h>
 #include <iostream>
 
-Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), shaderProgram(), textureProgram() {
+Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightOffset(0), shaderProgram(), textureProgram() {
 
 }
 
-Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), shaderProgram(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH) {
+Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightOffset(0), shaderProgram(), textureProgram() {
 	init();
 }
 
@@ -28,8 +28,8 @@ void Renderer::init(Camera2D& camera) {
 }
 
 void Renderer::initVertexArray() {
-	glGenVertexArrays(2, &vertexArrays[0]);
-	glGenBuffers(2, &vertexBuffers[0]);
+	glGenVertexArrays(3, &vertexArrays[0]);
+	glGenBuffers(3, &vertexBuffers[0]);
 
 	// bind shaderProgram buffer
 	glBindVertexArray(vertexArrays[0]);
@@ -57,6 +57,21 @@ void Renderer::initVertexArray() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
 	glBindVertexArray(0);
+
+	// bind lightProgram buffer
+	glBindVertexArray(vertexArrays[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[2]);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+
+	glBindVertexArray(0);
 }
 
 void Renderer::initShaderProgram(Camera2D& camera) {
@@ -71,6 +86,12 @@ void Renderer::initShaderProgram(Camera2D& camera) {
 	textureProgram.addAttribute("vertexColor");
 	textureProgram.addAttribute("vertexUV");
 	textureProgram.linkShaders();
+
+	lightProgram.initShaders(camera, LIGHT_VERTEX_PATH, LIGHT_FRAGMENT_PATH);
+	lightProgram.addAttribute("vertexPosition");
+	lightProgram.addAttribute("vertexColor");
+	lightProgram.addAttribute("vertexUV");
+	lightProgram.linkShaders();
 }
 
 void Renderer::begin() {
@@ -92,6 +113,11 @@ void Renderer::uploadVertexData() {
 	glBufferData(GL_ARRAY_BUFFER, textureVetrices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, textureVetrices.size() * sizeof(Vertex), textureVetrices.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[2]);
+	glBufferData(GL_ARRAY_BUFFER, lightVertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, lightVertices.size() * sizeof(Vertex), lightVertices.data());
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Renderer::draw() {
@@ -108,6 +134,17 @@ void Renderer::draw() {
 	drawTexture();
 	textureProgram.unuse();
 
+	bindVertexArray(vertexArrays[2]);
+	// draw light
+	lightProgram.use();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	drawLight();
+	lightProgram.unuse();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	unbindVertexArray();
 }
 
@@ -123,6 +160,13 @@ void Renderer::drawTexture() {
 		GLSL_Texture texture = textureObjects[i];
 		glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
 		glDrawArrays(texture.getMode(), texture.getOffset(), texture.getVertexNumber());
+	}
+}
+
+void Renderer::drawLight() {
+	for (size_t i = 0; i < lightObject.size(); i++) {
+		GLSL_Light light = lightObject[i];
+		glDrawArrays(light.getMode(), light.getOffset(), light.getVertexNumber());
 	}
 }
 
@@ -200,13 +244,27 @@ void Renderer::drawTexture(Square square, GLTexture texture) {
 	textureObjects.emplace_back(square, texture, textureOffset, textureVetrices);
 }
 
+// draw light
+void Renderer::drawLight(float x, float y, float width, float height, Color color) {
+	lightObject.emplace_back(x, y, width, height, color, lightOffset, lightVertices);
+}
+
+void Renderer::drawLight(Square square) {
+	lightObject.emplace_back(square, lightOffset, lightVertices);
+}
+
 void Renderer::reset() {
 	vertices.clear();
 	textureVetrices.clear();
+	lightVertices.clear();
+
 	geometryObjects.clear();
 	textureObjects.clear();
+	lightObject.clear();
+
 	offset = 0;
 	textureOffset = 0;
+	lightOffset = 0;
 }
 
 bool Renderer::check() {

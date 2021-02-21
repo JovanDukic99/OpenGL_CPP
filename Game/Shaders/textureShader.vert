@@ -12,7 +12,6 @@ uniform mat4 cameraMatrix;
 out vec2 fragmentUV;
 out vec4 fragmentColor;
 
-
 void main() {
     gl_Position = cameraMatrix * vec4(vertexPosition, 0.0f, 1.0f);
 
