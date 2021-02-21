@@ -1,11 +1,11 @@
 #include "SearchSpace.h"
 #include <cstring>
 
-SearchSpace::SearchSpace() : searchSpace(nullptr), startNode(nullptr), finalNode(nullptr), rowNumber(0), columnNumber(0) {
+SearchSpace::SearchSpace() : searchSpace(nullptr), startNode(nullptr), finalNode(nullptr), rowNumber(0), columnNumber(0), nodeState(NodeState::NONE) {
 
 }
 
-SearchSpace::SearchSpace(int rowNumber, int columnNumber) : startNode(nullptr), finalNode(nullptr), rowNumber(rowNumber), columnNumber(columnNumber) {
+SearchSpace::SearchSpace(int rowNumber, int columnNumber) : startNode(nullptr), finalNode(nullptr), rowNumber(rowNumber), columnNumber(columnNumber), nodeState(NodeState::NONE) {
 	init(rowNumber, columnNumber);
 }
 
@@ -33,8 +33,8 @@ void SearchSpace::init(int rowNumber, int columnNumber) {
 // reset
 void SearchSpace::reset() {
 	resetSpace();
-	resetStartNode();
-	resetFinalNode();
+	// resetStartNode();
+	// resetFinalNode();
 }
 
 // helper
@@ -86,6 +86,7 @@ void SearchSpace::setH(Node node, int h) {
 }
 
 bool SearchSpace::setStartNode(int rowIndex, int columnIndex) {
+	checkStartNode(rowIndex, columnIndex);
 	if (!isBlock(rowIndex, columnIndex)) {
 		startNode = &searchSpace[rowIndex][columnIndex];
 		return true;
@@ -94,11 +95,16 @@ bool SearchSpace::setStartNode(int rowIndex, int columnIndex) {
 }
 
 bool SearchSpace::setFinalNode(int rowIndex, int columnIndex) {
+	checkFinalNode(rowIndex, columnIndex);
 	if (!isBlock(rowIndex, columnIndex)) {
 		finalNode = &searchSpace[rowIndex][columnIndex];
 		return true;
 	}
 	return false;
+}
+
+bool SearchSpace::isPathTheSame() {
+	return nodeState == NodeState::BOTH_SAME;
 }
 
 // operator overloading
@@ -132,6 +138,24 @@ void SearchSpace::resetFinalNode() {
 // helpers
 bool SearchSpace::isBlock(int rowNumber, int columnNumber) {
 	return searchSpace[rowNumber][columnNumber].isBlock();
+}
+
+void SearchSpace::checkStartNode(int rowNumber, int columnNumber) {
+	if (startNode == &searchSpace[rowNumber][columnNumber]) {
+		nodeState = NodeState::ONE_SAME;
+	}
+	else {
+		nodeState = NodeState::DIFFERENT;
+	}
+}
+
+void SearchSpace::checkFinalNode(int rowNumber, int columnNumber) {
+	if (finalNode == &searchSpace[rowNumber][columnNumber]) {
+		nodeState = NodeState::BOTH_SAME;
+	}
+	else {
+		nodeState = NodeState::DIFFERENT;
+	}
 }
 
 // setters

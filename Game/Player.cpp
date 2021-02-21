@@ -9,31 +9,31 @@ Player::Player(float x, float y, float width, float height) : Square(x, y, width
 void Player::update(float deltaTime) {
 	if (isMoving()) {
 		if (normalizedSpeed.y >= 0 && normalizedSpeed.x >= 0) {
-			if ((getY() < destination.y - 0.1f) || (getX() < destination.x - 0.1f)) {
+			if ((getY() < destination.y - 0.01f) || (getX() < destination.x - 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 		else if (normalizedSpeed.y <= 0 && normalizedSpeed.x <= 0) {
-			if ((getY() > destination.y + 0.1f) || (getX() > destination.x + 0.1f)) {
+			if ((getY() > destination.y + 0.01f) || (getX() > destination.x + 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 		else if (normalizedSpeed.y >= 0 && normalizedSpeed.x <= 0) {
-			if ((getY() < destination.y - 0.1f) || (getX() > destination.x + 0.1f)) {
+			if ((getY() < destination.y - 0.01f) || (getX() > destination.x + 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 		else if(normalizedSpeed.y <= 0 && normalizedSpeed.x >= 0) {
-			if ((getY() > destination.y + 0.1f) || (getX() < destination.x - 0.1f)) {
+			if ((getY() > destination.y + 0.01f) || (getX() < destination.x - 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 
-		if (index < 0) {
+		if (index >= path.size()) {
 			setPlayerState(PlayerState::STAND);
 			setPosition(destination.x, destination.y);
 			return;
@@ -48,11 +48,11 @@ void Player::setPlayerState(PlayerState playerState) {
 }
 
 void Player::setDestination() {
-	int x = path[index].getX() * UNIT_WIDTH;
-	int y = MAP_HEIGHT - (path[index--].getY() * UNIT_HEIGHT) - UNIT_HEIGHT;
+	int x = path[index].getX();
+	int y = path[index++].getY();;
 	destination = glm::vec2(x, y);
 	setNormalizedSpeed();
-	//std::cout << "X: " << x << ", Y: " << y << std::endl;
+	//std::cout << "Destination X: " << x << ", Destination Y: " << y << std::endl;
 }
 
 void Player::setNormalizedSpeed() {
@@ -66,7 +66,7 @@ void Player::setPath(std::vector<Point> path) {
 }
 
 void Player::setUp() {
-	index = path.size() - 1;
+	index = 0;
 	setDestination();
 }
 

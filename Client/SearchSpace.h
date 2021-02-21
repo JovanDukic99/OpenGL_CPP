@@ -2,12 +2,21 @@
 #include "Node.h"
 #include "Point.h"
 #include <vector>
+
 class SearchSpace
 {
+private:
+	enum class NodeState {
+		NONE,
+		ONE_SAME,
+		BOTH_SAME,
+		DIFFERENT,
+	};
 private:
 	Node** searchSpace;
 	Node* startNode;
 	Node* finalNode;
+	NodeState nodeState;
 	int rowNumber;
 	int columnNumber;
 public:
@@ -35,6 +44,7 @@ public:
 	void setH(Node node, int h);
 	bool setStartNode(int rowIndex, int columnIndex);
 	bool setFinalNode(int rowIndex, int columnIndex);
+	bool isPathTheSame();
 
 	// getters
 	int getRowNumber();
@@ -49,6 +59,8 @@ private:
 
 	// helper
 	bool isBlock(int rowNumber, int columnNumber);
+	void checkStartNode(int rowNumber, int columnNumber);
+	void checkFinalNode(int rowNumber, int columnNumber);
 
 	// reset
 	void resetSpace();

@@ -16,7 +16,7 @@ private:
 	glm::vec2 destination;
 	glm::vec2 normalizedSpeed;
 	std::vector<Point> path; 
-	int index;
+	size_t index;
 public:
 	Player(float x, float y, float width, float height);
 	void update(float deltaTime);

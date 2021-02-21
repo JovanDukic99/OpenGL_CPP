@@ -28,6 +28,10 @@ static const float BLOCK_HEIGHT = 60.0f;
 static const float CAMERA_SPEED = 10.0f;
 static const float CAMERA_SCALE = 0.05f;
 
+// A* algorithm
+static const int HORIZONTAL_VERTICAL_COST = 10;
+static const int DIAGONAL_COST = 14;
+
 // assets paths
 static const std::string PLAYER_TEXTURE = "Textures/jimmyJump_pack/PNG/CharacterRight_Standing.png";
 static const std::string LEVEL_PATH = "Textures/jimmyJump_pack/PNG/LevelMap.png";

@@ -112,14 +112,14 @@ void Renderer::draw() {
 }
 
 void Renderer::drawGeometry() {
-	for (int i = 0; i < geometryObjects.size(); i++) {
+	for (size_t i = 0; i < geometryObjects.size(); i++) {
 		GLSL_Object object = geometryObjects[i];
 		glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
 	}
 }
 
 void Renderer::drawTexture() {
-	for (int i = 0; i < textureObjects.size(); i++) {
+	for (size_t i = 0; i < textureObjects.size(); i++) {
 		GLSL_Texture texture = textureObjects[i];
 		glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
 		glDrawArrays(texture.getMode(), texture.getOffset(), texture.getVertexNumber());

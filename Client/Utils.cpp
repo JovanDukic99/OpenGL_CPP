@@ -54,3 +54,22 @@ void Utils::loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSp
 		}
 	}
 }
+
+std::vector<Point> Utils::convertToSquarePath(std::vector<Point> points, float mapHeight, float unitWidth, float unitHeight) {
+	std::vector<Point> playerPath;
+	playerPath.resize(points.size());
+
+	for (size_t i = 0; i < points.size(); i++) {
+		playerPath[i].setX(points[i].getX() * unitWidth);
+		playerPath[i].setY(mapHeight - (points[i].getY() * unitHeight) - unitHeight);
+	}
+
+	return playerPath;
+}
+
+std::vector<Point>& Utils::convertToPlayerPath(std::vector<Point>& points, float endX, float endY) {
+	size_t size = points.size();
+	points[size - 1].setX(endX);
+	points[size - 1].setY(endY);
+	return points;
+}

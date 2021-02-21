@@ -8,17 +8,29 @@
 #define SEARCH_SPACE (*searchSpace)
 #define START_NODE searchSpace->getStartNode()
 #define FINAL_NODE searchSpace->getFinalNode()
+#define FOUND SearchResult::FOUND_SR
+#define NOT_FOUND SearchResult::NOT_FOUND_SR
+#define ALREADY_FOUND SearchResult::ALREADY_FOUND_SR
 
-enum class AlgorithmState {
-	SEARCHING,
-	NONE
-};
+enum class SearchResult {
+		NONE_SR,
+		FOUND_SR,
+		NOT_FOUND_SR,
+		ALREADY_FOUND_SR
+	};
 
 class AStarAlgorithm
 {
 private:
+	enum class AlgorithmState {
+		SEARCHING,
+		NONE
+	};
+	
+private:
 	SearchSpace* searchSpace;
 	AlgorithmState algorithmState;
+	SearchResult searchResult;
 	std::vector<Node> closedSet;
 	std::priority_queue<Node, std::vector<Node>, NodeComparator> openSet;
 public:
@@ -33,7 +45,7 @@ public:
 	bool isSearching();
 
 	// helpers
-	bool search();
+	SearchResult search();
 	void reset();
 private:
 	// setters

@@ -129,15 +129,19 @@ void Game::search() {
 
 	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
 
-	int endX = (int)mouseCoords.x / UNIT_WIDTH;
-	int endY = (int)(MAP_HEIGHT - mouseCoords.y) / UNIT_HEIGHT;
+	std::cout << "Mouse X: " << mouseCoords.x << ", Mouse Y: " << mouseCoords.y << std::endl;
+	std::cout << "Player X: " << player->getX() << ", Player Y: " << player->getY() << std::endl;
+
+	int endX = (int)(mouseCoords.x / UNIT_WIDTH);
+	int endY = (int)(MAP_VERTICAL_UNITS - (mouseCoords.y / UNIT_HEIGHT));
+
 	std::cout << "End X: " << endX << ", End Y: " << endY << std::endl;
 
-	int startX = (int)player->getX() / UNIT_WIDTH;
-	int startY = (int)(MAP_HEIGHT - player->getY() - UNIT_HEIGHT) / UNIT_HEIGHT;
+	int startX = (int)(player->getX() / UNIT_WIDTH);
+	int startY = (int)(MAP_VERTICAL_UNITS - (player->getY()) / UNIT_HEIGHT - 1);
 
 	std::cout << "Start X: " << startX << ", Start Y: " << startY << std::endl;
-
+	
 	if (!searchSpace.setStartNode(startY, startX)) {
 		std::cout << "Start node is a block." << std::endl;
 		return;
@@ -148,9 +152,16 @@ void Game::search() {
 		return;
 	}
 
-	if (algorithm.search()) {
+	SearchResult result = algorithm.search();
+
+	if (result == FOUND) {
 		std::cout << "Path has been found." << std::endl;
-		createPath(searchSpace.getPath());
+		std::vector<Point> path = Utils::convertToSquarePath(Utils::reverse(searchSpace.getPath()), MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
+		updateSquarePath(path);
+		updatePlayerPath(path);
+	}
+	else if (result == ALREADY_FOUND) {
+		std::cout << "Path has been already found." << std::endl;
 	}
 	else {
 		std::cout << "No path has been found." << std::endl;
@@ -311,9 +322,11 @@ void Game::drawBlocks() {
 	}
 
 	if (!squarePath.empty()) {
-		for (size_t i = 0; i < squarePath.size(); i++) {
+		renderer.drawSquare(squarePath[0], RED);
+		for (size_t i = 1; i < squarePath.size() - 1; i++) {
 			renderer.drawSquare(squarePath[i]);
 		}
+		renderer.drawSquare(squarePath[squarePath.size() - 1], VIOLET);
 	}
 }
 
@@ -321,14 +334,17 @@ void Game::drawPlayer() {
 	renderer.drawSquare(*player, BLUE);
 }
 
-void Game::createPath(std::vector<Point> path) {
+void Game::updatePlayerPath(std::vector<Point> playerPath) {
+	player->setPath(playerPath);
+	player->setPlayerState(PlayerState::MOVE);
+}
+
+void Game::updateSquarePath(std::vector<Point> path) {
 	squarePath.clear();
 	for (size_t i = 0; i < path.size(); i++) {
 		Point point = path[i];
-		squarePath.emplace_back(point.getX() * UNIT_WIDTH, MAP_HEIGHT - (point.getY() * UNIT_HEIGHT) - UNIT_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT, YELLOW);
+		squarePath.emplace_back(point.getX(), point.getY(), UNIT_WIDTH, UNIT_HEIGHT, YELLOW);
 	}
-	player->setPath(path);
-	player->setPlayerState(PlayerState::MOVE);
 }
 
 bool Game::checkCollision(float x, float y) {

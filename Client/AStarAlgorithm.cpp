@@ -1,14 +1,15 @@
 #include "AStarAlgorithm.h"
 #include "Utils.h"
+#include "EngineConfig.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>
 
-AStarAlgorithm::AStarAlgorithm() : searchSpace(nullptr), algorithmState(AlgorithmState::NONE) {
+AStarAlgorithm::AStarAlgorithm() : searchSpace(nullptr), algorithmState(AlgorithmState::NONE), searchResult(SearchResult::NONE_SR) {
 
 }
 
-AStarAlgorithm::AStarAlgorithm(SearchSpace* searchSpace) : searchSpace(searchSpace), algorithmState(AlgorithmState::NONE) {
+AStarAlgorithm::AStarAlgorithm(SearchSpace* searchSpace) : searchSpace(searchSpace), algorithmState(AlgorithmState::NONE), searchResult(SearchResult::NONE_SR) {
 
 }
 
@@ -23,14 +24,19 @@ bool AStarAlgorithm::isSearching() {
 }
 
 // search for path
-bool AStarAlgorithm::search() {
+SearchResult AStarAlgorithm::search() {
 	// set AlgorithmState
 	setAlgorithmState(AlgorithmState::SEARCHING);
+
+	if (searchSpace->isPathTheSame()) {
+		setAlgorithmState(AlgorithmState::NONE);
+		return SearchResult::ALREADY_FOUND_SR;
+	}
 
 	if (!canStart()) {
 		std::cout << "Can't start the algorithm." << std::endl;
 		setAlgorithmState(AlgorithmState::NONE);
-		return false;
+		return SearchResult::NOT_FOUND_SR;
 	}
 
 	START_NODE->setH(manhattanHeuristics(*START_NODE, *START_NODE));
@@ -45,7 +51,7 @@ bool AStarAlgorithm::search() {
 		if (node == *FINAL_NODE) {
 			// set AlgorithmState
 			setAlgorithmState(AlgorithmState::NONE);
-			return true;
+			return SearchResult::FOUND_SR;
 		}
 
 		std::vector<Node> neighbors = getAllNeighbors(node);
@@ -70,7 +76,7 @@ bool AStarAlgorithm::search() {
 	// set AlgorithmState
 	setAlgorithmState(AlgorithmState::NONE);
 
-	return false;
+	return SearchResult::NOT_FOUND_SR;
 }
 
 void AStarAlgorithm::reset() {
@@ -106,7 +112,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((row - 1 >= 0) && !SEARCH_SPACE[row - 1][column].isBlock()) {
 		Node temp = SEARCH_SPACE[row - 1][column];
 
-		temp.setG(node.getG() + 10);
+		temp.setG(node.getG() + HORIZONTAL_VERTICAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -116,7 +122,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((row + 1 < SEARCH_SPACE.getRowNumber()) && !SEARCH_SPACE[row + 1][column].isBlock()) {
 		Node temp = SEARCH_SPACE[row + 1][column];
 
-		temp.setG(node.getG() + 10);
+		temp.setG(node.getG() + HORIZONTAL_VERTICAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -126,7 +132,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((column - 1 >= 0) && !SEARCH_SPACE[row][column - 1].isBlock()) {
 		Node temp = SEARCH_SPACE[row][column - 1];
 
-		temp.setG(node.getG() + 10);
+		temp.setG(node.getG() + HORIZONTAL_VERTICAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -136,7 +142,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((column + 1 < SEARCH_SPACE.getColumnNumber()) && !SEARCH_SPACE[row][column + 1].isBlock()) {
 		Node temp = SEARCH_SPACE[row][column + 1];
 
-		temp.setG(node.getG() + 10);
+		temp.setG(node.getG() + HORIZONTAL_VERTICAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -186,7 +192,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((row - 1 >= 0) && (column + 1 < SEARCH_SPACE.getColumnNumber()) && !SEARCH_SPACE[row - 1][column].isBlock() && !SEARCH_SPACE[row][column + 1].isBlock() && !SEARCH_SPACE[row - 1][column + 1].isBlock()) {
 		Node temp = SEARCH_SPACE[row - 1][column + 1];
 
-		temp.setG(node.getG() + 14);
+		temp.setG(node.getG() + DIAGONAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -196,7 +202,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((row + 1 < SEARCH_SPACE.getRowNumber()) && (column + 1 < SEARCH_SPACE.getColumnNumber()) && !SEARCH_SPACE[row + 1][column].isBlock() && !SEARCH_SPACE[row][column + 1].isBlock() && !SEARCH_SPACE[row + 1][column + 1].isBlock()) {
 		Node temp = SEARCH_SPACE[row + 1][column + 1];
 
-		temp.setG(node.getG() + 14);
+		temp.setG(node.getG() + DIAGONAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -206,7 +212,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((row - 1 >= 0) && (column - 1 >= 0) && !SEARCH_SPACE[row - 1][column].isBlock() && !SEARCH_SPACE[row][column - 1].isBlock() && !SEARCH_SPACE[row - 1][column - 1].isBlock()) {
 		Node temp = SEARCH_SPACE[row - 1][column - 1];
 
-		temp.setG(node.getG() + 14);
+		temp.setG(node.getG() + DIAGONAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);
@@ -216,7 +222,7 @@ std::vector<Node> AStarAlgorithm::getAllNeighbors(Node node) {
 	if ((row + 1 < SEARCH_SPACE.getRowNumber()) && (column - 1 >= 0) && !SEARCH_SPACE[row + 1][column].isBlock() && !SEARCH_SPACE[row][column - 1].isBlock() && !SEARCH_SPACE[row + 1][column - 1].isBlock()) {
 		Node temp = SEARCH_SPACE[row + 1][column - 1];
 
-		temp.setG(node.getG() + 14);
+		temp.setG(node.getG() + DIAGONAL_COST);
 		temp.setH(manhattanHeuristics(temp, *FINAL_NODE));
 
 		neighbors.push_back(temp);

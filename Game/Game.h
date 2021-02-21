@@ -68,7 +68,8 @@ private:
 	void drawBlocks();
 	void drawPlayer();
 	void search();
-	void createPath(std::vector<Point> path);
+	void updatePlayerPath(std::vector<Point> path);
+	void updateSquarePath(std::vector<Point> path);
 	bool checkCollision(float x, float y);
 	bool cameraCulling(Square& square);
 	glm::vec2 getCameraPosition(glm::vec2 position);

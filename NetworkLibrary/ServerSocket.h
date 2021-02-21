@@ -2,7 +2,6 @@
 #ifndef SERVER_SOCKET
 #define SERVERS_SOCKET
 
-
 #include <Windows.h>
 #include <winsock.h>
 #include <string>
