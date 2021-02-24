@@ -21,5 +21,6 @@ public:
 	void setX(float x);
 	void setY(float y);
 	void setColor(Color color);
+	void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a = 255);
 };
 

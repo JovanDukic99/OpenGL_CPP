@@ -7,9 +7,14 @@
 #include <Renderer.h>
 #include <Square.h>
 #include <Point.h>
+#include <Light.h>
+#include <Edge.h>
 #include <SearchSpace.h>
 #include <AStarAlgorithm.h>
-#include <FPS.h>
+#include <Animation.h>
+#include <TileSheet.h>
+#include <TextureAtlas.h>
+#include <Time.h>
 #include <string>
 #include <vector>
 #include "Player.h"
@@ -31,17 +36,23 @@ private:
 	Renderer renderer;
 	GameState gameState;
 	WindowState windowState;
-	GLTexture texture;
+	TextureAtlas textureAtlas;
 	GLTexture bubbleTexture;
+	GLTexture atlas;
 	Camera2D camera;
 	InputManager inputManager;
-	FPS fpsCounter;
 	Player* player;
+	Time time;
 	SearchSpace searchSpace;
 	AStarAlgorithm algorithm;
 	std::vector<Square> blocks;
 	std::vector<Square> squarePath;
-
+	std::vector<Edge*> edges;
+	TileSheet tileSheet;
+	Light light;
+	float timer = 0.0f;
+	float alpha = 255.0f;
+	bool flip = true;
 public:
 	Game(std::string title, int screenWidth, int screenHeight);
 	~Game();
@@ -57,6 +68,7 @@ private:
 	void updateCameraPosition(int xrel, int yrel);
 	void updatePlayer(float deltaTime);
 	void updateCamera(float deltaTime);
+	void updateLight(float frameTime);
 	void updateWindowState(Uint32 flag);
 	void zoom(int zoomY);
 	void update(float deltaTime);

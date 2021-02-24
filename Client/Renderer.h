@@ -8,6 +8,7 @@
 #include "GLSL_Light.h"
 #include "ShaderProgram.h"
 #include "GLTexture.h"
+#include "TextureAtlas.h"
 #include <vector>
 class Renderer
 {
@@ -19,6 +20,7 @@ private:
 	std::vector<Vertex> textureVetrices;
 	std::vector<Vertex> lightVertices;
 	ShaderProgram shaderProgram;
+	ShaderProgram visionProgram;
 	ShaderProgram textureProgram;
 	ShaderProgram lightProgram;
 	GLuint vertexArrays[3];
@@ -26,10 +28,15 @@ private:
 	int offset;
 	int textureOffset;
 	int lightOffset;
+	Point visionCenter;
+	float visionRadius;
 public:
+	// constructors
 	Renderer();
 	Renderer(Camera2D& camera);
+	// inits
 	void init(Camera2D& camera);
+	// draw methods
 	void drawSquare(float x, float y, float width, float height, Color color);
 	void drawCircle(float x, float y, float radius, int segments, Color color);
 	void drawLine(float x, float y, float x1, float y1, Color color);
@@ -43,11 +50,18 @@ public:
 	void drawLine(Line line);
 	void drawPoint(Point point);
 	void drawTexture(float x, float y, float width, float height, GLTexture texture);
+	void drawTexture(float x, float y, float width, float height, TextureAtlas textureAtlas, int textureIndex);
 	void drawTexture(Square square, GLTexture texture);
+	void drawTexture(Square square, TextureAtlas textureAtlas, int textureIndex);
 	void drawLight(float x, float y, float width, float height, Color color);
-	void drawLight(Square square);
+	void drawLight(Light light);
+	// being / end
 	void begin();
 	void end();
+	// setters
+	void setVision(Point visionCenter, float visionRadius);
+	void setVisionCenter(Point visionCenter);
+	void setVisionRadius(float visionRadius);
 private:
 	void init();
 	void initVertexArray();

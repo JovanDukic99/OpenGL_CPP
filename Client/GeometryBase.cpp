@@ -44,3 +44,7 @@ void GeometryBase::setY(float y) {
 void GeometryBase::setColor(Color color) {
 	this->color = color;
 }
+
+void GeometryBase::setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a) {
+	this->color = Color(r, g, b, a);
+}

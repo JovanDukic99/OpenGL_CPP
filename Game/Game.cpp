@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Config.h"
 #include <Utils.h>
+#include <Light.h>
 #include <ResourceManager.h>
 #include <Collision.h>
 #include <GL/glew.h>
@@ -34,23 +35,39 @@ void Game::initBackgroundProps(float r, float g, float b, float a) {
 
 void Game::initComponents() {
 	player = new Player(START_PLAYER_X, START_PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
+
 	camera.setPosition(getCameraPosition(camera.getPosition()));
-	texture = ResourceManager::getTexture("Textures/jimmyJump_pack/PNG/CharacterRight_Standing.png");
+
 	bubbleTexture = ResourceManager::getTexture("Textures/jimmyJump_pack/PNG/CharacterLeft_Jump.png");
+
+	tileSheet.init(bubbleTexture, glm::ivec2(15, 10));
+
 	renderer.init(camera);
+
+	light.setDimensions(8 * UNIT_WIDTH, 8 * UNIT_HEIGHT);
+	light.setColor(RED);
 }
 
 void Game::initLevel(std::string filePath) {
 	Utils::loadMASP(filePath, blocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
+	edges = Utils::createEdges(searchSpace, blocks, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
+
+	for (size_t i = 0; i < edges.size(); i++) {
+		Edge* edge = edges[i];
+		float* points = edge->getPoints();
+		std::cout << "X1: " << points[0] << ", Y1: " << points[1] << ", X2: " << points[2] << ", Y2: " << points[3] << std::endl;
+	}
+
 	algorithm.setSearchSpace(&searchSpace);
 }
 
 void Game::run() {
 	while (gameState == GameState::PLAY) {
 		calculateFPS();
+		//printFPS();
 		receiveInput();
 		processInput();
-		update(fpsCounter.getDeltaTime());
+		update(time.getDeltaTime());
 		draw();
 	}
 }
@@ -166,11 +183,11 @@ void Game::search() {
 }
 
 void Game::calculateFPS() {
-	fpsCounter.calculateFPS();
+	time.calculateFPS();
 }
 
 void Game::printFPS() {
-	fpsCounter.printFPS();
+	time.printFPS();
 }
 
 void Game::updateCameraPosition(int xrel, int yrel) {
@@ -181,7 +198,7 @@ void Game::updateCameraPosition(int xrel, int yrel) {
 }
 
 void Game::updatePlayer(float deltaTime) {
-	player->update(deltaTime);
+	player->update(deltaTime, time.getTime());
 	/*if (inputManager.isKeyPressed(SDLK_a)) {
 		if (!checkCollision(player->getX() - PLAYER_SPEED * deltaTime, player->getY())) {
 			player->update(-PLAYER_SPEED, 0.0f, deltaTime);
@@ -239,6 +256,41 @@ void Game::updateCamera(float deltaTime) {
 	camera.update();
 }
 
+void Game::updateLight(float frameTime) {
+	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+
+	light.setPosition(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT);
+
+	Color color = light.getColor();
+
+	timer += frameTime;
+
+	// approximately every 5 seconds turn off / on
+	if (timer >= MILISECONDS * 0.05f) {
+		if (flip) {
+			alpha = color.a - 2.25f;
+			if (alpha <= 0) {
+				light.setColor(color.r, color.g, color.b, 0);
+				flip = false;
+			}
+			else {
+				light.setColor(color.r, color.g, color.b, alpha);
+			}
+		}
+		else {
+			alpha = color.a + 2.25f;
+			if (alpha >= 255) {
+				light.setColor(color.r, color.g, color.b, 255);
+				flip = true;
+			}
+			else {
+				light.setColor(color.r, color.g, color.b, alpha);
+			}
+		}
+		timer = 0.0f;
+	}
+}
+
 void Game::updateWindowState(Uint32 flag) {
 	if (flag == SDL_WINDOWEVENT_FOCUS_LOST) {
 		if (windowState == WindowState::MAXIMIZED) {
@@ -273,6 +325,7 @@ void Game::update(float deltaTime) {
 		deltaTime -= time;
 		i++;
 	}
+	updateLight(time.getFrameTime());
 }
 
 void Game::draw() {
@@ -282,12 +335,14 @@ void Game::draw() {
 
 	renderer.begin();
 
+	//renderer.setVision(player->getCenter(), UNIT_WIDTH * 4.0f);
+
 	drawLights();
-	drawBlocks();
+	// drawBlocks();
 	drawPlayer();
 	drawGrid();
 
-	renderer.drawTexture(*player, texture);
+	renderer.drawTexture(*player, player->getTexture());
 	renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
 
 	renderer.end();
@@ -297,12 +352,11 @@ void Game::draw() {
 }
 
 void Game::drawLights() {
-	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-	renderer.drawLight(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT, 8 * UNIT_WIDTH, 8 * UNIT_HEIGHT, RED);
+	renderer.drawLight(light);
 }
 
 void Game::drawGrid() {
-	for (int i = 0; i <= 2 * VERTICAL_UNITS; i++) {
+	/*for (int i = 0; i <= 2 * VERTICAL_UNITS; i++) {
 		float x = i * UNIT_WIDTH;
 		renderer.drawLine(x, 0.0f, x, 2 * SCREEN_HEIGHT, WHITE);
 	}
@@ -310,6 +364,14 @@ void Game::drawGrid() {
 	for (int i = 0; i <= 2 * HORIZONTAL_UNITS; i++) {
 		float y = i * UNIT_HEIGHT;
 		renderer.drawLine(0.0f, y, 2 * SCREEN_WIDTH, y, WHITE);
+	}*/
+
+	for (size_t i = 0; i < edges.size(); i++) {
+		Edge* edge = edges[i];
+		float* points = edge->getPoints();
+		renderer.drawCircle(points[0], points[1], 10, 3, RED);
+		renderer.drawCircle(points[2], points[3], 10, 3, RED);
+		renderer.drawLine(*edge, WHITE);
 	}
 }
 

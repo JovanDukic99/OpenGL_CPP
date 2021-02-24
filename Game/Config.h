@@ -24,7 +24,7 @@ static const float START_PLAYER_X = 60.0f;
 static const float START_PLAYER_Y = 60.0f;
 static const float PLAYER_WIDTH = 60.0f;
 static const float PLAYER_HEIGHT = 60.0f;
-static const float PLAYER_SPEED = 10.0f;
+static const float PLAYER_SPEED = 5.0f;
 
 // clear color values
 static const float CLEAR_R = 0.0f;

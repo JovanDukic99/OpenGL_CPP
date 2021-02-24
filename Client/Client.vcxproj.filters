@@ -76,6 +76,18 @@
     <Filter Include="Source Files\Colections">
       <UniqueIdentifier>{42b02219-6a41-450b-aabd-d162e9104c34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\texture">
+      <UniqueIdentifier>{c6f6baec-5a7a-4419-a32a-3bc8f5ad249c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\texture">
+      <UniqueIdentifier>{d7c42ad7-e8db-4a45-8d03-1d9f13f28754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shadows">
+      <UniqueIdentifier>{84f99af6-8dd3-42e5-bb75-dd8f6ad047cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shadows">
+      <UniqueIdentifier>{223c0e5c-43e2-46b4-b6cd-35f729535797}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame.cpp">
@@ -121,9 +133,6 @@
       <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files\game</Filter>
-    </ClCompile>
-    <ClCompile Include="FPS.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
@@ -195,6 +204,27 @@
     <ClCompile Include="GLSL_Light.cpp">
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="TileSheet.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureAtlas.cpp">
+      <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomRenderer.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Edge.cpp">
+      <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -214,9 +244,6 @@
     </ClInclude>
     <ClInclude Include="PicoPNG.H">
       <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="GLTexture.h">
-      <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="ImageLoader.h">
       <Filter>Header Files\utils</Filter>
@@ -246,9 +273,6 @@
       <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="ShaderProgram.h">
-      <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="FPS.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="EngineConfig.h">
@@ -334,6 +358,30 @@
     </ClInclude>
     <ClInclude Include="GLSL_Light.h">
       <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="TileSheet.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureAtlas.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="GLTexture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomRenderer.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Edge.h">
+      <Filter>Header Files\Shadows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

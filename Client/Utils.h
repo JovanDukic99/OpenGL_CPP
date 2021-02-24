@@ -5,6 +5,8 @@
 #include "PriorityQueue.h"
 #include "SearchSpace.h"
 #include "Square.h"
+#include "Line.h"
+
 class Utils
 {
 public:
@@ -13,6 +15,7 @@ public:
 	static void loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSpace& searchSpace, float unitWidth, float unitHeight);
 	static std::vector<Point> convertToSquarePath(std::vector<Point> points, float mapHeight, float unitWidth, float unitHeight);
 	static std::vector<Point>& convertToPlayerPath(std::vector<Point>& points, float endX, float endY);
+	static std::vector<Edge*> createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, float mapHeight, float unitWidth, float unitHeight);
 
 	// templates
 	template <typename T, typename F, typename G>

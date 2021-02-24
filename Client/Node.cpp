@@ -1,10 +1,16 @@
 #include "Node.h"
 Node::Node() : g(0), h(0), rowIndex(0), columnIndex(0), block(false), predecessor(nullptr) {
-
+	edges[0] = nullptr;
+	edges[1] = nullptr;
+	edges[2] = nullptr;
+	edges[3] = nullptr;
 }
 
 Node::Node(int rowIndex, int columnIndex, bool block) : g(0), h(0), rowIndex(rowIndex), columnIndex(columnIndex), block(block), predecessor(nullptr) {
-
+	edges[0] = nullptr;
+	edges[1] = nullptr;
+	edges[2] = nullptr;
+	edges[3] = nullptr;
 }
 
 void Node::reset() {
@@ -49,6 +55,26 @@ Node* Node::getPredecessor() {
 	return predecessor;
 }
 
+Edge* Node::getEdge(EdgeSide edgeSide) {
+	switch (edgeSide)
+	{
+	case EdgeSide::NORTH: {
+		return edges[0];
+	}
+	case EdgeSide::SOUTH: {
+		return edges[1];
+	}
+	case EdgeSide::WEST: {
+		return edges[2];
+	}
+	case EdgeSide::EAST: {
+		return edges[3];
+	}
+	default:
+		return nullptr;
+	}
+}
+
 void Node::setG(int g) {
 	this->g = g;
 }
@@ -71,6 +97,31 @@ void Node::setBlock(bool block) {
 
 void Node::setPredecessor(Node* predecessor) {
 	this->predecessor = predecessor;
+}
+
+void Node::addEdge(Edge* edge) {
+	EdgeSide edgeSide = edge->getEdgeSide();
+	switch (edgeSide)
+	{
+	case EdgeSide::NORTH :{
+		edges[0] = edge;
+		break;
+	}
+	case EdgeSide::SOUTH: {
+		edges[1] = edge;
+		break;
+	}
+	case EdgeSide::WEST: {
+		edges[2] = edge;
+		break;
+	}
+	case EdgeSide::EAST: {
+		edges[3] = edge;
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 std::ostream& operator<<(std::ostream& outputStream, Node& node) {

@@ -3,16 +3,17 @@
 #include "GLSL_Point.h"
 #include "GLSL_Square.h"
 #include "GLSL_Circle.h"
+#include "Light.h"
 #include "EngineConfig.h"
 #include <TTF/SDL_ttf.h>
 #include <GL/glew.h>
 #include <iostream>
 
-Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightOffset(0), shaderProgram(), textureProgram() {
+Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightOffset(0), visionRadius(0.0f){
 
 }
 
-Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightOffset(0), shaderProgram(), textureProgram() {
+Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightOffset(0){
 	init();
 }
 
@@ -81,6 +82,11 @@ void Renderer::initShaderProgram(Camera2D& camera) {
 	shaderProgram.addAttribute("vertexColor");
 	shaderProgram.linkShaders();
 
+	visionProgram.initShaders(camera, VISION_VERTEX_PATH, VISION_FRAGMENT_PATH);
+	visionProgram.addAttribute("vertexPosition");
+	visionProgram.addAttribute("vertexColor");
+	visionProgram.linkShaders();
+
 	textureProgram.initShaders(camera, TEXTURE_VERTEX_PATH, TEXTURE_FRAGMENT_PATH);
 	textureProgram.addAttribute("vertexPosition");
 	textureProgram.addAttribute("vertexColor");
@@ -122,10 +128,25 @@ void Renderer::uploadVertexData() {
 
 void Renderer::draw() {
 	bindVertexArray(vertexArrays[0]);
-	// draw geometry
-	shaderProgram.use();
-	drawGeometry();
-	shaderProgram.unuse();
+	if (visionRadius <= 0.0f) {
+		// draw geometry
+		shaderProgram.use();
+		drawGeometry();
+		shaderProgram.unuse();
+	}
+	else {
+		visionProgram.use();
+
+		GLint location = visionProgram.getUniformValueLocation("visionRadius");
+		glUniform1f(location, visionRadius);
+
+		location = visionProgram.getUniformValueLocation("visionCenter");
+		glUniform2f(location, visionCenter.getX(), visionCenter.getY());
+
+		drawGeometry();
+
+		visionProgram.unuse();
+	}
 
 	bindVertexArray(vertexArrays[1]);
 	// draw texture
@@ -138,6 +159,7 @@ void Renderer::draw() {
 	// draw light
 	lightProgram.use();
 
+	// additive blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	drawLight();
@@ -240,8 +262,16 @@ void Renderer::drawTexture(float x, float y, float width, float height, GLTextur
 	textureObjects.emplace_back(x, y, width, height, texture, textureOffset, textureVetrices);
 }
 
+void Renderer::drawTexture(float x, float y, float width, float height, TextureAtlas textureAtlas, int textureIndex) {
+	textureObjects.emplace_back(x, y, width, height, textureAtlas.getTexture(), textureAtlas.getUV(textureIndex), textureOffset, textureVetrices);
+}
+
 void Renderer::drawTexture(Square square, GLTexture texture) {
 	textureObjects.emplace_back(square, texture, textureOffset, textureVetrices);
+}
+
+void Renderer::drawTexture(Square square, TextureAtlas textureAtlas, int textureIndex) {
+	textureObjects.emplace_back(square, textureAtlas.getTexture(), textureAtlas.getUV(textureIndex), textureOffset, textureVetrices);
 }
 
 // draw light
@@ -249,8 +279,8 @@ void Renderer::drawLight(float x, float y, float width, float height, Color colo
 	lightObject.emplace_back(x, y, width, height, color, lightOffset, lightVertices);
 }
 
-void Renderer::drawLight(Square square) {
-	lightObject.emplace_back(square, lightOffset, lightVertices);
+void Renderer::drawLight(Light light) {
+	lightObject.emplace_back(light, lightOffset, lightVertices);
 }
 
 void Renderer::reset() {
@@ -269,5 +299,19 @@ void Renderer::reset() {
 
 bool Renderer::check() {
 	return vertexArrays[0] == 0;
+}
+
+// setters
+void Renderer::setVision(Point visionCenter, float visionRadius) {
+	setVisionCenter(visionCenter);
+	setVisionRadius(visionRadius);
+}
+
+void Renderer::setVisionCenter(Point visionCenter) {
+	this->visionCenter = visionCenter;
+}
+
+void Renderer::setVisionRadius(float visionRadius) {
+	this->visionRadius = visionRadius;
 }
 

@@ -1,7 +1,7 @@
 #include "GLSL_Light.h"
 
-GLSL_Light::GLSL_Light(Square& square, int& offset, std::vector<Vertex>& lightVertices) {
-	GLSL_Light(square.getX(), square.getY(), square.getWidth(), square.getHeight(), square.getColor(), offset, lightVertices);
+GLSL_Light::GLSL_Light(Light& light, int& offset, std::vector<Vertex>& lightVertices) : GLSL_Object(GL_TRIANGLES, 6, offset) {
+	GLSL_Light(light.getX(), light.getY(), light.getWidth(), light.getHeight(), light.getColor(), offset, lightVertices);
 }
 
 GLSL_Light::GLSL_Light(float x, float y, float width, float height, Color color, int& offset, std::vector<Vertex>& lightVertices) : GLSL_Object(GL_TRIANGLES, 6, offset) {

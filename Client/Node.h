@@ -1,4 +1,5 @@
 #pragma once
+#include "Edge.h"
 #include <iostream>
 // g - how far is node from start point
 // h - how far is node from end point
@@ -11,6 +12,7 @@ private:
 	int columnIndex;
 	bool block;
 	Node* predecessor;
+	Edge* edges[4];
 public:
 	Node();
 	Node(int rowIndex, int columnIndex, bool block = false);
@@ -29,6 +31,7 @@ public:
 	int getColumnIndex();
 	bool isBlock();
 	Node* getPredecessor();
+	Edge* getEdge(EdgeSide edgeSide);
 
 	// setters
 	void setG(int g);
@@ -37,5 +40,6 @@ public:
 	void setColumnIndex(int columnIndex);
 	void setBlock(bool block);
 	void setPredecessor(Node* predecessor);
+	void addEdge(Edge* edge);
 };
 

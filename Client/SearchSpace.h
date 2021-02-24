@@ -34,6 +34,7 @@ public:
 
 	// helper
 	bool canStart();
+	bool isBlock(int rowNumber, int columnNumber);
 
 	// operator overloading
 	Node* operator[](int index);
@@ -57,8 +58,7 @@ private:
 	// init
 	void initSpace();
 
-	// helper
-	bool isBlock(int rowNumber, int columnNumber);
+	// helpers
 	void checkStartNode(int rowNumber, int columnNumber);
 	void checkFinalNode(int rowNumber, int columnNumber);
 
