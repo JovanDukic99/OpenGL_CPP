@@ -74,9 +74,7 @@ std::vector<Point>& Utils::convertToPlayerPath(std::vector<Point>& points, float
 	return points;
 }
 
-std::vector<Edge*> Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, float mapHeight, float unitWidth, float unitHeight) {
-	std::vector<Edge*> edges;
-
+void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight) {
 	for (size_t i = 0; i < blocks.size(); i++) {
 		Square& block = blocks[i];
 
@@ -122,6 +120,7 @@ std::vector<Edge*> Utils::createEdges(SearchSpace& searchSpace, std::vector<Squa
 					searchSpace[row][column].addEdge(edge);
 				}
 				else {
+					// if node from the left do not have south edge than create one
 					Edge* edge = new Edge(x, y, x + width, y, EdgeSide::SOUTH);
 					searchSpace[row][column].addEdge(edge);
 					edges.push_back(edge);
@@ -178,6 +177,70 @@ std::vector<Edge*> Utils::createEdges(SearchSpace& searchSpace, std::vector<Squa
 			}
 		}
 	}
+}
 
-	return edges;
+void Utils::createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints) {
+	for (size_t i = 0; i < edges.size(); i++) {
+		Edge* edge = edges[i];
+		glm::vec2 p1 = edge->getP1();
+		glm::vec2 p2 = edge->getP2();
+		if (!contains(edgePoints, p1)) {
+			edgePoints.push_back(p1);
+		}
+		if (!contains(edgePoints, p2)) {
+			edgePoints.push_back(p2);
+		}
+	}
+}
+
+void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<glm::vec2>& lightPoints, glm::vec2 p) {
+	for (size_t i = 0; i < edgePoints.size(); i++) {
+		glm::vec2 point = edgePoints[i];
+
+		Line line1(point, p);
+
+		float minDistance = INFINITY;
+		glm::vec2 closestPoint(0.0f, 0.0f);
+
+		for (size_t j = 0; j < edges.size(); j++) {
+			Edge* line2 = edges[j];
+
+			if (line2->contains(point)) {
+				continue;
+			}
+
+			bool check = false;
+
+			glm::vec2 intersection = lineIntersection(line1.getP1(), line1.getP2(), line2->getP1(), line2->getP2(), &check);
+
+			if (check) {
+				float distance = glm::length(intersection - p);
+
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestPoint = intersection;
+				}
+			}
+
+		}
+
+		lightPoints.emplace_back(closestPoint.x, closestPoint.y);
+	}
+}
+glm::vec2 Utils::lineIntersection(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 d, bool* check) {
+	glm::vec2 r = b - a;
+	glm::vec2 s = d - c;
+
+	float scalar = r.x * s.y - r.y * s.x;
+	float u = ((c.x - a.x) * r.y - (c.y - a.y) * r.x) / scalar;
+	float t = ((c.x - a.x) * s.y - (c.y - a.y) * s.x) / scalar;
+
+	if ((0.0f <= u) && (u <= 1.0f) && (0.0f <= t) && (t <= 1.0f)) {
+		*check = true;
+		return glm::vec2(a + t * r);
+	}
+	else {
+		*check = false;
+		return glm::vec2(0.0f, 0.0f);
+	}
 }

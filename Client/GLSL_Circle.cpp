@@ -2,21 +2,12 @@
 #include "GLSL_Circle.h"
 #include <cmath>
 
-GLSL_Circle::GLSL_Circle(Circle& circle, int& offset, std::vector<Vertex>& vertices) : GLSL_Object(GL_TRIANGLES, 3 * circle.getSegments(), offset) {
-	init(circle, offset, vertices);
-}
-
 GLSL_Circle::GLSL_Circle(float x, float y, float radius, int segments, Color color, int& offset, std::vector<Vertex>& vertices) : GLSL_Object(GL_TRIANGLES, 3 * segments, offset) {
 	init(x, y, radius, segments, color, offset, vertices);
 }
 
 void GLSL_Circle::init(float x, float y, float radius, int segments, Color color, int& offset, std::vector<Vertex>& vertices) {
 	generateVertices(x, y, radius, segments, color, vertices);
-	updateOffset(offset);
-}
-
-void GLSL_Circle::init(Circle& circle, int& offset, std::vector<Vertex>& vertices) {
-	generateVertices(circle.getX(), circle.getY(), circle.getRadius(), circle.getSegments(), circle.getColor(), vertices);
 	updateOffset(offset);
 }
 

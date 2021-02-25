@@ -11,9 +11,7 @@ Edge::Edge(float x, float y, float x1, float y1, EdgeSide edgeSide) : edgeSide(e
 }
 
 void Edge::lenghtenEdge(float x1, float y1) {
-	float* points = getPoints();
-	points[2] = x1;
-	points[3] = y1;
+	setP2(glm::vec2(x1, y1));
 }
 
 int Edge::getID() {

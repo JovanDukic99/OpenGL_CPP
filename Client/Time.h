@@ -8,10 +8,10 @@
 class Time
 {
 private:
-	int index;
+	unsigned int index;
 	int count;
 	int samples[NUMBER_SAMPLES];
-	int previousTime;
+	unsigned previousTime;
 	int printMarker;
 	float fps;
 	float deltaTime;

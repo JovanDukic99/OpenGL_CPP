@@ -6,7 +6,7 @@ Camera2D::Camera2D(float halfWidth, float halfHeight, float cameraX, float camer
 
 void Camera2D::init() {
 	orthoMatrix = glm::ortho((float)-halfWidth, (float)halfWidth, (float)-halfHeight, (float)halfHeight, -1.0f, 1.0f);
-	bounds.setProps(0.0f, 0.0f, 2*halfWidth, 2*halfHeight);
+	bounds.setProperties(0.0f, 0.0f, 2*halfWidth, 2*halfHeight);
 }
 
 void Camera2D::updateOrthoMatrix() {
@@ -48,7 +48,7 @@ void Camera2D::setPosition(const glm::vec2& position) {
 }
 
 void Camera2D::updateBounds() {
-	bounds.setPosition(position.x - halfWidth, position.y - halfHeight);
+	bounds.setPosition(glm::vec2(position.x - halfWidth, position.y - halfHeight));
 }
 
 void Camera2D::setDimiension(float halfWidth, float halfHeight) {

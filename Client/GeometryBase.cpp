@@ -1,44 +1,59 @@
 #include "GeometryBase.h"
 
-GeometryBase::GeometryBase() : x(0.0f), y(0.0f), color() {
+GeometryBase::GeometryBase() : position(0.0f, 0.0f), color() {
 
 }
 
-GeometryBase::GeometryBase(float x, float y, Color color) : x(x), y(y), color(color) {
+GeometryBase::GeometryBase(glm::vec2 position, Color color) : position(position), color(color) {
+
+}
+
+GeometryBase::GeometryBase(float x, float y, Color color) : position(x,y), color(color) {
 
 }
 
 // getters
-float GeometryBase::getX() {
-	return x;
+glm::vec2 GeometryBase::getPosition() const {
+	return position;
 }
 
-float GeometryBase::getY() {
-	return y;
+float GeometryBase::getX() const {
+	return position.x;
 }
 
-Color GeometryBase::getColor() {
+float GeometryBase::getY() const {
+	return position.y;
+}
+
+Color GeometryBase::getColor() const {
 	return color;
 }
 
+void GeometryBase::setPosition(glm::vec2 position) {
+	this->position = position;
+}
+
 void GeometryBase::setPosition(float x, float y) {
-	setX(x);
-	setY(y);
+	setPosition(glm::vec2(x, y));
 }
 
 // setters
-void GeometryBase::setProps(float x, float y, Color color) {
-	setX(x);
-	setY(y);
+void GeometryBase::setProperties(glm::vec2 position, Color color) {
+	setPosition(position);
+	setColor(color);
+}
+
+void GeometryBase::setProperties(float x, float y, Color color) {
+	setPosition(glm::vec2(x, y));
 	setColor(color);
 }
 
 void GeometryBase::setX(float x) {
-	this->x = x;
+	setPosition(glm::vec2(x, position.y));
 }
 
 void GeometryBase::setY(float y) {
-	this->y = y;
+	setPosition(glm::vec2(position.x, y));
 }
 
 void GeometryBase::setColor(Color color) {

@@ -1,4 +1,5 @@
 #pragma once
+#include <glm/glm.hpp>
 #include <string>
 #include <vector>
 #include <queue>
@@ -13,9 +14,14 @@ public:
 	// static methods
 	static void loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight);
 	static void loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSpace& searchSpace, float unitWidth, float unitHeight);
+	static void createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight);
+	static void createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints);
+	static void rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<glm::vec2>& lightPoints, glm::vec2 p);
 	static std::vector<Point> convertToSquarePath(std::vector<Point> points, float mapHeight, float unitWidth, float unitHeight);
 	static std::vector<Point>& convertToPlayerPath(std::vector<Point>& points, float endX, float endY);
-	static std::vector<Edge*> createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, float mapHeight, float unitWidth, float unitHeight);
+
+	// calculations
+	static glm::vec2 lineIntersection(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 d, bool* check);
 
 	// templates
 	template <typename T, typename F, typename G>

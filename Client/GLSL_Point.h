@@ -6,12 +6,10 @@
 class GLSL_Point : public GLSL_Object
 {
 public:
-	GLSL_Point(Point& point, int& offset, std::vector<Vertex>& vertices);
-	GLSL_Point(float x, float y, Color color, int& offset, std::vector<Vertex>& vertices);
+	GLSL_Point(const glm::vec2& p, const Color& color, int& offset, std::vector<Vertex>& vertices);
 
 private:
-	void init(Point& point, int& offset, std::vector<Vertex>& vertices);
-	void init(float x, float y, Color color, int& offset, std::vector<Vertex>& vertices);
-	void generateVertecies(float x, float y, Color color, std::vector<Vertex>& vertices);
+	void init(const glm::vec2& p, const Color& color, int& offset, std::vector<Vertex>& vertices);
+	void generateVertecies(const glm::vec2& p, const Color& color, std::vector<Vertex>& vertices);
 };
 

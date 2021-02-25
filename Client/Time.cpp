@@ -47,7 +47,7 @@ void Time::calculateFPS() {
 }
 
 void Time::printFPS() {
-	if (printMarker >= 10) {
+	if (printMarker == 10) {
 		std::cout << "FPS: " << fps << std::endl;
 		printMarker = 0;
 	}

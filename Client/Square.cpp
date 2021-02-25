@@ -4,25 +4,31 @@ Square::Square() : GeometryBase(), width(0.0f), height(0.0f) {
 
 }
 
+Square::Square(glm::vec2 position, float width, float height, Color color) : GeometryBase(position, color), width(width), height(height) {
+
+}
+
 Square::Square(float x, float y, float width, float height, Color color) : GeometryBase(x, y, color), width(width), height(height) {
 
 }
 
-float Square::getWidth() {
+// getters
+float Square::getWidth() const {
 	return width;
 }
 
-float Square::getHeight() {
+float Square::getHeight() const {
 	return height;
 }
 
-void Square::setProps(float x, float y, float width, float height) {
-	GeometryBase::setPosition(x, y);
+// setters
+void Square::setProperties(glm::vec2 position, float width, float height, Color color) {
+	GeometryBase::setProperties(position, color);
 	setDimensions(width, height);
 }
 
-void Square::setProps(float x, float y, float width, float height, Color color) {
-	GeometryBase::setProps(x, y, color);
+void Square::setProperties(float x, float y, float width, float height, Color color) {
+	GeometryBase::setProperties(x, y, color);
 	setDimensions(width, height);
 }
 

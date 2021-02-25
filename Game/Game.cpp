@@ -50,21 +50,15 @@ void Game::initComponents() {
 
 void Game::initLevel(std::string filePath) {
 	Utils::loadMASP(filePath, blocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
-	edges = Utils::createEdges(searchSpace, blocks, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
-
-	for (size_t i = 0; i < edges.size(); i++) {
-		Edge* edge = edges[i];
-		float* points = edge->getPoints();
-		std::cout << "X1: " << points[0] << ", Y1: " << points[1] << ", X2: " << points[2] << ", Y2: " << points[3] << std::endl;
-	}
-
+	Utils::createEdges(searchSpace, blocks, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
+	Utils::createEdgePoints(edges, edgePoints);
 	algorithm.setSearchSpace(&searchSpace);
 }
 
 void Game::run() {
 	while (gameState == GameState::PLAY) {
 		calculateFPS();
-		//printFPS();
+		printFPS();
 		receiveInput();
 		processInput();
 		update(time.getDeltaTime());
@@ -259,7 +253,7 @@ void Game::updateCamera(float deltaTime) {
 void Game::updateLight(float frameTime) {
 	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
 
-	light.setPosition(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT);
+	light.setPosition(glm::vec2(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT));
 
 	Color color = light.getColor();
 
@@ -368,12 +362,22 @@ void Game::drawGrid() {
 
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
-		float* points = edge->getPoints();
-		renderer.drawCircle(points[0], points[1], 10, 3, RED);
-		renderer.drawCircle(points[2], points[3], 10, 3, RED);
+		/*renderer.drawCircle(points[0], points[1], 5, 60, RED);
+		renderer.drawCircle(points[2], points[3], 5, 60, RED);*/
 		renderer.drawLine(*edge, WHITE);
 	}
-}
+
+	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+
+	std::vector<glm::vec2> lightPoints;
+	
+	Utils::rayTracing(edges, edgePoints, lightPoints, mouseCoords);
+
+	for (size_t i = 0; i < lightPoints.size(); i++) {
+		Point point = lightPoints[i];
+		renderer.drawCircle(point.getX(), point.getY(), 5, 60, RED);
+	}
+;}
 
 void Game::drawBlocks() {
 	for (size_t i = 0; i < blocks.size(); i++) {

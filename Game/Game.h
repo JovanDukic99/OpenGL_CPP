@@ -47,6 +47,7 @@ private:
 	AStarAlgorithm algorithm;
 	std::vector<Square> blocks;
 	std::vector<Square> squarePath;
+	std::vector<glm::vec2> edgePoints;
 	std::vector<Edge*> edges;
 	TileSheet tileSheet;
 	Light light;

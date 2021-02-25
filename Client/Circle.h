@@ -1,22 +1,27 @@
 #pragma once
 #include "GeometryBase.h"
+#include <glm/glm.hpp>
+
 #define SEGMENT_NUMBER 60
+
 class Circle : public GeometryBase
 {
 private:
 	float radius;
 	int segments;
 public:
+	// constructors
 	Circle();
-	Circle(float x, float y, float radius, Color color, int segments);
+	Circle(glm::vec2 position, float radius, int segments = SEGMENT_NUMBER, Color color = WHITE);
+	Circle(float x, float y, float radius, int segments = SEGMENT_NUMBER, Color color = WHITE);
 
 	// getters
-	float getRadius();
-	int getSegments();
+	float getRadius() const;
+	int getSegments() const;
 
 	// setters
-	void setProps(float x, float y, float radius, int segments);
-	void setProps(float x, float y, float radius, int segments, Color color);
+	void setProperties(glm::vec2 position, float radius, int segments = SEGMENT_NUMBER, Color color = WHITE);
+	void setProperties(float x, float y, float radius, int segments = SEGMENT_NUMBER, Color color = WHITE);
 	void setRadius(float radius);
 	void setSegments(int segments);
 };

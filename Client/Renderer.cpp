@@ -206,72 +206,81 @@ void Renderer::uploadTextureUnit() {
 	glUniform1i(textureLocation, 0);
 }
 
-// GLSL drawing functions
+// draw square
 void Renderer::drawSquare(float x, float y, float width, float height, Color color) {
 	geometryObjects.emplace_back(GLSL_Square(x, y, width, height, color, offset, vertices));
 }
 
-void Renderer::drawCircle(float x, float y, float radius, int segments, Color color) {
-	geometryObjects.emplace_back(GLSL_Circle(x, y, radius, segments, color, offset, vertices));
-}
-
-void Renderer::drawLine(float x, float y, float x1, float y1, Color color) {
-	geometryObjects.emplace_back(GLSL_Line(x, y, x1, y1, color, offset, vertices));
-}
-
-void Renderer::drawPoint(float x, float y, Color color) {
-	geometryObjects.emplace_back(GLSL_Point(x, y, color, offset, vertices));
-}
-
-// geometry drawing functions with color
 void Renderer::drawSquare(Square square, Color color) {
 	drawSquare(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color);
+}
+
+void Renderer::drawSquare(Square square) {
+	drawSquare(square.getX(), square.getY(), square.getWidth(), square.getHeight(), square.getColor());
+}
+
+// draw circle
+void Renderer::drawCircle(float x, float y, float radius, int segments, Color color) {
+	geometryObjects.emplace_back(GLSL_Circle(x, y, radius, segments, color, offset, vertices));
 }
 
 void Renderer::drawCircle(Circle circle, Color color) {
 	drawCircle(circle.getX(), circle.getY(), circle.getRadius(), circle.getSegments(), color);
 }
 
+void Renderer::drawCircle(Circle circle) {
+	drawCircle(circle.getX(), circle.getY(), circle.getRadius(), circle.getSegments(), circle.getColor());
+}
+
+// draw line
+void Renderer::drawLine(glm::vec2 p1, glm::vec2 p2, Color color) {
+	geometryObjects.emplace_back(GLSL_Line(p1, p2, color, offset, vertices));
+}
+
+void Renderer::drawLine(float x, float y, float x1, float y1, Color color) {
+	geometryObjects.emplace_back(GLSL_Line(glm::vec2(x, y), glm::vec2(x1, y1), color, offset, vertices));
+}
+
 void Renderer::drawLine(Line line, Color color) {
-	drawLine(line.getPoints()[0], line.getPoints()[1], line.getPoints()[2], line.getPoints()[3], color);
+	drawLine(line.getP1(), line.getP2(), color);
+}
+
+void Renderer::drawLine(Line line) {
+	drawLine(line.getP1(), line.getP2(), line.getColor());
+}
+
+// draw point
+void Renderer::drawPoint(glm::vec2 p, Color color) {
+	geometryObjects.emplace_back(GLSL_Point(p, color, offset, vertices));
+}
+
+void Renderer::drawPoint(float x, float y, Color color) {
+	drawPoint(glm::vec2(x, y), color);
 }
 
 void Renderer::drawPoint(Point point, Color color) {
 	drawPoint(point.getX(), point.getY(), color);
 }
 
-// geometry drawing functions
-void Renderer::drawSquare(Square square) {
-	geometryObjects.emplace_back(GLSL_Square(square, offset, vertices));
-}
-
-void Renderer::drawCircle(Circle circle) {
-	geometryObjects.emplace_back(GLSL_Circle(circle, offset, vertices));
-}
-
-void Renderer::drawLine(Line line) {
-	geometryObjects.emplace_back(GLSL_Line(line, offset, vertices));
-}
-
 void Renderer::drawPoint(Point point) {
-	geometryObjects.emplace_back(GLSL_Point(point, offset, vertices));
+	drawPoint(point.getX(), point.getY(), point.getColor());
 }
 
 // draw texture
 void Renderer::drawTexture(float x, float y, float width, float height, GLTexture texture) {
-	textureObjects.emplace_back(x, y, width, height, texture, textureOffset, textureVetrices);
-}
-
-void Renderer::drawTexture(float x, float y, float width, float height, TextureAtlas textureAtlas, int textureIndex) {
-	textureObjects.emplace_back(x, y, width, height, textureAtlas.getTexture(), textureAtlas.getUV(textureIndex), textureOffset, textureVetrices);
+	textureObjects.emplace_back(x, y, width, height, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), texture, textureOffset, textureVetrices);
 }
 
 void Renderer::drawTexture(Square square, GLTexture texture) {
-	textureObjects.emplace_back(square, texture, textureOffset, textureVetrices);
+	drawTexture(square.getX(), square.getY(), square.getWidth(), square.getHeight(), texture);
+}
+
+void Renderer::drawTexture(float x, float y, float width, float height, TextureAtlas textureAtlas, int textureIndex) {
+	textureObjects.emplace_back(x, y, width, height, textureAtlas.getUV(textureIndex), textureAtlas.getTexture(), textureOffset, textureVetrices);
 }
 
 void Renderer::drawTexture(Square square, TextureAtlas textureAtlas, int textureIndex) {
-	textureObjects.emplace_back(square, textureAtlas.getTexture(), textureAtlas.getUV(textureIndex), textureOffset, textureVetrices);
+	drawTexture(square.getX(), square.getY(), square.getWidth(), square.getHeight(), textureAtlas, textureIndex);
 }
 
 // draw light
@@ -279,10 +288,15 @@ void Renderer::drawLight(float x, float y, float width, float height, Color colo
 	lightObject.emplace_back(x, y, width, height, color, lightOffset, lightVertices);
 }
 
-void Renderer::drawLight(Light light) {
-	lightObject.emplace_back(light, lightOffset, lightVertices);
+void Renderer::drawLight(Light light, Color color) {
+	drawLight(light.getX(), light.getY(), light.getWidth(), light.getHeight(), color);
 }
 
+void Renderer::drawLight(Light light) {
+	drawLight(light.getX(), light.getY(), light.getWidth(), light.getHeight(), light.getColor());
+}
+
+// reset
 void Renderer::reset() {
 	vertices.clear();
 	textureVetrices.clear();

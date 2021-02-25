@@ -1,18 +1,14 @@
 #pragma once
 #include "GLSL_Object.h"
-#include "Line.h"
+#include <glm/glm.hpp>
 #include <vector>
 
 class GLSL_Line : public GLSL_Object
 {
 public:
-	GLSL_Line(Line& line, int& offset, std::vector<Vertex>& vertices);
-	GLSL_Line(float x, float y, float x1, float y1, Color color, int& offset, std::vector<Vertex>& vertices);
-
+	GLSL_Line(const glm::vec2& p1, const glm::vec2& p2, const Color& color, int& offset, std::vector<Vertex>& vertices);
 private:
-	void init(Line& line, int& offset, std::vector<Vertex>& vertices);
-	void init(float x, float y, float x1, float y1, Color color, int& offset, std::vector<Vertex>& vertices);
-	void generateVertecies(float* points, Color color, std::vector<Vertex>& vertices);
-	void generateVertecies(float x, float y, float x1, float y1, Color color, std::vector<Vertex>& vertices);
+	void init(const glm::vec2& p1, const glm::vec2& p2, const Color& color, int& offset, std::vector<Vertex>& vertices);
+	void generateVertecies(const glm::vec2& p1, const glm::vec2& p2, const Color& color, std::vector<Vertex>& vertices);
 };
 

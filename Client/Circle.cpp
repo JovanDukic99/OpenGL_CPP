@@ -4,26 +4,32 @@ Circle::Circle() : GeometryBase(), radius(0.0f), segments(0) {
 
 }
 
-Circle::Circle(float x, float y, float radius, Color color, int segments = SEGMENT_NUMBER) : GeometryBase(x, y, color), radius(radius), segments(segments) {
+Circle::Circle(glm::vec2 position, float radius, int segments, Color color) : GeometryBase(position, color), radius(radius), segments(segments) {
 
 }
 
-float Circle::getRadius() {
+Circle::Circle(float x, float y, float radius, int segments, Color color) : GeometryBase(x, y, color), radius(radius), segments(segments) {
+
+}
+
+// getters
+float Circle::getRadius() const {
 	return radius;
 }
 
-int Circle::getSegments() {
+int Circle::getSegments() const {
 	return segments;
 }
 
-void Circle::setProps(float x, float y, float radius, int segments) {
-	GeometryBase::setPosition(x, y);
+// setters
+void Circle::setProperties(glm::vec2 position, float radius, int segments, Color color) {
+	GeometryBase::setProperties(position, color);
 	setRadius(radius);
 	setSegments(segments);
 }
 
-void Circle::setProps(float x, float y, float radius, int segments, Color color) {
-	GeometryBase::setProps(x, y, color);
+void Circle::setProperties(float x, float y, float radius, int segments, Color color) {
+	GeometryBase::setProperties(x, y, color);
 	setRadius(radius);
 	setSegments(segments);
 }

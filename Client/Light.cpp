@@ -1,6 +1,10 @@
 #include "Light.h"
 
-Light::Light() {
+Light::Light() : Square() {
+
+}
+
+Light::Light(glm::vec2 position, float width, float height, Color color) : Square(position, width, height, color) {
 
 }
 
