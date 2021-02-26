@@ -180,6 +180,7 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, s
 }
 
 void Utils::createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints) {
+	// filter points => eliminate same points
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
 		glm::vec2 p1 = edge->getP1();
@@ -205,10 +206,6 @@ void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePo
 		for (size_t j = 0; j < edges.size(); j++) {
 			Edge* line2 = edges[j];
 
-			if (line2->contains(point)) {
-				continue;
-			}
-
 			bool check = false;
 
 			glm::vec2 intersection = lineIntersection(line1.getP1(), line1.getP2(), line2->getP1(), line2->getP2(), &check);
@@ -220,6 +217,7 @@ void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePo
 					minDistance = distance;
 					closestPoint = intersection;
 				}
+
 			}
 
 		}

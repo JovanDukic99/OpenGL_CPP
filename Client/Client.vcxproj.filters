@@ -225,6 +225,12 @@
     <ClCompile Include="Edge.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Triangle.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -382,6 +388,12 @@
     </ClInclude>
     <ClInclude Include="Edge.h">
       <Filter>Header Files\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Triangle.h">
+      <Filter>Header Files\GLSL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 #include "GeometryBase.h"
 #include <glm/glm.hpp>
 
-#define SEGMENT_NUMBER 60
+#define SEGMENT_NUMBER 20
 
 class Circle : public GeometryBase
 {

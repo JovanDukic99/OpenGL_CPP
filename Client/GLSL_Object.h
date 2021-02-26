@@ -9,15 +9,15 @@ private:
 	int vertexNumber;
 	int offset;
 protected:
-	GLSL_Object();
+	// constructors
 	GLSL_Object(GLenum mode, int vertexNumber, int offset);
 
 	// setters
 	void updateOffset(int& offset);
 public:
 	// getters
-	int getOffset();
-	int getVertexNumber();
-	GLenum getMode();
+	int getOffset() const;
+	int getVertexNumber() const;
+	GLenum getMode() const;
 };
 
