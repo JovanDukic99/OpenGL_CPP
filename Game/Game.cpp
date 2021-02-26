@@ -332,7 +332,7 @@ void Game::draw() {
 	//renderer.setVision(player->getCenter(), UNIT_WIDTH * 4.0f);
 
 	drawLights();
-	//drawBlocks();
+	// drawBlocks();
 	drawPlayer();
 	drawGrid();
 
@@ -362,16 +362,12 @@ void Game::drawGrid() {
 
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
-		/*renderer.drawCircle(edge->getP1(), 5, 20, RED);
-		renderer.drawCircle(edge->getP2(), 5, 20, RED);*/
+		/*renderer.drawCircle(points[0], points[1], 5, 60, RED);
+		renderer.drawCircle(points[2], points[3], 5, 60, RED);*/
 		renderer.drawLine(*edge, WHITE);
 	}
 
 	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-
-	for (size_t i = 0; i < edgePoints.size(); i++) {
-		renderer.drawLine(edgePoints[i], mouseCoords, WHITE);
-	}
 
 	std::vector<glm::vec2> lightPoints;
 	
@@ -379,7 +375,7 @@ void Game::drawGrid() {
 
 	for (size_t i = 0; i < lightPoints.size(); i++) {
 		Point point = lightPoints[i];
-		renderer.drawCircle(point.getX(), point.getY(), 5, 20, RED);
+		renderer.drawCircle(point.getX(), point.getY(), 5, 60, RED);
 	}
 ;}
 

@@ -3,7 +3,6 @@
 #include "Point.h"
 #include "Square.h"
 #include "Circle.h"
-#include "Triangle.h"
 #include "GLSL_Object.h"
 #include "GLSL_Texture.h"
 #include "GLSL_Light.h"
@@ -50,15 +49,9 @@ public:
 	void drawSquare(Square square);
 
 	// draw circle
-	void drawCircle(glm::vec2 center, float radius, int segments = SEGMENT_NUMBER, Color color = WHITE);
 	void drawCircle(float x, float y, float radius, int segments = SEGMENT_NUMBER, Color color = WHITE);
 	void drawCircle(Circle circle, Color color);
 	void drawCircle(Circle circle);
-
-	// draw triangle
-	void drawTriangle(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
-	void drawTriangle(Triangle triangle, Color color);
-	void drawTriangle(Triangle triangle);
 
 	// draw line
 	void drawLine(glm::vec2 p1, glm::vec2 p2, Color color = WHITE);

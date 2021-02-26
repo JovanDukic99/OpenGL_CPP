@@ -30,7 +30,6 @@
     <ClCompile Include="Element.cpp" />
     <ClCompile Include="GeometryBase.cpp" />
     <ClCompile Include="GLSL_Circle.cpp" />
-    <ClCompile Include="GLSL_Triangle.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="GLSL_Light.cpp" />
     <ClCompile Include="GLSL_Object.cpp" />
@@ -62,7 +61,6 @@
     <ClCompile Include="TextureAtlas.cpp" />
     <ClCompile Include="TextureCache.cpp" />
     <ClCompile Include="TileSheet.cpp" />
-    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -80,7 +78,6 @@
     <ClInclude Include="GeometryBase.h" />
     <ClInclude Include="GLSL_Circle.h" />
     <ClInclude Include="EngineConfig.h" />
-    <ClInclude Include="GLSL_Triangle.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="GLSL_Light.h" />
     <ClInclude Include="GLSL_Object.h" />
@@ -118,7 +115,6 @@
     <ClInclude Include="TextureAtlas.h" />
     <ClInclude Include="TextureCache.h" />
     <ClInclude Include="TileSheet.h" />
-    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />

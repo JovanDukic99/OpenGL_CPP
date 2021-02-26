@@ -3,7 +3,6 @@
 #include "GLSL_Point.h"
 #include "GLSL_Square.h"
 #include "GLSL_Circle.h"
-#include "GLSL_Triangle.h"
 #include "Light.h"
 #include "EngineConfig.h"
 #include <TTF/SDL_ttf.h>
@@ -225,29 +224,12 @@ void Renderer::drawCircle(float x, float y, float radius, int segments, Color co
 	geometryObjects.emplace_back(GLSL_Circle(x, y, radius, segments, color, offset, vertices));
 }
 
-void Renderer::drawCircle(glm::vec2 center, float radius, int segments, Color color) {
-	drawCircle(center.x, center.y, radius, segments, color);
-}
-
 void Renderer::drawCircle(Circle circle, Color color) {
 	drawCircle(circle.getX(), circle.getY(), circle.getRadius(), circle.getSegments(), color);
 }
 
 void Renderer::drawCircle(Circle circle) {
 	drawCircle(circle.getX(), circle.getY(), circle.getRadius(), circle.getSegments(), circle.getColor());
-}
-
-// draw triangle
-void Renderer::drawTriangle(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color) {
-	geometryObjects.emplace_back(GLSL_Triangle(p1, p2, p3, color, offset, vertices));
-}
-
-void Renderer::drawTriangle(Triangle triangle, Color color) {
-	drawTriangle(triangle.getP1(), triangle.getP2(), triangle.getP3(), color);
-}
-
-void Renderer::drawTriangle(Triangle triangle) {
-	drawTriangle(triangle.getP1(), triangle.getP2(), triangle.getP3(), triangle.getColor());
 }
 
 // draw line
