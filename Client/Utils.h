@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include "PriorityQueue.h"
+#include "LightPoint.h"
 #include "SearchSpace.h"
 #include "Square.h"
 #include "Line.h"
@@ -16,7 +17,7 @@ public:
 	static void loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSpace& searchSpace, float unitWidth, float unitHeight);
 	static void createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight);
 	static void createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints);
-	static void rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<glm::vec2>& lightPoints, glm::vec2 p);
+	static void rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<LightPoint>& intersectionPoints, glm::vec2 p);
 	static std::vector<Point> convertToSquarePath(std::vector<Point> points, float mapHeight, float unitWidth, float unitHeight);
 	static std::vector<Point>& convertToPlayerPath(std::vector<Point>& points, float endX, float endY);
 
@@ -30,6 +31,10 @@ public:
 	static bool contains(std::vector<T>& nodes, T node);
 	template <typename T>
 	static std::vector<T> reverse(std::vector<T> vector);
+
+private:
+	static std::vector<LightPoint> createRays(const glm::vec2& edge, const glm::vec2& source);
+	static bool sortCriteria(LightPoint p1, LightPoint p2);
 };
 
 template<typename T, typename F, typename G>

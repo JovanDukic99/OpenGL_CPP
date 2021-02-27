@@ -1,7 +1,9 @@
+#define _USE_MATH_DEFINES
 #include "Utils.h"
 #include "ImageLoader.h"
 #include "Node.h"
 #include <iostream>
+#include <cmath>
 
 void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight) {
 	Image image = ImageLoader::loadImage(filePath);
@@ -194,36 +196,48 @@ void Utils::createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& 
 	}
 }
 
-void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<glm::vec2>& lightPoints, glm::vec2 p) {
+void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<LightPoint>& intersectionPoints, glm::vec2 p) {
 	for (size_t i = 0; i < edgePoints.size(); i++) {
 		glm::vec2 point = edgePoints[i];
 
-		Line line1(point, p);
+		// create additional 2 rays, one on each side
+		std::vector<LightPoint> lightPoints = createRays(point, p);
 
-		float minDistance = INFINITY;
-		glm::vec2 closestPoint(0.0f, 0.0f);
+		for (size_t i = 0; i < lightPoints.size(); i++) {
 
-		for (size_t j = 0; j < edges.size(); j++) {
-			Edge* line2 = edges[j];
+			LightPoint lightPoint = lightPoints[i];
 
-			bool check = false;
+			Line line1(lightPoint.getPosition(), p);
 
-			glm::vec2 intersection = lineIntersection(line1.getP1(), line1.getP2(), line2->getP1(), line2->getP2(), &check);
+			float minDistance = INFINITY;
+			glm::vec2 closestPoint(INFINITY, INFINITY);
 
-			if (check) {
-				float distance = glm::length(intersection - p);
+			for (size_t j = 0; j < edges.size(); j++) {
+				Edge* line2 = edges[j];
 
-				if (distance < minDistance) {
-					minDistance = distance;
-					closestPoint = intersection;
+				bool check = false;
+
+				glm::vec2 intersection = lineIntersection(line1.getP1(), line1.getP2(), line2->getP1(), line2->getP2(), &check);
+
+				if (check) {
+					float distance = glm::length(intersection - p);
+
+					if (distance < minDistance) {
+						minDistance = distance;
+						closestPoint = intersection;
+					}
+
 				}
 
 			}
 
+			intersectionPoints.emplace_back(closestPoint, lightPoint.getAngle());
+
 		}
 
-		lightPoints.emplace_back(closestPoint.x, closestPoint.y);
 	}
+
+	std::sort(intersectionPoints.begin(), intersectionPoints.end(), sortCriteria);
 }
 glm::vec2 Utils::lineIntersection(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 d, bool* check) {
 	glm::vec2 r = b - a;
@@ -241,4 +255,35 @@ glm::vec2 Utils::lineIntersection(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::ve
 		*check = false;
 		return glm::vec2(0.0f, 0.0f);
 	}
+}
+
+std::vector<LightPoint> Utils::createRays(const glm::vec2& edge, const glm::vec2& source) {	
+	std::vector<LightPoint> lightPoints;
+
+	glm::vec2 vector = edge - source;
+
+	float baseAngle = std::atan2(vector.y, vector.x);
+
+	// the order must be the following
+	for (size_t i = 0; i < 3; i++) {
+		float angle = 0.0f;
+		if (i == 0) {
+			angle = baseAngle - 0.0001f;
+		}
+		else if (i == 1) {
+			angle = baseAngle;
+		}
+		else {
+			angle = baseAngle + 0.0001f;
+		}
+		float x = edge.x +  5000.0f * std::cos(angle);
+		float y = edge.y + 5000.0f * std::sin(angle);
+		lightPoints.emplace_back(glm::vec2(x, y), angle);
+	}
+
+	return lightPoints;
+}
+
+bool Utils::sortCriteria(LightPoint p1, LightPoint p2) {
+	return p1.getAngle() < p2.getAngle();
 }

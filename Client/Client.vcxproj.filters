@@ -231,6 +231,9 @@
     <ClCompile Include="GLSL_Triangle.cpp">
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
+    <ClCompile Include="LightPoint.cpp">
+      <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -394,6 +397,9 @@
     </ClInclude>
     <ClInclude Include="GLSL_Triangle.h">
       <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="LightPoint.h">
+      <Filter>Header Files\Shadows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

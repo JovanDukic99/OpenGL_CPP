@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Config.h"
+#include <LightPoint.h>
 #include <Utils.h>
 #include <Light.h>
 #include <ResourceManager.h>
@@ -332,7 +333,7 @@ void Game::draw() {
 	//renderer.setVision(player->getCenter(), UNIT_WIDTH * 4.0f);
 
 	drawLights();
-	//drawBlocks();
+	drawBlocks();
 	drawPlayer();
 	drawGrid();
 
@@ -350,7 +351,7 @@ void Game::drawLights() {
 }
 
 void Game::drawGrid() {
-	/*for (int i = 0; i <= 2 * VERTICAL_UNITS; i++) {
+	for (int i = 0; i <= 2 * VERTICAL_UNITS; i++) {
 		float x = i * UNIT_WIDTH;
 		renderer.drawLine(x, 0.0f, x, 2 * SCREEN_HEIGHT, WHITE);
 	}
@@ -358,12 +359,10 @@ void Game::drawGrid() {
 	for (int i = 0; i <= 2 * HORIZONTAL_UNITS; i++) {
 		float y = i * UNIT_HEIGHT;
 		renderer.drawLine(0.0f, y, 2 * SCREEN_WIDTH, y, WHITE);
-	}*/
+	}
 
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
-		/*renderer.drawCircle(edge->getP1(), 5, 20, RED);
-		renderer.drawCircle(edge->getP2(), 5, 20, RED);*/
 		renderer.drawLine(*edge, WHITE);
 	}
 
@@ -373,15 +372,27 @@ void Game::drawGrid() {
 		renderer.drawLine(edgePoints[i], mouseCoords, WHITE);
 	}
 
-	std::vector<glm::vec2> lightPoints;
-	
-	Utils::rayTracing(edges, edgePoints, lightPoints, mouseCoords);
+	std::vector<LightPoint> intersectionPoints;
 
-	for (size_t i = 0; i < lightPoints.size(); i++) {
-		Point point = lightPoints[i];
-		renderer.drawCircle(point.getX(), point.getY(), 5, 20, RED);
+	Utils::rayTracing(edges, edgePoints, intersectionPoints, mouseCoords);
+
+	for (size_t i = 0; i < intersectionPoints.size(); i++) {
+		if (i != intersectionPoints.size() - 1) {
+			glm::vec2 point1 = intersectionPoints[i].getPosition();
+			glm::vec2 point2 = intersectionPoints[i + 1].getPosition();
+			renderer.drawTriangle(mouseCoords, point1, point2);
+			renderer.drawCircle(point1, 5.0f, 3, RED);
+			renderer.drawLine(point1, mouseCoords, WHITE);
+		}
+		else {
+			glm::vec2 point1 = intersectionPoints[i].getPosition();
+			renderer.drawTriangle(mouseCoords, intersectionPoints[0].getPosition(), point1);
+			renderer.drawCircle(point1, 5.0f, 3, YELLOW);
+			renderer.drawLine(point1, mouseCoords, WHITE);
+		}
 	}
-;}
+
+}
 
 void Game::drawBlocks() {
 	for (size_t i = 0; i < blocks.size(); i++) {

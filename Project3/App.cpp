@@ -1,7 +1,5 @@
 #include <iostream>
-#include <string>
-#include <iostream>
-#include <Socket.h>
+#include <vector>
 
 typedef unsigned char byte;
 
@@ -72,14 +70,14 @@ void foo()
 	test4();
 }
 
-void test5() {
-	try {
-		Socket* socket = new Socket(100, "helloWOrld!");
-	}
-	catch (SocketException e) {
-		std::cout << e.message() << std::endl;
-	}
-}
+//void test5() {
+//	try {
+//		Socket* socket = new Socket(100, "helloWOrld!");
+//	}
+//	catch (SocketException e) {
+//		std::cout << e.message() << std::endl;
+//	}
+//}
 
 void test6() {
 	int mat[2][2] = {1, 2,
@@ -95,9 +93,32 @@ void test6() {
 	std::cout << *mat[1] << std::endl;
 }
 
+void test7() {
+	std::vector<int> numbers;
+
+	numbers.push_back(1);
+	numbers.push_back(2);
+	numbers.push_back(5);
+	numbers.push_back(6);
+
+	std::vector<int>::iterator it;
+
+
+	for (it = numbers.begin(); it < numbers.end(); it++) {
+		if (4 < *it) {
+			numbers.insert(it, 4);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < numbers.size(); i++) {
+		std::cout << numbers[i] << std::endl;
+	}
+}
+
 int main() {
 	
-	test6();
+	test7();
 
 	return 0;
 }

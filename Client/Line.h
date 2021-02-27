@@ -19,9 +19,9 @@ public:
 	bool contains(glm::vec2 point);
 
 	// getters
-	Color getColor();
-	glm::vec2 getP1();
-	glm::vec2 getP2();
+	Color getColor() const;
+	glm::vec2 getP1() const;
+	glm::vec2 getP2() const;
 
 	// setters
 	void setProperties(glm::vec2 p1, glm::vec2 p2, Color color = WHITE);

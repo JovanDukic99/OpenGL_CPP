@@ -19,15 +19,15 @@ bool Line::contains(glm::vec2 point) {
 }
 
 // getters
-Color Line::getColor() {
+Color Line::getColor() const {
 	return color;
 }
 
-glm::vec2 Line::getP1() {
+glm::vec2 Line::getP1() const {
 	return p1;
 }
 
-glm::vec2 Line::getP2() {
+glm::vec2 Line::getP2() const {
 	return p2;
 }
 
