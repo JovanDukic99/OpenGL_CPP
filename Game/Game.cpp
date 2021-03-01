@@ -45,18 +45,17 @@ void Game::initComponents() {
 
 	renderer.init(camera);
 
-	mouseLight.setProperties(START_PLAYER_X, START_PLAYER_Y, 3 * UNIT_WIDTH, 3 * UNIT_HEIGHT);
+	mouseLight.setDimensions(3 * UNIT_WIDTH, 3 * UNIT_HEIGHT);
+	playerLight.setDimensions(6 * UNIT_WIDTH, 6 * UNIT_HEIGHT);
 
 	lights.emplace_back(&mouseLight);
+	lights.emplace_back(&playerLight);
 }
 
 void Game::initLevel(std::string filePath) {
 	Utils::loadMASP(filePath, blocks, edgeBlocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
 	searchSpace.setMode(Mode::DEFAULT);
 	algorithm.setSearchSpace(&searchSpace);
-
-	/*Utils::createEdges(searchSpace, blockEdges, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
-	Utils::createEdgePoints(edges, edgePoints);*/
 }
 
 void Game::run() {
@@ -256,9 +255,12 @@ void Game::updateCamera(float deltaTime) {
 
 void Game::updateLight(float frameTime) {
 	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-
 	mouseLight.setPosition(mouseCoords - (mouseLight.getDimensions() / 2.0f));
 	mouseLight.setVisionCenter(mouseCoords);
+
+	playerLight.setPosition(player->getPosition() + (player->getDimensions() / 2.0f) - (playerLight.getDimensions() / 2.0f));
+	playerLight.setVisionCenter(player->getPosition() + (player->getDimensions() / 2.0f));
+
 	//playerLight.setPosition(player->getPosition() + (player->getDimensions() / 2.0f) - (light.getDimensions() / 2.0f));
 	/*glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
 
@@ -339,18 +341,15 @@ void Game::draw() {
 
 	renderer.begin();
 
-	//renderer.setVision(player->getCenter(), UNIT_WIDTH * 4.0f);
-
-	drawLights();
+	drawGrid();
 	drawBlocks();
 	drawPlayer();
-	drawGrid();
+	drawLights();
 
 	renderer.drawTexture(*player, player->getTexture());
 	renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
 
 	renderer.end();
-
 
 	SDL_GL_SwapWindow(window);
 }
@@ -374,8 +373,8 @@ void Game::drawLights() {
 		std::vector<LightPoint> intersectionPoints;
 
 		Utils::createEdges(searchSpace, visibleEdges, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
-		Utils::createLightEdges(*light, edges);
-		Utils::createEdgePoints(edges, edgePoints);
+		Utils::createLightEdges(light, edges);
+		Utils::createEdgePoints(light, edges, edgePoints);
 		Utils::rayTracing(edges, edgePoints, intersectionPoints, visionCenter);
 
 		drawLightArea(intersectionPoints, visionCenter);
@@ -383,6 +382,8 @@ void Game::drawLights() {
 		for (size_t i = 0; i < visibleEdges.size(); i++) {
 			visibleEdges[i]->setVisibility(Visibility::INVISIBLE);
 		}
+
+		drawEdges(edges);
 
 		visibleEdges.clear();
 	}
@@ -416,11 +417,13 @@ void Game::drawGrid() {
 		float y = i * UNIT_HEIGHT;
 		renderer.drawLine(0.0f, y, MAP_WIDTH, y, WHITE);
 	}
+}
 
-	/*for (size_t i = 0; i < edges.size(); i++) {
+void Game::drawEdges(std::vector<Edge*> edges) {
+	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
-		renderer.drawLine(*edge, WHITE);
-	}*/
+		renderer.drawLine(*edge, YELLOW);
+	}
 }
 
 void Game::drawBlocks() {

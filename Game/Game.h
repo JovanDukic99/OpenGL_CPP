@@ -87,6 +87,7 @@ private:
 	void drawLights();
 	void drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2& visionCenter);
 	void drawGrid();
+	void drawEdges(std::vector<Edge*> edges);
 	void drawBlocks();
 	void drawPlayer();
 	void search();

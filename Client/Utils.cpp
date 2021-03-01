@@ -190,11 +190,11 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Node*>& blockEdges
 	}
 }
 
-void Utils::createLightEdges(Light& light, std::vector<Edge*>& edges) {
-	float x = light.getX();
-	float y = light.getY();
-	float width = light.getWidth();
-	float height = light.getHeight();
+void Utils::createLightEdges(Light* light, std::vector<Edge*>& edges) {
+	float x = light->getX();
+	float y = light->getY();
+	float width = light->getWidth();
+	float height = light->getHeight();
 
 	Edge* west = new Edge(x, y, x, y + height, EdgeSide::WEST);
 	Edge* east = new Edge(x + width, y, x + width, y + height, EdgeSide::EAST);
@@ -207,12 +207,23 @@ void Utils::createLightEdges(Light& light, std::vector<Edge*>& edges) {
 	edges.push_back(south);
 }
 
-void Utils::createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints) {
+void Utils::createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints) {
+	// top edge of lightm, this is our bound, max edge point
+	glm::vec2 lightPosition = light->getPosition();
+	glm::vec2 dimensions = light->getDimensions();
+
 	// filter points => eliminate same points
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
 		glm::vec2 p1 = edge->getP1();
 		glm::vec2 p2 = edge->getP2();
+
+		p1.x = glm::clamp(p1.x, lightPosition.x, lightPosition.x + dimensions.x);
+		p1.y = glm::clamp(p1.y, lightPosition.y, lightPosition.y + dimensions.y);
+
+		p2.x = glm::clamp(p2.x, lightPosition.x, lightPosition.x + dimensions.x);
+		p2.y = glm::clamp(p2.y, lightPosition.y, lightPosition.y + dimensions.y);
+
 		if (!contains(edgePoints, p1)) {
 			edgePoints.push_back(p1);
 		}

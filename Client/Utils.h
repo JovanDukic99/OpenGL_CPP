@@ -18,8 +18,8 @@ public:
 	static void loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight);
 	static void loadMASP(std::string filePath, std::vector<Node*>& blocks, std::vector<Node*>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight);
 	static void createEdges(SearchSpace& searchSpace, std::vector<Node*>& blockEdges, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight);
-	static void createLightEdges(Light& light, std::vector<Edge*>& edges);
-	static void createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints);
+	static void createLightEdges(Light* light, std::vector<Edge*>& edges);
+	static void createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints);
 	static void rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<LightPoint>& intersectionPoints, glm::vec2 p);
 	static std::vector<Point> convertToSquarePath(std::vector<Point> points, float mapHeight, float unitWidth, float unitHeight);
 	static std::vector<Point>& convertToPlayerPath(std::vector<Point>& points, float endX, float endY);
