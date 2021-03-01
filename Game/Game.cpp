@@ -45,15 +45,18 @@ void Game::initComponents() {
 
 	renderer.init(camera);
 
-	light.setDimensions(8 * UNIT_WIDTH, 8 * UNIT_HEIGHT);
-	light.setColor(RED);
+	mouseLight.setProperties(START_PLAYER_X, START_PLAYER_Y, 3 * UNIT_WIDTH, 3 * UNIT_HEIGHT);
+
+	lights.emplace_back(&mouseLight);
 }
 
 void Game::initLevel(std::string filePath) {
-	Utils::loadMASP(filePath, blocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
-	Utils::createEdges(searchSpace, blocks, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
-	Utils::createEdgePoints(edges, edgePoints);
+	Utils::loadMASP(filePath, blocks, edgeBlocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
+	searchSpace.setMode(Mode::DEFAULT);
 	algorithm.setSearchSpace(&searchSpace);
+
+	/*Utils::createEdges(searchSpace, blockEdges, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
+	Utils::createEdgePoints(edges, edgePoints);*/
 }
 
 void Game::run() {
@@ -225,7 +228,7 @@ void Game::updatePlayer(float deltaTime) {
 
 void Game::updateCamera(float deltaTime) {
 	if (inputManager.isKeyPressed(SDLK_SPACE)) {
-		camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
+		camera.reset(getCameraPosition(glm::vec2(player->getX(), player->getY())));
 		camera.update();
 		return;
 	}
@@ -254,7 +257,14 @@ void Game::updateCamera(float deltaTime) {
 void Game::updateLight(float frameTime) {
 	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
 
+	mouseLight.setPosition(mouseCoords - (mouseLight.getDimensions() / 2.0f));
+	mouseLight.setVisionCenter(mouseCoords);
+	//playerLight.setPosition(player->getPosition() + (player->getDimensions() / 2.0f) - (light.getDimensions() / 2.0f));
+	/*glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
+
 	light.setPosition(glm::vec2(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT));
+
+	return;
 
 	Color color = light.getColor();
 
@@ -283,7 +293,7 @@ void Game::updateLight(float frameTime) {
 			}
 		}
 		timer = 0.0f;
-	}
+	} */
 }
 
 void Game::updateWindowState(Uint32 flag) {
@@ -299,7 +309,7 @@ void Game::updateWindowState(Uint32 flag) {
 }
 
 glm::vec2 Game::getCameraPosition(glm::vec2 position) {
-	return glm::clamp(position, glm::vec2(HALF_WIDTH, HALF_HEIGHT), glm::vec2(MAP_WIDTH - HALF_WIDTH, MAP_HEIGHT - HALF_HEIGHT));
+	return glm::clamp(position, glm::vec2(HALF_WIDTH + UNIT_WIDTH, HALF_HEIGHT + UNIT_HEIGHT), glm::vec2(MAP_WIDTH - HALF_WIDTH - UNIT_WIDTH, MAP_HEIGHT - HALF_HEIGHT - UNIT_HEIGHT));
 }
 
 void Game::zoom(int zoomY) {
@@ -327,7 +337,6 @@ void Game::draw() {
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 	renderer.begin();
 
 	//renderer.setVision(player->getCenter(), UNIT_WIDTH * 4.0f);
@@ -347,57 +356,77 @@ void Game::draw() {
 }
 
 void Game::drawLights() {
-	renderer.drawLight(light);
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
+
+		for (size_t i = 0; i < edgeBlocks.size(); i++) {
+			Node* edgeBlock = edgeBlocks[i];
+			if (Collision::squareCollision(*light, *edgeBlock)) {
+				edgeBlock->setVisibility(Visibility::VISIBLE);
+				visibleEdges.push_back(edgeBlock);
+			}
+		}
+
+		glm::vec2 visionCenter = light->getVisionCenter();
+		std::vector<glm::vec2> edgePoints;
+		std::vector<LightPoint> lightPoints;
+		std::vector<Edge*> edges;
+		std::vector<LightPoint> intersectionPoints;
+
+		Utils::createEdges(searchSpace, visibleEdges, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
+		Utils::createLightEdges(*light, edges);
+		Utils::createEdgePoints(edges, edgePoints);
+		Utils::rayTracing(edges, edgePoints, intersectionPoints, visionCenter);
+
+		drawLightArea(intersectionPoints, visionCenter);
+
+		for (size_t i = 0; i < visibleEdges.size(); i++) {
+			visibleEdges[i]->setVisibility(Visibility::INVISIBLE);
+		}
+
+		visibleEdges.clear();
+	}
 }
 
-void Game::drawGrid() {
-	for (int i = 0; i <= 2 * VERTICAL_UNITS; i++) {
-		float x = i * UNIT_WIDTH;
-		renderer.drawLine(x, 0.0f, x, 2 * SCREEN_HEIGHT, WHITE);
-	}
-
-	for (int i = 0; i <= 2 * HORIZONTAL_UNITS; i++) {
-		float y = i * UNIT_HEIGHT;
-		renderer.drawLine(0.0f, y, 2 * SCREEN_WIDTH, y, WHITE);
-	}
-
-	for (size_t i = 0; i < edges.size(); i++) {
-		Edge* edge = edges[i];
-		renderer.drawLine(*edge, WHITE);
-	}
-
-	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-
-	for (size_t i = 0; i < edgePoints.size(); i++) {
-		renderer.drawLine(edgePoints[i], mouseCoords, WHITE);
-	}
-
-	std::vector<LightPoint> intersectionPoints;
-
-	Utils::rayTracing(edges, edgePoints, intersectionPoints, mouseCoords);
-
+void Game::drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2& visionCenter) {
 	for (size_t i = 0; i < intersectionPoints.size(); i++) {
 		if (i != intersectionPoints.size() - 1) {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
 			glm::vec2 point2 = intersectionPoints[i + 1].getPosition();
-			renderer.drawTriangle(mouseCoords, point1, point2);
+			renderer.drawLight(visionCenter, point1, point2);
 			renderer.drawCircle(point1, 5.0f, 3, RED);
-			renderer.drawLine(point1, mouseCoords, WHITE);
+			renderer.drawLine(point1, visionCenter, WHITE);
 		}
 		else {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
-			renderer.drawTriangle(mouseCoords, intersectionPoints[0].getPosition(), point1);
+			renderer.drawLight(visionCenter, intersectionPoints[0].getPosition(), point1);
 			renderer.drawCircle(point1, 5.0f, 3, YELLOW);
-			renderer.drawLine(point1, mouseCoords, WHITE);
+			renderer.drawLine(point1, visionCenter, WHITE);
 		}
 	}
+}
 
+void Game::drawGrid() {
+	for (int i = 0; i <= MAP_HORIZONTAL_UNITS; i++) {
+		float x = i * UNIT_WIDTH;
+		renderer.drawLine(x, 0.0f, x, MAP_HEIGHT, WHITE);
+	}
+
+	for (int i = 0; i <= MAP_VERTICAL_UNITS; i++) {
+		float y = i * UNIT_HEIGHT;
+		renderer.drawLine(0.0f, y, MAP_WIDTH, y, WHITE);
+	}
+
+	/*for (size_t i = 0; i < edges.size(); i++) {
+		Edge* edge = edges[i];
+		renderer.drawLine(*edge, WHITE);
+	}*/
 }
 
 void Game::drawBlocks() {
 	for (size_t i = 0; i < blocks.size(); i++) {
-		if (cameraCulling(blocks[i])) {
-			renderer.drawSquare(blocks[i], GREEN);
+		if (cameraCulling(*blocks[i])) {
+			renderer.drawSquare(*blocks[i], GREEN);
 		}
 	}
 
@@ -430,7 +459,7 @@ void Game::updateSquarePath(std::vector<Point> path) {
 bool Game::checkCollision(float x, float y) {
 	Square square(x, y, player->getWidth(), player->getHeight());
 	for (size_t i = 0; i < blocks.size(); i++) {
-		if (Collision::squareCollision(square, blocks[i])) {
+		if (Collision::squareCollision(square, *blocks[i])) {
 			return true;
 		}
 	}

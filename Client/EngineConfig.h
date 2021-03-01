@@ -2,12 +2,18 @@
 #include <string>
 
 // shader file paths
-static const std::string VERTEX_SHADER_PATH = "Shaders/baseShader.vert";
-static const std::string FRAGMENT_SHADER_PATH = "Shaders/baseShader.frag";
+static const std::string VERTEX_SHADER_PATH = "Shaders/geometryShader.vert";
+static const std::string FRAGMENT_SHADER_PATH = "Shaders/geometryShader.frag";
+
 static const std::string VISION_VERTEX_PATH = "Shaders/visionShader.vert";
 static const std::string VISION_FRAGMENT_PATH = "Shaders/visionShader.frag";
+
 static const std::string LIGHT_VERTEX_PATH = "Shaders/lightShader.vert";
 static const std::string LIGHT_FRAGMENT_PATH = "Shaders/lightShader.frag";
+
+static const std::string VISION_TEXTURE_VERTEX_PATH = "Shaders/textureVision.vert";
+static const std::string VISION_TEXTURE_FRAGMENT_PATH = "Shaders/textureVision.frag";
+
 static const std::string TEXTURE_VERTEX_PATH = "Shaders/textureShader.vert";
 static const std::string TEXTURE_FRAGMENT_PATH = "Shaders/textureShader.frag";
 

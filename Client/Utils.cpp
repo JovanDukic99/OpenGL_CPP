@@ -1,7 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "Utils.h"
 #include "ImageLoader.h"
-#include "Node.h"
 #include <iostream>
 #include <cmath>
 
@@ -28,10 +27,11 @@ void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, float uni
 	}
 }
 
-void Utils::loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
+void Utils::loadMASP(std::string filePath, std::vector<Node*>& blocks, std::vector<Node*>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
 	Image image = ImageLoader::loadImage(filePath);
 
 	float mapHeight = image.getHeight() * unitHeight;
+	glm::vec2 dimensions(unitWidth, unitHeight);
 
 	searchSpace.init(image.getHeight(), image.getWidth());
 
@@ -44,14 +44,22 @@ void Utils::loadMASP(std::string filePath, std::vector<Square>& blocks, SearchSp
 			int b = (pixel >> 8) & 0xff;
 			int a = pixel & 0xff;
 
+			float y = mapHeight - unitHeight * (i + 1);
+			float x = j * unitWidth;
+
+			glm::vec2 matrixPosition(j, i);
+			glm::vec2 worldPosition(x, y);
+
 			if (r == 0 && g == 0 && b == 0 && a == 255) {
-				float y = mapHeight - unitHeight * (i + 1);
-				float x = j * unitWidth;
-				blocks.emplace_back(x, y, unitWidth, unitHeight);
-				searchSpace[i][j] = Node(i, j, true);
+				searchSpace[i][j] = Node(matrixPosition, worldPosition, dimensions, BlockType::EDGE);
+				blockEdges.emplace_back(&searchSpace[i][j]);
+			}
+			else if(r == 0 && g == 255 && b == 0 && a == 255) {
+				searchSpace[i][j] = Node(matrixPosition, worldPosition, dimensions, BlockType::BLOCK);
+				blocks.emplace_back(&searchSpace[i][j]);
 			}
 			else {
-				searchSpace[i][j] = Node(i, j, false);
+				searchSpace[i][j] = Node(matrixPosition, worldPosition, dimensions, BlockType::NONE);
 			}
 		}
 	}
@@ -76,24 +84,25 @@ std::vector<Point>& Utils::convertToPlayerPath(std::vector<Point>& points, float
 	return points;
 }
 
-void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight) {
-	for (size_t i = 0; i < blocks.size(); i++) {
-		Square& block = blocks[i];
+void Utils::createEdges(SearchSpace& searchSpace, std::vector<Node*>& blockEdges, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight) {
+	// if default mode is being used for edge generation
+	for (size_t i = 0; i < blockEdges.size(); i++) {
+		Node* block = blockEdges[i];
 
-		float x = block.getX();
-		float y = block.getY();
-		
-		int row = (mapHeight - y - unitHeight) / unitHeight;
-		int column = x / unitWidth;
+		float x = block->getX();
+		float y = block->getY();
 
-		float width = block.getWidth();
-		float height = block.getHeight();
+		int row = block->getRowIndex();
+		int column = block->getColumnIndex();
+
+		float width = block->getWidth();
+		float height = block->getHeight();
 
 		// ================================== NORTH EDGE ===================================== 
 		// if there is node on top side than skip this edge
-		if (!((row - 1 >= 0) && searchSpace.isBlock(row - 1, column))) {
+		if ((row - 1 >= 0) && !(searchSpace.isEdge(row - 1, column) || searchSpace.isVisible(row - 1, column))) {
 			// node from left, if it exists lenghten the edge, otherwise create one
-			if (column - 1 >= 0 && searchSpace.isBlock(row, column - 1)) {
+			if (column - 1 >= 0 && searchSpace.isEdge(row, column - 1) && searchSpace.isVisible(row, column - 1)) {
 				Edge* edge = searchSpace[row][column - 1].getEdge(EdgeSide::NORTH);
 				if (edge != nullptr) {
 					edge->lenghtenEdge(x + width, y + height);
@@ -113,9 +122,9 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, s
 		}
 		// ================================== SOUTH EDGE =====================================
 		// if there is node on top bottom than skip this edge
-		if (!((row + 1 < searchSpace.getRowNumber()) && searchSpace.isBlock(row + 1, column))) {
+		if ((row + 1 < searchSpace.getRowNumber()) && !(searchSpace.isEdge(row + 1, column) || searchSpace.isVisible(row + 1, column))) {
 			// node from left
-			if (column - 1 >= 0 && searchSpace.isBlock(row, column - 1)) {
+			if (column - 1 >= 0 && searchSpace.isEdge(row, column - 1) && searchSpace.isVisible(row, column - 1)) {
 				Edge* edge = searchSpace[row][column - 1].getEdge(EdgeSide::SOUTH);
 				if (edge != nullptr) {
 					edge->lenghtenEdge(x + width, y);
@@ -136,9 +145,9 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, s
 		}
 		// ================================== WEST EDGE =====================================
 		// if there is node on left side than skip this edge
-		if (!((column - 1 >= 0) && searchSpace.isBlock(row, column - 1))) {
+		if ((column - 1 >= 0) && !(searchSpace.isEdge(row, column - 1) || searchSpace.isVisible(row, column - 1))) {
 			// node from top
-			if (row - 1 >= 0 && searchSpace.isBlock(row - 1, column)) {
+			if (row - 1 >= 0 && searchSpace.isEdge(row - 1, column) && searchSpace.isVisible(row - 1, column)) {
 				Edge* edge = searchSpace[row - 1][column].getEdge(EdgeSide::WEST);
 				if (edge != nullptr) {
 					edge->lenghtenEdge(x, y);
@@ -158,9 +167,9 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, s
 		}
 		// ================================== EAST EDGE =====================================
 		// if there is node on right side than skip this edge
-		if (!((column + 1 < searchSpace.getColumnNumber()) && searchSpace.isBlock(row, column + 1))) {
+		if ((column + 1 < searchSpace.getColumnNumber()) && !(searchSpace.isEdge(row, column + 1) || searchSpace.isVisible(row, column + 1))) {
 			// node from top
-			if (row - 1 >= 0 && searchSpace.isBlock(row - 1, column)) {
+			if (row - 1 >= 0 && searchSpace.isEdge(row - 1, column) && searchSpace.isVisible(row - 1, column)) {
 				Edge* edge = searchSpace[row - 1][column].getEdge(EdgeSide::EAST);
 				if (edge != nullptr) {
 					edge->lenghtenEdge(x + width, y);
@@ -179,6 +188,23 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Square>& blocks, s
 			}
 		}
 	}
+}
+
+void Utils::createLightEdges(Light& light, std::vector<Edge*>& edges) {
+	float x = light.getX();
+	float y = light.getY();
+	float width = light.getWidth();
+	float height = light.getHeight();
+
+	Edge* west = new Edge(x, y, x, y + height, EdgeSide::WEST);
+	Edge* east = new Edge(x + width, y, x + width, y + height, EdgeSide::EAST);
+	Edge* north = new Edge(x, y + height, x + width, y + height, EdgeSide::NORTH);
+	Edge* south = new Edge(x, y, x + width, y, EdgeSide::SOUTH);
+
+	edges.push_back(west);
+	edges.push_back(east);
+	edges.push_back(north);
+	edges.push_back(south);
 }
 
 void Utils::createEdgePoints(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints) {

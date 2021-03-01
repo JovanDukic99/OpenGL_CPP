@@ -1,12 +1,12 @@
 #include "Node.h"
-Node::Node() : g(0), h(0), rowIndex(0), columnIndex(0), block(false), predecessor(nullptr) {
+Node::Node() : g(0), h(0), matrixPosition(0, 0), blockType(BlockType::NONE), visibility(Visibility::NONE), predecessor(nullptr) {
 	edges[0] = nullptr;
 	edges[1] = nullptr;
 	edges[2] = nullptr;
 	edges[3] = nullptr;
 }
 
-Node::Node(int rowIndex, int columnIndex, bool block) : g(0), h(0), rowIndex(rowIndex), columnIndex(columnIndex), block(block), predecessor(nullptr) {
+Node::Node(glm::ivec2 matrixPosition, glm::ivec2 worldPosition, glm::vec2 dimensions, BlockType blockType, Visibility visibility) : Square(worldPosition, dimensions), g(0), h(0), matrixPosition(matrixPosition), blockType(blockType), visibility(visibility), predecessor(nullptr) {
 	edges[0] = nullptr;
 	edges[1] = nullptr;
 	edges[2] = nullptr;
@@ -20,7 +20,7 @@ void Node::reset() {
 }
 
 bool Node::operator==(const Node& node) {
-	return (rowIndex == node.rowIndex) && (columnIndex == node.columnIndex);
+	return (matrixPosition.y == node.matrixPosition.y) && (matrixPosition.x == node.matrixPosition.x);
 }
 
 bool Node::operator!=(const Node& node) {
@@ -40,15 +40,23 @@ int Node::getH() {
 }
 
 int Node::getRowIndex() {
-	return rowIndex;
+	return matrixPosition.y;
 }
 
 int Node::getColumnIndex() {
-	return columnIndex;
+	return matrixPosition.x;
 }
 
 bool Node::isBlock() {
-	return block;
+	return blockType == BlockType::BLOCK;
+}
+
+bool Node::isEdge() {
+	return blockType == BlockType::EDGE;
+}
+
+bool Node::isVisible() {
+	return visibility == Visibility::VISIBLE;
 }
 
 Node* Node::getPredecessor() {
@@ -84,15 +92,19 @@ void Node::setH(int h) {
 }
 
 void Node::setRowIndex(int rowIndex) {
-	this->rowIndex = rowIndex;
+	matrixPosition.x = rowIndex;
 }
 
 void Node::setColumnIndex(int columnIndex) {
-	this->columnIndex = columnIndex;
+	matrixPosition.y = columnIndex;
 }
 
-void Node::setBlock(bool block) {
-	this->block = block;
+void Node::setBlockType(BlockType blockType) {
+	this->blockType = blockType;
+}
+
+void Node::setVisibility(Visibility visibility) {
+	this->visibility = visibility;
 }
 
 void Node::setPredecessor(Node* predecessor) {
@@ -125,6 +137,6 @@ void Node::addEdge(Edge* edge) {
 }
 
 std::ostream& operator<<(std::ostream& outputStream, Node& node) {
-	return outputStream << "Node [g=" << node.g << " h=" << node.h << ", rowIndex=" << node.rowIndex << ", columnIdex=" << node.columnIndex << ", predecessor="
-		<< node.predecessor << ", isBlock=" << node.block << "]" << std::endl;
+	return outputStream << "Node [g=" << node.g << " h=" << node.h << ", rowIndex=" << node.matrixPosition.y << ", columnIdex=" << node.matrixPosition.x << ", predecessor="
+		<< node.predecessor << ", isBlock=" << (node.blockType == BlockType::BLOCK ? " block" : " edge") << "]" << std::endl;
 }

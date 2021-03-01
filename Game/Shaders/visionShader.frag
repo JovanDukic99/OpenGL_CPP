@@ -8,11 +8,12 @@ in vec2 fragmentPosition;
 out vec4 color;
 
 // uniform
-uniform float visionRadius;
-uniform vec2 visionCenter;
+// uniform float visionRadius;
+// uniform vec2 visionCenter;
 
 void main() {
-    float intensity = length(fragmentPosition - visionCenter) / visionRadius;
-
-    color = fragmentColor * (1.0f - intensity);
+    // float factor = length(fragmentPosition - visionCenter) / visionRadius;
+    // float intensity = pow(0.01f, factor) - 0.01f;
+    // color = fragmentColor * intensity;
+    color = fragmentColor;
 }

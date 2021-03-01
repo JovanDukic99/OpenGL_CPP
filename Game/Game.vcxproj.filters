@@ -63,7 +63,7 @@
       <Filter>Header Files\entity</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\controller</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

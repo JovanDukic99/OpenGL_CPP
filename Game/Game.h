@@ -11,10 +11,12 @@
 #include <Edge.h>
 #include <SearchSpace.h>
 #include <AStarAlgorithm.h>
+#include <LightPoint.h>
 #include <Animation.h>
 #include <TileSheet.h>
 #include <TextureAtlas.h>
 #include <Time.h>
+#include <Node.h>
 #include <string>
 #include <vector>
 #include "Player.h"
@@ -45,12 +47,18 @@ private:
 	Time time;
 	SearchSpace searchSpace;
 	AStarAlgorithm algorithm;
-	std::vector<Square> blocks;
-	std::vector<Square> squarePath;
-	std::vector<glm::vec2> edgePoints;
-	std::vector<Edge*> edges;
 	TileSheet tileSheet;
-	Light light;
+
+	std::vector<Node*> blocks;
+	std::vector<Node*> edgeBlocks;
+	std::vector<Node*> visibleEdges;
+
+	std::vector<Square> squarePath;
+	std::vector<Light*> lights;
+
+	Light mouseLight;
+	Light playerLight;
+
 	float timer = 0.0f;
 	float alpha = 255.0f;
 	bool flip = true;
@@ -77,6 +85,7 @@ private:
 	void run();
 	void draw();
 	void drawLights();
+	void drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2& visionCenter);
 	void drawGrid();
 	void drawBlocks();
 	void drawPlayer();

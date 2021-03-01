@@ -14,14 +14,14 @@ static const int VERTICAL_UNITS = SCREEN_WIDTH / UNIT_WIDTH;
 static const int HORIZONTAL_UNITS = SCREEN_HEIGHT / UNIT_HEIGHT;
 
 // map config
-static const int MAP_HORIZONTAL_UNITS = 36;
-static const int MAP_VERTICAL_UNITS = 24;
+static const int MAP_HORIZONTAL_UNITS = 72;
+static const int MAP_VERTICAL_UNITS = 48;
 static const float MAP_WIDTH = UNIT_WIDTH * MAP_HORIZONTAL_UNITS;
 static const float MAP_HEIGHT = UNIT_HEIGHT * MAP_VERTICAL_UNITS;
 
 // player config
-static const float START_PLAYER_X = 60.0f;
-static const float START_PLAYER_Y = 60.0f;
+static const float START_PLAYER_X = 120.0f;
+static const float START_PLAYER_Y = 120.0f;
 static const float PLAYER_WIDTH = 60.0f;
 static const float PLAYER_HEIGHT = 60.0f;
 static const float PLAYER_SPEED = 5.0f;

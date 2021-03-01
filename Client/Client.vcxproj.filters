@@ -204,9 +204,6 @@
     <ClCompile Include="GLSL_Light.cpp">
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files\particles</Filter>
-    </ClCompile>
     <ClCompile Include="TileSheet.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
@@ -232,6 +229,9 @@
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
     <ClCompile Include="LightPoint.cpp">
+      <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
   </ItemGroup>
@@ -368,9 +368,6 @@
     <ClInclude Include="GLSL_Light.h">
       <Filter>Header Files\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files\particles</Filter>
-    </ClInclude>
     <ClInclude Include="TileSheet.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
@@ -399,6 +396,9 @@
       <Filter>Header Files\GLSL</Filter>
     </ClInclude>
     <ClInclude Include="LightPoint.h">
+      <Filter>Header Files\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
       <Filter>Header Files\Shadows</Filter>
     </ClInclude>
   </ItemGroup>

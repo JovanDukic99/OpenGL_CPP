@@ -1,7 +1,15 @@
+// Mode - indicator wheather we are considering light raduis
+// NodeState - prevents program from calculating same route multiple simes
+
 #pragma once
 #include "Node.h"
 #include "Point.h"
 #include <vector>
+
+enum class Mode {
+	DEFAULT,
+	VISIBILITY
+};
 
 class SearchSpace
 {
@@ -17,6 +25,7 @@ private:
 	Node* startNode;
 	Node* finalNode;
 	NodeState nodeState;
+	Mode mode;
 	int rowNumber;
 	int columnNumber;
 public:
@@ -35,6 +44,8 @@ public:
 	// helper
 	bool canStart();
 	bool isBlock(int rowNumber, int columnNumber);
+	bool isEdge(int rowNumber, int columnNumber);
+	bool isVisible(int rowIndex, int columnIndex);
 
 	// operator overloading
 	Node* operator[](int index);
@@ -43,6 +54,8 @@ public:
 	void setPredecessor(Node ancestor, Node predecessor);
 	void setG(Node node, int g);
 	void setH(Node node, int h);
+	void setMode(Mode mode);
+	void setVisibility(int rowIndex, int columnIndex, Visibility visibility);
 	bool setStartNode(int rowIndex, int columnIndex);
 	bool setFinalNode(int rowIndex, int columnIndex);
 	bool isPathTheSame();
@@ -50,6 +63,7 @@ public:
 	// getters
 	int getRowNumber();
 	int getColumnNumber();
+	Mode getMode();
 	Node* getStartNode();
 	Node* getFinalNode();
 	Node** getSearchSpace();
