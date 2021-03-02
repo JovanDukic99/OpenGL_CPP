@@ -1,11 +1,11 @@
 #include "SearchSpace.h"
 #include <cstring>
 
-SearchSpace::SearchSpace() : searchSpace(nullptr), startNode(nullptr), finalNode(nullptr), rowNumber(0), columnNumber(0), nodeState(NodeState::NONE), mode(Mode::DEFAULT) {
+SearchSpace::SearchSpace() : searchSpace(nullptr), startNode(nullptr), finalNode(nullptr), rowNumber(0), columnNumber(0), nodeState(NodeState::NONE) {
 
 }
 
-SearchSpace::SearchSpace(int rowNumber, int columnNumber) : startNode(nullptr), finalNode(nullptr), rowNumber(rowNumber), columnNumber(columnNumber), nodeState(NodeState::NONE), mode(Mode::DEFAULT) {
+SearchSpace::SearchSpace(int rowNumber, int columnNumber) : startNode(nullptr), finalNode(nullptr), rowNumber(rowNumber), columnNumber(columnNumber), nodeState(NodeState::NONE) {
 	init(rowNumber, columnNumber);
 }
 
@@ -55,10 +55,6 @@ int SearchSpace::getColumnNumber() {
 	return columnNumber;
 }
 
-Mode SearchSpace::getMode() {
-	return mode;
-}
-
 Node* SearchSpace::getStartNode() {
 	return startNode;
 }
@@ -87,10 +83,6 @@ void SearchSpace::setG(Node node, int g) {
 
 void SearchSpace::setH(Node node, int h) {
 	searchSpace[node.getRowIndex()][node.getColumnIndex()].setH(h);
-}
-
-void SearchSpace::setMode(Mode mode) {
-	this->mode = mode;
 }
 
 void SearchSpace::setVisibility(int rowIndex, int columnIndex, Visibility visibility) {

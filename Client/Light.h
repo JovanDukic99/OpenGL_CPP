@@ -1,19 +1,37 @@
 #pragma once
 #include "Square.h"
 #include <glm/glm.hpp>
-class Light : public Square
+#include <vector>
+class Light
 {
 private:
-	int intensity;
-	glm::vec2 visionCenter;
+	static int nextID;
+
+	int ID;
+	int radius;
+
+	Square bounds;
+	glm::vec2 source;
 public:
 	// constructors
 	Light();
-	Light(glm::vec2 position, float width, float height, Color color = WHITE);
-	Light(float x, float y, float width, float height, Color color = WHITE);
+	Light(int radius, glm::vec2 source, Color color);
+
+	// init
+	void init(int radius, glm::vec2 source, Color color);
+
 	// setters
-	void setVisionCenter(glm::vec2 visionCenter);
+	void setSource(glm::vec2 source);
+	void setColor(Color color);
+	void setRadius(int radius);
+
 	// getters
-	glm::vec2 getVisionCenter() const;
+	glm::vec2 getSource() const;
+	Square getBounds() const;
+	int getID() const;
+	int getRadius() const;
+private:
+	// update
+	void updateBounds();
 };
 

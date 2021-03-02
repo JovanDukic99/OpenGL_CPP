@@ -27,11 +27,10 @@ void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, float uni
 	}
 }
 
-void Utils::loadMASP(std::string filePath, std::vector<Node*>& blocks, std::vector<Node*>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
+void Utils::loadMASP(std::string filePath, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
 	Image image = ImageLoader::loadImage(filePath);
 
 	float mapHeight = image.getHeight() * unitHeight;
-	glm::vec2 dimensions(unitWidth, unitHeight);
 
 	searchSpace.init(image.getHeight(), image.getWidth());
 
@@ -47,19 +46,16 @@ void Utils::loadMASP(std::string filePath, std::vector<Node*>& blocks, std::vect
 			float y = mapHeight - unitHeight * (i + 1);
 			float x = j * unitWidth;
 
-			glm::vec2 matrixPosition(j, i);
-			glm::vec2 worldPosition(x, y);
-
 			if (r == 0 && g == 0 && b == 0 && a == 255) {
-				searchSpace[i][j] = Node(matrixPosition, worldPosition, dimensions, BlockType::EDGE);
-				blockEdges.emplace_back(&searchSpace[i][j]);
+				searchSpace[i][j] = Node(i, j, BlockType::EDGE);
+				blockEdges.emplace_back(Square(x, y, unitWidth, unitHeight), glm::vec2(j, i));
 			}
 			else if(r == 0 && g == 255 && b == 0 && a == 255) {
-				searchSpace[i][j] = Node(matrixPosition, worldPosition, dimensions, BlockType::BLOCK);
-				blocks.emplace_back(&searchSpace[i][j]);
+				searchSpace[i][j] = Node(i, j, BlockType::BLOCK);
+				blocks.emplace_back(Square(x, y, unitWidth, unitHeight), glm::vec2(j, i));
 			}
 			else {
-				searchSpace[i][j] = Node(matrixPosition, worldPosition, dimensions, BlockType::NONE);
+				searchSpace[i][j] = Node(i, j, BlockType::NONE);
 			}
 		}
 	}
@@ -84,19 +80,21 @@ std::vector<Point>& Utils::convertToPlayerPath(std::vector<Point>& points, float
 	return points;
 }
 
-void Utils::createEdges(SearchSpace& searchSpace, std::vector<Node*>& blockEdges, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight) {
+void Utils::createEdges(SearchSpace& searchSpace, std::vector<Block>& visibleBlockEdges, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight) {
 	// if default mode is being used for edge generation
-	for (size_t i = 0; i < blockEdges.size(); i++) {
-		Node* block = blockEdges[i];
+	for (size_t i = 0; i < visibleBlockEdges.size(); i++) {
+		Block block = visibleBlockEdges[i];
+		Square bounds = block.getBounds();
 
-		float x = block->getX();
-		float y = block->getY();
 
-		int row = block->getRowIndex();
-		int column = block->getColumnIndex();
+		float x = bounds.getX();
+		float y = bounds.getY();
 
-		float width = block->getWidth();
-		float height = block->getHeight();
+		int row = block.getMatrixPosition().y;
+		int column = block.getMatrixPosition().x;
+
+		float width = bounds.getWidth();
+		float height = bounds.getHeight();
 
 		// ================================== NORTH EDGE ===================================== 
 		// if there is node on top side than skip this edge
@@ -191,10 +189,12 @@ void Utils::createEdges(SearchSpace& searchSpace, std::vector<Node*>& blockEdges
 }
 
 void Utils::createLightEdges(Light* light, std::vector<Edge*>& edges) {
-	float x = light->getX();
-	float y = light->getY();
-	float width = light->getWidth();
-	float height = light->getHeight();
+	Square lightBounds = light->getBounds();
+
+	float x = lightBounds.getX();
+	float y = lightBounds.getY();
+	float width = lightBounds.getWidth();
+	float height = lightBounds.getHeight();
 
 	Edge* west = new Edge(x, y, x, y + height, EdgeSide::WEST);
 	Edge* east = new Edge(x + width, y, x + width, y + height, EdgeSide::EAST);
@@ -208,9 +208,9 @@ void Utils::createLightEdges(Light* light, std::vector<Edge*>& edges) {
 }
 
 void Utils::createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints) {
-	// top edge of lightm, this is our bound, max edge point
-	glm::vec2 lightPosition = light->getPosition();
-	glm::vec2 dimensions = light->getDimensions();
+	// we have to clamp edge points to fit the area of light, point needs to be inside of it
+	glm::vec2 lightPosition = light->getBounds().getPosition();
+	int radius = light->getRadius();
 
 	// filter points => eliminate same points
 	for (size_t i = 0; i < edges.size(); i++) {
@@ -218,11 +218,11 @@ void Utils::createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vecto
 		glm::vec2 p1 = edge->getP1();
 		glm::vec2 p2 = edge->getP2();
 
-		p1.x = glm::clamp(p1.x, lightPosition.x, lightPosition.x + dimensions.x);
-		p1.y = glm::clamp(p1.y, lightPosition.y, lightPosition.y + dimensions.y);
+		p1.x = glm::clamp(p1.x, lightPosition.x, lightPosition.x + 2 * radius);
+		p1.y = glm::clamp(p1.y, lightPosition.y, lightPosition.y + 2 * radius);
 
-		p2.x = glm::clamp(p2.x, lightPosition.x, lightPosition.x + dimensions.x);
-		p2.y = glm::clamp(p2.y, lightPosition.y, lightPosition.y + dimensions.y);
+		p2.x = glm::clamp(p2.x, lightPosition.x, lightPosition.x + 2 * radius);
+		p2.y = glm::clamp(p2.y, lightPosition.y, lightPosition.y + 2 *radius);
 
 		if (!contains(edgePoints, p1)) {
 			edgePoints.push_back(p1);

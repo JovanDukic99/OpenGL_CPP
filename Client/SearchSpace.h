@@ -6,11 +6,6 @@
 #include "Point.h"
 #include <vector>
 
-enum class Mode {
-	DEFAULT,
-	VISIBILITY
-};
-
 class SearchSpace
 {
 private:
@@ -25,7 +20,6 @@ private:
 	Node* startNode;
 	Node* finalNode;
 	NodeState nodeState;
-	Mode mode;
 	int rowNumber;
 	int columnNumber;
 public:
@@ -54,7 +48,6 @@ public:
 	void setPredecessor(Node ancestor, Node predecessor);
 	void setG(Node node, int g);
 	void setH(Node node, int h);
-	void setMode(Mode mode);
 	void setVisibility(int rowIndex, int columnIndex, Visibility visibility);
 	bool setStartNode(int rowIndex, int columnIndex);
 	bool setFinalNode(int rowIndex, int columnIndex);
@@ -63,7 +56,6 @@ public:
 	// getters
 	int getRowNumber();
 	int getColumnNumber();
-	Mode getMode();
 	Node* getStartNode();
 	Node* getFinalNode();
 	Node** getSearchSpace();

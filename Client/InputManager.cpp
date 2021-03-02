@@ -13,7 +13,7 @@ void InputManager::releaseKey(unsigned int keyID) {
 bool InputManager::isKeyPressed(unsigned int keyID) {
 	auto iterator = keyMap.find(keyID);
 
-	// if it found it it will not be equal to end
+	// if it found it, it will not be equal to end
 	if (iterator != keyMap.end()) {
 		return iterator->second;
 	}

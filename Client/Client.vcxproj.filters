@@ -234,6 +234,9 @@
     <ClCompile Include="Light.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>Source Files\A%2a</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -400,6 +403,9 @@
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files\A%2a</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,5 @@
 #pragma once
 #include "Edge.h"
-#include "Square.h"
-#include <glm/glm.hpp>
 #include <iostream>
 // g - how far is node from start point
 // h - how far is node from end point
@@ -18,19 +16,20 @@ enum class Visibility {
 	INVISIBLE
 };
 
-class Node : public Square
+class Node
 {
 private:
 	int g;
 	int h;
-	glm::ivec2 matrixPosition;
+	int rowIndex;
+	int columnIndex;
 	Node* predecessor;
 	Edge* edges[4];
 	BlockType blockType;
 	Visibility visibility;
 public:
 	Node();
-	Node(glm::ivec2 matrixPosition, glm::ivec2 worldPosition, glm::vec2 dimensions, BlockType blockType = BlockType::NONE, Visibility visibility = Visibility::NONE);
+	Node(int rowIndex, int columnIndex, BlockType blockType = BlockType::NONE, Visibility visibility = Visibility::NONE);
 	void reset();
 
 	// operator overloading

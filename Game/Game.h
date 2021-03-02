@@ -15,8 +15,8 @@
 #include <Animation.h>
 #include <TileSheet.h>
 #include <TextureAtlas.h>
+#include <Block.h>
 #include <Time.h>
-#include <Node.h>
 #include <string>
 #include <vector>
 #include "Player.h"
@@ -49,9 +49,9 @@ private:
 	AStarAlgorithm algorithm;
 	TileSheet tileSheet;
 
-	std::vector<Node*> blocks;
-	std::vector<Node*> edgeBlocks;
-	std::vector<Node*> visibleEdges;
+	std::vector<Block> blocks;
+	std::vector<Block> edgeBlocks;
+	std::vector<Block> visibleEdgeBlocks;
 
 	std::vector<Square> squarePath;
 	std::vector<Light*> lights;
@@ -62,6 +62,7 @@ private:
 	float timer = 0.0f;
 	float alpha = 255.0f;
 	bool flip = true;
+	int squarePathID;
 public:
 	Game(std::string title, int screenWidth, int screenHeight);
 	~Game();
@@ -94,7 +95,7 @@ private:
 	void updatePlayerPath(std::vector<Point> path);
 	void updateSquarePath(std::vector<Point> path);
 	bool checkCollision(float x, float y);
-	bool cameraCulling(Square& square);
+	bool cameraCulling(Square square);
 	glm::vec2 getCameraPosition(glm::vec2 position);
 };
 

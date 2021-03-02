@@ -67,8 +67,11 @@ void Player::update(float deltaTime, Uint32 time) {
 		if (index >= path.size()) {
 			setPlayerState(PlayerState::STAND);
 			setPosition(destination.x, destination.y);
+			(*squarePathID) = -1;
 			return;
 		}
+
+		(*squarePathID)++;
 
 		setDestination();
 	}
@@ -91,8 +94,9 @@ void Player::setNormalizedSpeed() {
 	normalizedSpeed = glm::normalize(vector);
 }
 
-void Player::setPath(std::vector<Point> path) {
+void Player::setPath(std::vector<Point> path, int* squarePathID) {
 	this->path = path;
+	this->squarePathID = squarePathID;
 	setUp();
 }
 

@@ -10,11 +10,11 @@
 #include <GL/glew.h>
 #include <iostream>
 
-Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), visionRadius(0.0f), visionCenter(0.0f, 0.0f) {
+Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightRadius(0.0f), lightSource(0.0f, 0.0f) {
 
 }
 
-Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), visionRadius(0.0f), visionCenter(0.0f, 0.0f){
+Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightRadius(0.0f), lightSource(0.0f, 0.0f){
 	init();
 }
 
@@ -68,6 +68,11 @@ void Renderer::initShaderProgram(Camera2D& camera) {
 	shaderProgram.addAttribute("vertexColor");
 	shaderProgram.linkShaders();
 
+	lightProgram.initShaders(camera, LIGHT_VERTEX_PATH, LIGHT_FRAGMENT_PATH);
+	lightProgram.addAttribute("vertexPosition");
+	lightProgram.addAttribute("vertexColor");
+	lightProgram.linkShaders();
+
 	textureProgram.initShaders(camera, TEXTURE_VERTEX_PATH, TEXTURE_FRAGMENT_PATH);
 	textureProgram.addAttribute("vertexPosition");
 	textureProgram.addAttribute("vertexColor");
@@ -104,40 +109,56 @@ void Renderer::uploadVertexData() {
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[1]);
 	glBufferData(GL_ARRAY_BUFFER, textureVetrices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, textureVetrices.size() * sizeof(Vertex), textureVetrices.data());
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);	
 }
 
 void Renderer::draw() {
 	bindVertexArray(vertexArrays[0]);
+
 	// draw light
+	// create alpha mask
 	shaderProgram.use();
 
-	// additive blending
-	glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_SRC_ALPHA, GL_ZERO);
+	GLint alphaLocation = shaderProgram.getUniformValueLocation("alpha");
 
-	drawLight();
+	glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_SRC_ALPHA, GL_ZERO);
+	glUniform1f(alphaLocation, 1.0f);
+	drawLightMask();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glUniform1f(alphaLocation, 0.5f);
+	drawGeometry();
+
 	shaderProgram.unuse();
 
-
-
-
-	//glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ZERO);
 	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-	//glBlendFunc(GL_DST_ALPHA, GL_ONE);
-
-
-
 
 	// draw geometry
 	visionProgram.use();
 
-	/*GLint location = visionProgram.getUniformValueLocation("visionRadius");
-	glUniform1f(location, visionRadius);
+	GLint visionRadiusLocation = visionProgram.getUniformValueLocation("visionRadius");
+	GLint visionCenterLocation = visionProgram.getUniformValueLocation("visionCenter");
 
-	location = visionProgram.getUniformValueLocation("visionCenter");
-	glUniform2f(location,visionCenter.x, visionCenter.y);*/
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
 
-	drawGeometry();
+		lightRadius = light->getRadius();
+		lightSource = light->getSource();
+
+		glUniform1f(visionRadiusLocation, lightRadius);
+		glUniform2f(visionCenterLocation, lightSource.x, lightSource.y);
+
+		std::vector<GLSL_Object> visionVector = visibleObjects[light->getID()];
+
+		for (size_t i = 0; i < visionVector.size(); i++) {
+			GLSL_Object object = visionVector[i];
+			glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
+		}
+	}
+
+	for (auto& x : visibleObjects) {
+		x.second.clear();
+	}
 
 	visionProgram.unuse();
 
@@ -149,11 +170,8 @@ void Renderer::draw() {
 	// draw texture
 	visionTextureProgram.use();
 
-	/*location = visionTextureProgram.getUniformValueLocation("visionRadius");
-	glUniform1f(location, visionRadius);
-
-	location = visionTextureProgram.getUniformValueLocation("visionCenter");
-	glUniform2f(location, visionCenter.x, visionCenter.y);*/
+	glUniform1f(visionRadiusLocation, lightRadius);
+	glUniform2f(visionCenterLocation, lightSource.x, lightSource.y);
 
 	uploadTextureUnit();
 	drawTexture();
@@ -177,7 +195,7 @@ void Renderer::drawTexture() {
 	}
 }
 
-void Renderer::drawLight() {
+void Renderer::drawLightMask() {
 	for (size_t i = 0; i < lightTriangles.size(); i++) {
 		GLSL_Triangle triangle = lightTriangles[i];
 		glDrawArrays(triangle.getMode(), triangle.getOffset(), triangle.getVertexNumber());
@@ -202,6 +220,15 @@ void Renderer::uploadTextureUnit() {
 void Renderer::drawSquare(float x, float y, float width, float height, Color color) {
 	geometryObjects.emplace_back(GLSL_Square(x, y, width, height, color, offset, vertices));
 }
+
+// =========================================================== //
+
+
+void Renderer::drawSquare(Square square, Light& light, Color color) {
+	visibleObjects[light.getID()].push_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color, offset, vertices));
+}
+
+// =========================================================== //
 
 void Renderer::drawSquare(Square square, Color color) {
 	drawSquare(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color);
@@ -292,8 +319,8 @@ void Renderer::drawTexture(Square square, TextureAtlas textureAtlas, int texture
 	drawTexture(square.getX(), square.getY(), square.getWidth(), square.getHeight(), textureAtlas, textureIndex);
 }
 
-// draw light
-void  Renderer::drawLight(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color) {
+// draw light mask
+void  Renderer::drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color) {
 	lightTriangles.emplace_back(p1, p2, p3, color, offset, vertices);
 }
 
@@ -333,10 +360,16 @@ void Renderer::setVision(glm::vec2 visionCenter, float visionRadius) {
 }
 
 void Renderer::setVisionCenter(glm::vec2 visionCenter) {
-	this->visionCenter = visionCenter;
+	this->lightSource = visionCenter;
 }
 
 void Renderer::setVisionRadius(float visionRadius) {
-	this->visionRadius = visionRadius;
+	this->lightRadius = visionRadius;
 }
 
+void Renderer::setLights(std::vector<Light*>& lights) {
+	for (size_t i = 0; i < lights.size(); i++) {
+		visibleObjects[lights[i]->getID()] = std::vector<GLSL_Object>();
+	}
+	this->lights = lights;
+}

@@ -45,16 +45,19 @@ void Game::initComponents() {
 
 	renderer.init(camera);
 
-	mouseLight.setDimensions(3 * UNIT_WIDTH, 3 * UNIT_HEIGHT);
-	playerLight.setDimensions(6 * UNIT_WIDTH, 6 * UNIT_HEIGHT);
+	mouseLight.init(2 * UNIT_WIDTH, glm::vec2(160, 160), WHITE);
+	playerLight.init(4 * UNIT_WIDTH, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
+
+	squarePathID = -1;
 
 	lights.emplace_back(&mouseLight);
 	lights.emplace_back(&playerLight);
+
+	renderer.setLights(lights);
 }
 
 void Game::initLevel(std::string filePath) {
 	Utils::loadMASP(filePath, blocks, edgeBlocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
-	searchSpace.setMode(Mode::DEFAULT);
 	algorithm.setSearchSpace(&searchSpace);
 }
 
@@ -196,33 +199,7 @@ void Game::updateCameraPosition(int xrel, int yrel) {
 
 void Game::updatePlayer(float deltaTime) {
 	player->update(deltaTime, time.getTime());
-	/*if (inputManager.isKeyPressed(SDLK_a)) {
-		if (!checkCollision(player->getX() - PLAYER_SPEED * deltaTime, player->getY())) {
-			player->update(-PLAYER_SPEED, 0.0f, deltaTime);
-			camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
-		}
-	}
-
-	if (inputManager.isKeyPressed(SDLK_d)) {
-		if (!checkCollision(player->getX() + PLAYER_SPEED * deltaTime, player->getY())) {
-			player->update(PLAYER_SPEED, 0.0f, deltaTime);
-			camera.setPosition((getCameraPosition(glm::vec2(player->getX(), player->getY()))));
-		}
-	}
-
-	if (inputManager.isKeyPressed(SDLK_w)) {
-		if (!checkCollision(player->getX(), player->getY() + PLAYER_SPEED * deltaTime)) {
-			player->update(0.0f, PLAYER_SPEED, deltaTime);
-			camera.setPosition(getCameraPosition(glm::vec2(player->getX(), player->getY())));
-		}
-	}
-
-	if (inputManager.isKeyPressed(SDLK_s)) {
-		if (!checkCollision(player->getX(), player->getY() - PLAYER_SPEED * deltaTime)) {
-			player->update(0.0f, -PLAYER_SPEED, deltaTime);
-			camera.setPosition((getCameraPosition(glm::vec2(player->getX(), player->getY()))));
-		}
-	}*/
+	
 }
 
 void Game::updateCamera(float deltaTime) {
@@ -255,47 +232,10 @@ void Game::updateCamera(float deltaTime) {
 
 void Game::updateLight(float frameTime) {
 	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-	mouseLight.setPosition(mouseCoords - (mouseLight.getDimensions() / 2.0f));
-	mouseLight.setVisionCenter(mouseCoords);
 
-	playerLight.setPosition(player->getPosition() + (player->getDimensions() / 2.0f) - (playerLight.getDimensions() / 2.0f));
-	playerLight.setVisionCenter(player->getPosition() + (player->getDimensions() / 2.0f));
+	mouseLight.setSource(mouseCoords);
 
-	//playerLight.setPosition(player->getPosition() + (player->getDimensions() / 2.0f) - (light.getDimensions() / 2.0f));
-	/*glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-
-	light.setPosition(glm::vec2(mouseCoords.x - 4 * UNIT_WIDTH, mouseCoords.y - 4 * UNIT_HEIGHT));
-
-	return;
-
-	Color color = light.getColor();
-
-	timer += frameTime;
-
-	// approximately every 5 seconds turn off / on
-	if (timer >= MILISECONDS * 0.05f) {
-		if (flip) {
-			alpha = color.a - 2.25f;
-			if (alpha <= 0) {
-				light.setColor(color.r, color.g, color.b, 0);
-				flip = false;
-			}
-			else {
-				light.setColor(color.r, color.g, color.b, alpha);
-			}
-		}
-		else {
-			alpha = color.a + 2.25f;
-			if (alpha >= 255) {
-				light.setColor(color.r, color.g, color.b, 255);
-				flip = true;
-			}
-			else {
-				light.setColor(color.r, color.g, color.b, alpha);
-			}
-		}
-		timer = 0.0f;
-	} */
+	playerLight.setSource(player->getPosition() + (player->getDimensions() / 2.0f));
 }
 
 void Game::updateWindowState(Uint32 flag) {
@@ -341,10 +281,10 @@ void Game::draw() {
 
 	renderer.begin();
 
-	drawGrid();
 	drawBlocks();
 	drawPlayer();
 	drawLights();
+	drawGrid();
 
 	renderer.drawTexture(*player, player->getTexture());
 	renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
@@ -359,33 +299,36 @@ void Game::drawLights() {
 		Light* light = lights[i];
 
 		for (size_t i = 0; i < edgeBlocks.size(); i++) {
-			Node* edgeBlock = edgeBlocks[i];
-			if (Collision::squareCollision(*light, *edgeBlock)) {
-				edgeBlock->setVisibility(Visibility::VISIBLE);
-				visibleEdges.push_back(edgeBlock);
+			Block edgeBlock = edgeBlocks[i];
+			if (Collision::squareCollision(light->getBounds(), edgeBlock.getBounds())) {
+				glm::ivec2 matrixPosition = edgeBlock.getMatrixPosition();
+				searchSpace.setVisibility(matrixPosition.y, matrixPosition.x, Visibility::VISIBLE);
+				visibleEdgeBlocks.push_back(edgeBlock);
 			}
 		}
 
-		glm::vec2 visionCenter = light->getVisionCenter();
+		glm::vec2 lightSource = light->getSource();
 		std::vector<glm::vec2> edgePoints;
 		std::vector<LightPoint> lightPoints;
 		std::vector<Edge*> edges;
 		std::vector<LightPoint> intersectionPoints;
 
-		Utils::createEdges(searchSpace, visibleEdges, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
+		Utils::createEdges(searchSpace, visibleEdgeBlocks, edges, MAP_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
 		Utils::createLightEdges(light, edges);
 		Utils::createEdgePoints(light, edges, edgePoints);
-		Utils::rayTracing(edges, edgePoints, intersectionPoints, visionCenter);
+		Utils::rayTracing(edges, edgePoints, intersectionPoints, lightSource);
 
-		drawLightArea(intersectionPoints, visionCenter);
+		drawLightArea(intersectionPoints, lightSource);
 
-		for (size_t i = 0; i < visibleEdges.size(); i++) {
-			visibleEdges[i]->setVisibility(Visibility::INVISIBLE);
+		for (size_t i = 0; i < visibleEdgeBlocks.size(); i++) {
+			Block edgeBlock = visibleEdgeBlocks[i];
+			glm::ivec2 matrixPosition = edgeBlock.getMatrixPosition();
+			searchSpace.setVisibility(matrixPosition.y, matrixPosition.x, Visibility::INVISIBLE);
 		}
 
 		drawEdges(edges);
 
-		visibleEdges.clear();
+		visibleEdgeBlocks.clear();
 	}
 }
 
@@ -394,13 +337,13 @@ void Game::drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2&
 		if (i != intersectionPoints.size() - 1) {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
 			glm::vec2 point2 = intersectionPoints[i + 1].getPosition();
-			renderer.drawLight(visionCenter, point1, point2);
+			renderer.drawLightMask(visionCenter, point1, point2);
 			renderer.drawCircle(point1, 5.0f, 3, RED);
 			renderer.drawLine(point1, visionCenter, WHITE);
 		}
 		else {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
-			renderer.drawLight(visionCenter, intersectionPoints[0].getPosition(), point1);
+			renderer.drawLightMask(visionCenter, intersectionPoints[0].getPosition(), point1);
 			renderer.drawCircle(point1, 5.0f, 3, YELLOW);
 			renderer.drawLine(point1, visionCenter, WHITE);
 		}
@@ -427,18 +370,31 @@ void Game::drawEdges(std::vector<Edge*> edges) {
 }
 
 void Game::drawBlocks() {
-	for (size_t i = 0; i < blocks.size(); i++) {
-		if (cameraCulling(*blocks[i])) {
-			renderer.drawSquare(*blocks[i], GREEN);
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
+		for (size_t j = 0; j < blocks.size(); j++) {
+			Block block = blocks[j];
+			if (Collision::squareCollision(light->getBounds(), block.getBounds())) {
+				renderer.drawSquare(block.getBounds(), *light, GREEN);
+			}
 		}
 	}
 
-	if (!squarePath.empty()) {
-		renderer.drawSquare(squarePath[0], RED);
-		for (size_t i = 1; i < squarePath.size() - 1; i++) {
-			renderer.drawSquare(squarePath[i]);
+	for (size_t i = 0; i < blocks.size(); i++) {
+		if (cameraCulling(blocks[i].getBounds())) {
+			renderer.drawSquare(blocks[i].getBounds(), GREEN);
 		}
-		renderer.drawSquare(squarePath[squarePath.size() - 1], VIOLET);
+	}
+
+	if (squarePathID != -1) {
+		for (size_t i = squarePathID; i < squarePath.size(); i++) {
+			if (i == squarePath.size() - 1) {
+				renderer.drawSquare(squarePath[squarePath.size() - 1], RED);
+			}
+			else {
+				renderer.drawSquare(squarePath[i]);
+			}
+		}
 	}
 }
 
@@ -447,11 +403,12 @@ void Game::drawPlayer() {
 }
 
 void Game::updatePlayerPath(std::vector<Point> playerPath) {
-	player->setPath(playerPath);
+	player->setPath(playerPath, &squarePathID);
 	player->setPlayerState(PlayerState::MOVE);
 }
 
 void Game::updateSquarePath(std::vector<Point> path) {
+	squarePathID = 0;
 	squarePath.clear();
 	for (size_t i = 0; i < path.size(); i++) {
 		Point point = path[i];
@@ -462,14 +419,14 @@ void Game::updateSquarePath(std::vector<Point> path) {
 bool Game::checkCollision(float x, float y) {
 	Square square(x, y, player->getWidth(), player->getHeight());
 	for (size_t i = 0; i < blocks.size(); i++) {
-		if (Collision::squareCollision(square, *blocks[i])) {
+		if (Collision::squareCollision(square, blocks[i].getBounds())) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool Game::cameraCulling(Square& square) {
+bool Game::cameraCulling(Square square) {
 	return Collision::squareCollision(camera.getBounds(), square);
 }
 

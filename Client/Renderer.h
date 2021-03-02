@@ -12,6 +12,7 @@
 #include "GLTexture.h"
 #include "TextureAtlas.h"
 #include <vector>
+#include <unordered_map>
 class Renderer
 {
 private:
@@ -22,7 +23,11 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<Vertex> textureVetrices;
 
+	std::unordered_map<int, std::vector<GLSL_Object>> visibleObjects;
+	std::vector<Light*> lights;
+
 	ShaderProgram shaderProgram;
+	ShaderProgram lightProgram;
 	ShaderProgram textureProgram;
 	ShaderProgram visionProgram;
 	ShaderProgram visionTextureProgram;
@@ -33,8 +38,8 @@ private:
 	int offset;
 	int textureOffset;
 
-	glm::vec2 visionCenter;
-	float visionRadius;
+	glm::vec2 lightSource;
+	float lightRadius;
 public:
 	// constructors
 	Renderer();
@@ -45,6 +50,7 @@ public:
 
 	// draw square
 	void drawSquare(float x, float y, float width, float height, Color color = WHITE);
+	void drawSquare(Square square, Light& light, Color color = WHITE);
 	void drawSquare(Square square, Color color);
 	void drawSquare(Square square);
 
@@ -77,8 +83,10 @@ public:
 	void drawTexture(Square square, GLTexture texture);
 	void drawTexture(Square square, TextureAtlas textureAtlas, int textureIndex);
 
+	// draw light mask
+	void drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
+
 	// draw light
-	void drawLight(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
 	void drawLight(float x, float y, float width, float height, Color color);
 	void drawLight(Light light, Color color);
 	void drawLight(Light light);
@@ -91,6 +99,7 @@ public:
 	void setVision(glm::vec2 visionCenter, float visionRadius);
 	void setVisionCenter(glm::vec2 visionCenter);
 	void setVisionRadius(float visionRadius);
+	void setLights(std::vector<Light*>& lights);
 private:
 	// init
 	void init();
@@ -101,7 +110,7 @@ private:
 	void draw();
 	void drawGeometry();
 	void drawTexture();
-	void drawLight();
+	void drawLightMask();
 
 	// bind / unbind
 	void bindVertexArray(GLuint vertexArrayID);

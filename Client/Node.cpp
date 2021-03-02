@@ -1,12 +1,12 @@
 #include "Node.h"
-Node::Node() : g(0), h(0), matrixPosition(0, 0), blockType(BlockType::NONE), visibility(Visibility::NONE), predecessor(nullptr) {
+Node::Node() : g(0), h(0), rowIndex(0), columnIndex(0), blockType(BlockType::NONE), visibility(Visibility::NONE), predecessor(nullptr) {
 	edges[0] = nullptr;
 	edges[1] = nullptr;
 	edges[2] = nullptr;
 	edges[3] = nullptr;
 }
 
-Node::Node(glm::ivec2 matrixPosition, glm::ivec2 worldPosition, glm::vec2 dimensions, BlockType blockType, Visibility visibility) : Square(worldPosition, dimensions), g(0), h(0), matrixPosition(matrixPosition), blockType(blockType), visibility(visibility), predecessor(nullptr) {
+Node::Node(int rowIndex, int columnIndex, BlockType blockType, Visibility visibility) : g(0), h(0), rowIndex(rowIndex), columnIndex(columnIndex), blockType(blockType), visibility(visibility), predecessor(nullptr) {
 	edges[0] = nullptr;
 	edges[1] = nullptr;
 	edges[2] = nullptr;
@@ -20,7 +20,7 @@ void Node::reset() {
 }
 
 bool Node::operator==(const Node& node) {
-	return (matrixPosition.y == node.matrixPosition.y) && (matrixPosition.x == node.matrixPosition.x);
+	return (rowIndex == node.rowIndex) && (columnIndex == node.columnIndex);
 }
 
 bool Node::operator!=(const Node& node) {
@@ -40,11 +40,11 @@ int Node::getH() {
 }
 
 int Node::getRowIndex() {
-	return matrixPosition.y;
+	return rowIndex;
 }
 
 int Node::getColumnIndex() {
-	return matrixPosition.x;
+	return columnIndex;
 }
 
 bool Node::isBlock() {
@@ -92,11 +92,11 @@ void Node::setH(int h) {
 }
 
 void Node::setRowIndex(int rowIndex) {
-	matrixPosition.x = rowIndex;
+	this->rowIndex = rowIndex;
 }
 
 void Node::setColumnIndex(int columnIndex) {
-	matrixPosition.y = columnIndex;
+	this->columnIndex = columnIndex;
 }
 
 void Node::setBlockType(BlockType blockType) {
@@ -137,6 +137,6 @@ void Node::addEdge(Edge* edge) {
 }
 
 std::ostream& operator<<(std::ostream& outputStream, Node& node) {
-	return outputStream << "Node [g=" << node.g << " h=" << node.h << ", rowIndex=" << node.matrixPosition.y << ", columnIdex=" << node.matrixPosition.x << ", predecessor="
+	return outputStream << "Node [g=" << node.g << " h=" << node.h << ", rowIndex=" << node.rowIndex << ", columnIdex=" << node.columnIndex << ", predecessor="
 		<< node.predecessor << ", isBlock=" << (node.blockType == BlockType::BLOCK ? " block" : " edge") << "]" << std::endl;
 }

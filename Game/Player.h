@@ -28,11 +28,12 @@ private:
 	Animation animationLeft;
 	Animation animationRight;
 	GLTexture texture;
+	int* squarePathID;
 public:
 	Player(float x, float y, float width, float height);
 	void update(float deltaTime, Uint32 time);
 	void setPlayerState(PlayerState playerState);
-	void setPath(std::vector<Point> path);
+	void setPath(std::vector<Point> path, int* squarePathID);
 	Point getCenter();
 	GLTexture getTexture();
 private:
