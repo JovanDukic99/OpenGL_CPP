@@ -215,8 +215,8 @@ void Utils::createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vecto
 	// filter points => eliminate same points
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
-		glm::vec2 p1 = edge->getP1();
-		glm::vec2 p2 = edge->getP2();
+		glm::vec2 p1 = edge->getEdge().getP1();
+		glm::vec2 p2 = edge->getEdge().getP2();
 
 		p1.x = glm::clamp(p1.x, lightPosition.x, lightPosition.x + 2 * radius);
 		p1.y = glm::clamp(p1.y, lightPosition.y, lightPosition.y + 2 * radius);
@@ -244,17 +244,17 @@ void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePo
 
 			LightPoint lightPoint = lightPoints[i];
 
-			Line line1(lightPoint.getPosition(), p);
+			Line line(lightPoint.getPosition(), p);
 
 			float minDistance = INFINITY;
 			glm::vec2 closestPoint(INFINITY, INFINITY);
 
 			for (size_t j = 0; j < edges.size(); j++) {
-				Edge* line2 = edges[j];
+				Edge* edge = edges[j];
 
 				bool check = false;
 
-				glm::vec2 intersection = lineIntersection(line1.getP1(), line1.getP2(), line2->getP1(), line2->getP2(), &check);
+				glm::vec2 intersection = lineIntersection(line.getP1(), line.getP2(), edge->getEdge().getP1(), edge->getEdge().getP2(), &check);
 
 				if (check) {
 					float distance = glm::length(intersection - p);

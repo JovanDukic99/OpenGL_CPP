@@ -5,14 +5,24 @@
 #include "Circle.h"
 #include "Triangle.h"
 #include "GLSL_Object.h"
+#include "GeometryBase.h"
 #include "GLSL_Texture.h"
 #include "GLSL_Light.h"
 #include "GLSL_Triangle.h"
 #include "ShaderProgram.h"
 #include "GLTexture.h"
 #include "TextureAtlas.h"
+#include "Duplicate.h"
+#include "GLSL_Duplicate.h"
+#include "GeometryPacket.h"
 #include <vector>
 #include <unordered_map>
+
+enum class RenderMode {
+	DEFAULT,
+	SHADOWS
+};
+
 class Renderer
 {
 private:
@@ -24,13 +34,24 @@ private:
 	std::vector<Vertex> textureVetrices;
 
 	std::unordered_map<int, std::vector<GLSL_Object>> visibleObjects;
+
 	std::vector<Light*> lights;
 
-	ShaderProgram shaderProgram;
-	ShaderProgram lightProgram;
+	std::vector<GeometryPacket> geometryPackets;
+	std::vector<GLSL_Duplicate> duplicatesGL_SL;
+	std::vector<Duplicate> duplicates;
+
+	// non shadow programs
+	ShaderProgram geometryProgram;
 	ShaderProgram textureProgram;
-	ShaderProgram visionProgram;
+
+	// shadow programs
+	ShaderProgram visionGeometryProgram;
 	ShaderProgram visionTextureProgram;
+
+	// multi shadow programs
+	ShaderProgram multiVisionGeometryProgram;
+	ShaderProgram multiVisionTextureProgram;
 
 	GLuint vertexArrays[2];
 	GLuint vertexBuffers[2];
@@ -38,8 +59,7 @@ private:
 	int offset;
 	int textureOffset;
 
-	glm::vec2 lightSource;
-	float lightRadius;
+	RenderMode mode;
 public:
 	// constructors
 	Renderer();
@@ -50,7 +70,7 @@ public:
 
 	// draw square
 	void drawSquare(float x, float y, float width, float height, Color color = WHITE);
-	void drawSquare(Square square, Light& light, Color color = WHITE);
+	void drawSquare(Square square, Light* lightID, Color color = WHITE);
 	void drawSquare(Square square, Color color);
 	void drawSquare(Square square);
 
@@ -87,6 +107,7 @@ public:
 	void drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
 
 	// draw light
+	void filterPackets();
 	void drawLight(float x, float y, float width, float height, Color color);
 	void drawLight(Light light, Color color);
 	void drawLight(Light light);
@@ -96,10 +117,8 @@ public:
 	void end();
 
 	// setters
-	void setVision(glm::vec2 visionCenter, float visionRadius);
-	void setVisionCenter(glm::vec2 visionCenter);
-	void setVisionRadius(float visionRadius);
 	void setLights(std::vector<Light*>& lights);
+	void setMode(RenderMode mode);
 private:
 	// init
 	void init();
@@ -111,6 +130,8 @@ private:
 	void drawGeometry();
 	void drawTexture();
 	void drawLightMask();
+	void drawVisibleObjects();
+	void drawMultiVisibleObjects();
 
 	// bind / unbind
 	void bindVertexArray(GLuint vertexArrayID);

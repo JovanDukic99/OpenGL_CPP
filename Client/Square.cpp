@@ -16,6 +16,12 @@ Square::Square(float x, float y, float width, float height, Color color) : Geome
 
 }
 
+// operator overload
+bool Square::operator==(const Square& obj) {
+	return position == obj.position && dimensions == obj.dimensions;
+}
+
+
 // getters
 float Square::getWidth() const {
 	return dimensions.x;

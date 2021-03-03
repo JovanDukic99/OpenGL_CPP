@@ -9,20 +9,21 @@ enum class EdgeSide {
 	EAST
 };
 
-class Edge : public Line
+class Edge
 {
 private:
 	EdgeSide edgeSide;
+	Line edge;
 public:
 	// constructors
 	Edge();
 	Edge(float x, float y, float x1, float y1, EdgeSide edgeSide);
-	Edge(glm::vec2 p1, glm::vec2 p2, EdgeSide edgeSide);
 
 	// setters
-	void lenghtenEdge(float x1, float y1);
+	void lenghtenEdge(float x2, float y2);
 
 	// getters
 	EdgeSide getEdgeSide();
+	Line getEdge();
 };
 

@@ -11,6 +11,9 @@ public:
 	Square(glm::vec2 position, float width, float height, Color color = WHITE);
 	Square(glm::vec2 position, glm::vec2 dimensions, Color color = WHITE);
 
+	// operator overload
+	bool operator==(const Square& obj);
+
 	// getters
 	float getWidth() const;
 	float getHeight() const;

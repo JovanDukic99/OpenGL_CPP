@@ -216,9 +216,6 @@
     <ClCompile Include="Time.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
-    <ClCompile Include="CustomRenderer.cpp">
-      <Filter>Source Files\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Edge.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
@@ -236,6 +233,15 @@
     </ClCompile>
     <ClCompile Include="Block.cpp">
       <Filter>Source Files\A%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryPacket.cpp">
+      <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="Duplicate.cpp">
+      <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSL_Duplicate.cpp">
+      <Filter>Source Files\Shadows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,9 +392,6 @@
     <ClInclude Include="Time.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
-    <ClInclude Include="CustomRenderer.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Edge.h">
       <Filter>Header Files\Shadows</Filter>
     </ClInclude>
@@ -406,6 +409,15 @@
     </ClInclude>
     <ClInclude Include="Block.h">
       <Filter>Header Files\A%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryPacket.h">
+      <Filter>Header Files\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Duplicate.h">
+      <Filter>Header Files\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSL_Duplicate.h">
+      <Filter>Header Files\Shadows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

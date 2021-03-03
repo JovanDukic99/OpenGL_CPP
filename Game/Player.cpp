@@ -3,7 +3,7 @@
 #include <ResourceManager.h>
 #include <iostream>
 
-Player::Player(float x, float y, float width, float height) : Square(x, y, width, height), playerState(PlayerState::STAND), moveDirection(MoveDirection::NONE), destination(0.0f, 0.0f), normalizedSpeed(0.0f, 0.0f), index(0) {
+Player::Player(float x, float y, float width, float height) : bounds(x, y, width, height), playerState(PlayerState::STAND), moveDirection(MoveDirection::NONE), destination(0.0f, 0.0f), normalizedSpeed(0.0f, 0.0f), index(0) {
 	init();
 }
 
@@ -40,25 +40,25 @@ void Player::update(float deltaTime, Uint32 time) {
 		}
 
 		if (normalizedSpeed.y >= 0 && normalizedSpeed.x >= 0) {
-			if ((getY() < destination.y - 0.01f) || (getX() < destination.x - 0.01f)) {
+			if ((bounds.getY() < destination.y - 0.01f) || (bounds.getX() < destination.x - 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 		else if (normalizedSpeed.y <= 0 && normalizedSpeed.x <= 0) {
-			if ((getY() > destination.y + 0.01f) || (getX() > destination.x + 0.01f)) {
+			if ((bounds.getY() > destination.y + 0.01f) || (bounds.getX() > destination.x + 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 		else if (normalizedSpeed.y >= 0 && normalizedSpeed.x <= 0) {
-			if ((getY() < destination.y - 0.01f) || (getX() > destination.x + 0.01f)) {
+			if ((bounds.getY() < destination.y - 0.01f) || (bounds.getX() > destination.x + 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
 		}
 		else if(normalizedSpeed.y <= 0 && normalizedSpeed.x >= 0) {
-			if ((getY() > destination.y + 0.01f) || (getX() < destination.x - 0.01f)) {
+			if ((bounds.getY() > destination.y + 0.01f) || (bounds.getX() < destination.x - 0.01f)) {
 				updatePosition(deltaTime);
 				return;
 			}
@@ -66,7 +66,7 @@ void Player::update(float deltaTime, Uint32 time) {
 
 		if (index >= path.size()) {
 			setPlayerState(PlayerState::STAND);
-			setPosition(destination.x, destination.y);
+			bounds.setPosition(destination.x, destination.y);
 			(*squarePathID) = -1;
 			return;
 		}
@@ -90,7 +90,7 @@ void Player::setDestination() {
 }
 
 void Player::setNormalizedSpeed() {
-	glm::vec2 vector = destination - glm::vec2(getX(), getY());
+	glm::vec2 vector = destination - glm::vec2(bounds.getX(), bounds.getY());
 	normalizedSpeed = glm::normalize(vector);
 }
 
@@ -100,8 +100,20 @@ void Player::setPath(std::vector<Point> path, int* squarePathID) {
 	setUp();
 }
 
-Point Player::getCenter() {
-	return Point(getX() + getWidth() / 2.0f, getY() + getHeight() / 2.0f);
+Square Player::getBounds() const {
+	return bounds;
+}
+
+glm::vec2 Player::getCenter() const {
+	return glm::vec2(bounds.getX() + bounds.getWidth() / 2.0f, bounds.getY() + bounds.getHeight() / 2.0f);
+}
+
+float Player::getX() const {
+	return bounds.getX();
+}
+
+float Player::getY() const {
+	return bounds.getY();
 }
 
 void Player::setUp() {
@@ -109,10 +121,10 @@ void Player::setUp() {
 
 	Point finalPoint = path[path.size() - 1];
 
-	if (finalPoint.getX() > getX()) {
+	if (finalPoint.getX() > bounds.getX()) {
 		moveDirection = MoveDirection::RIGHT;
 	}
-	else if (finalPoint.getX() < getX()) {
+	else if (finalPoint.getX() < bounds.getX()) {
 		moveDirection = MoveDirection::LEFT;
 	}
 
@@ -124,15 +136,15 @@ void Player::setTexture(GLTexture texture) {
 }
 
 void Player::updatePosition(float deltaTime) {
-	setPosition(getX() + PLAYER_SPEED * normalizedSpeed.x * deltaTime, getY() + PLAYER_SPEED * normalizedSpeed.y * deltaTime);
+	bounds.setPosition(bounds.getX() + PLAYER_SPEED * normalizedSpeed.x * deltaTime, bounds.getY() + PLAYER_SPEED * normalizedSpeed.y * deltaTime);
 	//std::cout << "X: " << getX() << ", Y: " << getY() << std::endl;
 }
 
-bool Player::isMoving() {
+bool Player::isMoving() const {
 	return playerState == PlayerState::MOVE;
 }
 
-GLTexture Player::getTexture() {
+GLTexture Player::getTexture() const {
 	return texture;
 }
 

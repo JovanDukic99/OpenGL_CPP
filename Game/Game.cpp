@@ -44,14 +44,15 @@ void Game::initComponents() {
 	tileSheet.init(bubbleTexture, glm::ivec2(15, 10));
 
 	renderer.init(camera);
+	renderer.setMode(RenderMode::SHADOWS);
 
-	mouseLight.init(2 * UNIT_WIDTH, glm::vec2(160, 160), WHITE);
-	playerLight.init(4 * UNIT_WIDTH, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
+	mouseLight.init(3 * UNIT_WIDTH, glm::vec2(160, 160), WHITE);
+	playerLight.init(6 * UNIT_WIDTH, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
 
 	squarePathID = -1;
 
-	lights.emplace_back(&mouseLight);
 	lights.emplace_back(&playerLight);
+	lights.emplace_back(&mouseLight);
 
 	renderer.setLights(lights);
 }
@@ -231,11 +232,8 @@ void Game::updateCamera(float deltaTime) {
 }
 
 void Game::updateLight(float frameTime) {
-	glm::vec2 mouseCoords = camera.convertScreenToWorld(inputManager.getMouseCoords());
-
-	mouseLight.setSource(mouseCoords);
-
-	playerLight.setSource(player->getPosition() + (player->getDimensions() / 2.0f));
+	mouseLight.setSource(camera.convertScreenToWorld(inputManager.getMouseCoords()));
+	playerLight.setSource(player->getCenter());
 }
 
 void Game::updateWindowState(Uint32 flag) {
@@ -286,7 +284,7 @@ void Game::draw() {
 	drawLights();
 	drawGrid();
 
-	renderer.drawTexture(*player, player->getTexture());
+	renderer.drawTexture(player->getBounds(), player->getTexture());
 	renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
 
 	renderer.end();
@@ -365,7 +363,7 @@ void Game::drawGrid() {
 void Game::drawEdges(std::vector<Edge*> edges) {
 	for (size_t i = 0; i < edges.size(); i++) {
 		Edge* edge = edges[i];
-		renderer.drawLine(*edge, YELLOW);
+		renderer.drawLine(edge->getEdge(), YELLOW);
 	}
 }
 
@@ -375,7 +373,7 @@ void Game::drawBlocks() {
 		for (size_t j = 0; j < blocks.size(); j++) {
 			Block block = blocks[j];
 			if (Collision::squareCollision(light->getBounds(), block.getBounds())) {
-				renderer.drawSquare(block.getBounds(), *light, GREEN);
+				renderer.drawSquare(block.getBounds(), light, GREEN);
 			}
 		}
 	}
@@ -399,7 +397,7 @@ void Game::drawBlocks() {
 }
 
 void Game::drawPlayer() {
-	renderer.drawSquare(*player, BLUE);
+	renderer.drawSquare(player->getBounds(), &playerLight, BLUE);
 }
 
 void Game::updatePlayerPath(std::vector<Point> playerPath) {
@@ -417,7 +415,7 @@ void Game::updateSquarePath(std::vector<Point> path) {
 }
 
 bool Game::checkCollision(float x, float y) {
-	Square square(x, y, player->getWidth(), player->getHeight());
+	Square square(player->getBounds());
 	for (size_t i = 0; i < blocks.size(); i++) {
 		if (Collision::squareCollision(square, blocks[i].getBounds())) {
 			return true;

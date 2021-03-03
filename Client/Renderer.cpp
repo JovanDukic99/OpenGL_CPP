@@ -6,15 +6,16 @@
 #include "GLSL_Triangle.h"
 #include "Light.h"
 #include "EngineConfig.h"
+#include "Utils.h"
 #include <TTF/SDL_ttf.h>
 #include <GL/glew.h>
 #include <iostream>
 
-Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightRadius(0.0f), lightSource(0.0f, 0.0f) {
+Renderer::Renderer() : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), mode(RenderMode::DEFAULT) {
 
 }
 
-Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), lightRadius(0.0f), lightSource(0.0f, 0.0f){
+Renderer::Renderer(Camera2D& camera) : vertexArrays(), vertexBuffers(), offset(0), textureOffset(0), mode(RenderMode::DEFAULT) {
 	init();
 }
 
@@ -63,15 +64,11 @@ void Renderer::initVertexArray() {
 
 void Renderer::initShaderProgram(Camera2D& camera) {
 	// the order of attributes must be the same as order used in shaders
-	shaderProgram.initShaders(camera, VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-	shaderProgram.addAttribute("vertexPosition");
-	shaderProgram.addAttribute("vertexColor");
-	shaderProgram.linkShaders();
-
-	lightProgram.initShaders(camera, LIGHT_VERTEX_PATH, LIGHT_FRAGMENT_PATH);
-	lightProgram.addAttribute("vertexPosition");
-	lightProgram.addAttribute("vertexColor");
-	lightProgram.linkShaders();
+	// non shadow shaders
+	geometryProgram.initShaders(camera, GEOMETRY_VERTEX_PATH, GEOMETRY_FRAGMENT_PATH);
+	geometryProgram.addAttribute("vertexPosition");
+	geometryProgram.addAttribute("vertexColor");
+	geometryProgram.linkShaders();
 
 	textureProgram.initShaders(camera, TEXTURE_VERTEX_PATH, TEXTURE_FRAGMENT_PATH);
 	textureProgram.addAttribute("vertexPosition");
@@ -79,16 +76,29 @@ void Renderer::initShaderProgram(Camera2D& camera) {
 	textureProgram.addAttribute("vertexUV");
 	textureProgram.linkShaders();
 
-	visionProgram.initShaders(camera, VISION_VERTEX_PATH, VISION_FRAGMENT_PATH);
-	visionProgram.addAttribute("vertexPosition");
-	visionProgram.addAttribute("vertexColor");
-	visionProgram.linkShaders();
+	// shadow programs
+	visionGeometryProgram.initShaders(camera, VISION_GEOMETRY_VERTEX_PATH, VISION_GEOMETRY_FRAGMENT_PATH);
+	visionGeometryProgram.addAttribute("vertexPosition");
+	visionGeometryProgram.addAttribute("vertexColor");
+	visionGeometryProgram.linkShaders();
 
 	visionTextureProgram.initShaders(camera, VISION_TEXTURE_VERTEX_PATH, VISION_TEXTURE_FRAGMENT_PATH);
 	visionTextureProgram.addAttribute("vertexPosition");
 	visionTextureProgram.addAttribute("vertexColor");
 	visionTextureProgram.addAttribute("vertexUV");
 	visionTextureProgram.linkShaders();
+
+	// multi shadow programs
+	multiVisionGeometryProgram.initShaders(camera, MULTI_VISION_GEOMETRY_VERTEX_PATH, MULTI_VISION_GEOMETRY_FRAGMENT_PATH);
+	multiVisionGeometryProgram.addAttribute("vertexPosition");
+	multiVisionGeometryProgram.addAttribute("vertexColor");
+	multiVisionGeometryProgram.linkShaders();
+
+	multiVisionTextureProgram.initShaders(camera, MULTI_VISION_TEXTURE_VERTEX_PATH, MULTI_VISION_TEXTURE_FRAGMENT_PATH);
+	multiVisionTextureProgram.addAttribute("vertexPosition");
+	multiVisionTextureProgram.addAttribute("vertexColor");
+	multiVisionTextureProgram.addAttribute("vertexUV");
+	multiVisionTextureProgram.linkShaders();
 }
 
 void Renderer::begin() {
@@ -96,6 +106,7 @@ void Renderer::begin() {
 }
 
 void Renderer::end() {
+	filterPackets();
 	uploadVertexData();
 	draw();
 }
@@ -113,71 +124,57 @@ void Renderer::uploadVertexData() {
 }
 
 void Renderer::draw() {
-	bindVertexArray(vertexArrays[0]);
+	if (mode == RenderMode::DEFAULT) {
+		bindVertexArray(vertexArrays[0]);
 
-	// draw light
-	// create alpha mask
-	shaderProgram.use();
+		// draw geometry
+		geometryProgram.use();
+		drawGeometry();
+		geometryProgram.unuse();
 
-	GLint alphaLocation = shaderProgram.getUniformValueLocation("alpha");
+		bindVertexArray(vertexArrays[1]);
 
-	glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_SRC_ALPHA, GL_ZERO);
-	glUniform1f(alphaLocation, 1.0f);
-	drawLightMask();
+		// draw texture
+		textureProgram.use();
+		drawTexture();
+		textureProgram.unuse();
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glUniform1f(alphaLocation, 0.5f);
-	drawGeometry();
+		unbindVertexArray();
+	}
+	else if(mode == RenderMode::SHADOWS) {
+		bindVertexArray(vertexArrays[0]);
 
-	shaderProgram.unuse();
+		// draw light mask
+		geometryProgram.use();
+		drawLightMask();
+		geometryProgram.unuse();
 
-	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+		// draw visible objects
+		visionGeometryProgram.use();
+		drawVisibleObjects();
+		visionGeometryProgram.unuse();
 
-	// draw geometry
-	visionProgram.use();
+		// draw multi visible objects
+		multiVisionGeometryProgram.use();
+		drawMultiVisibleObjects();
+		multiVisionGeometryProgram.unuse();
 
-	GLint visionRadiusLocation = visionProgram.getUniformValueLocation("visionRadius");
-	GLint visionCenterLocation = visionProgram.getUniformValueLocation("visionCenter");
 
-	for (size_t i = 0; i < lights.size(); i++) {
-		Light* light = lights[i];
-
-		lightRadius = light->getRadius();
-		lightSource = light->getSource();
-
-		glUniform1f(visionRadiusLocation, lightRadius);
-		glUniform2f(visionCenterLocation, lightSource.x, lightSource.y);
-
-		std::vector<GLSL_Object> visionVector = visibleObjects[light->getID()];
-
-		for (size_t i = 0; i < visionVector.size(); i++) {
-			GLSL_Object object = visionVector[i];
-			glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
-		}
+		unbindVertexArray();
 	}
 
-	for (auto& x : visibleObjects) {
-		x.second.clear();
-	}
+	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	visionProgram.unuse();
+	//bindVertexArray(vertexArrays[1]);
+	//// draw texture
+	//visionTextureProgram.use();
 
+	//glUniform1f(visionRadiusLocation, lightRadius);
+	//glUniform2f(visionCenterLocation, lightSource.x, lightSource.y);
 
-
-	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	bindVertexArray(vertexArrays[1]);
-	// draw texture
-	visionTextureProgram.use();
-
-	glUniform1f(visionRadiusLocation, lightRadius);
-	glUniform2f(visionCenterLocation, lightSource.x, lightSource.y);
-
-	uploadTextureUnit();
-	drawTexture();
-	visionTextureProgram.unuse();
-
-	unbindVertexArray();
+	//uploadTextureUnit();
+	//drawTexture();
+	//visionTextureProgram.unuse();
 }
 
 void Renderer::drawGeometry() {
@@ -188,6 +185,7 @@ void Renderer::drawGeometry() {
 }
 
 void Renderer::drawTexture() {
+	uploadTextureUnit();
 	for (size_t i = 0; i < textureObjects.size(); i++) {
 		GLSL_Texture texture = textureObjects[i];
 		glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
@@ -196,9 +194,58 @@ void Renderer::drawTexture() {
 }
 
 void Renderer::drawLightMask() {
+	// create alpha mask
+	glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_SRC_ALPHA, GL_ZERO);
 	for (size_t i = 0; i < lightTriangles.size(); i++) {
 		GLSL_Triangle triangle = lightTriangles[i];
 		glDrawArrays(triangle.getMode(), triangle.getOffset(), triangle.getVertexNumber());
+	}
+}
+
+void Renderer::drawVisibleObjects() {
+	// use alpah mask
+	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+
+	// draw geometry
+	GLint radiusLocation = visionGeometryProgram.getUniformValueLocation("visionRadius");
+	GLint centerLocation = visionGeometryProgram.getUniformValueLocation("visionCenter");
+
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
+
+		glUniform1f(radiusLocation, light->getRadius());
+		glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
+
+		std::vector<GLSL_Object> visionVector = visibleObjects[light->getID()];
+
+		for (size_t i = 0; i < visionVector.size(); i++) {
+			GLSL_Object object = visionVector[i];
+			glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
+		}
+	}
+}
+
+void Renderer::drawMultiVisibleObjects() {
+	GLint radiusLocation1 = multiVisionGeometryProgram.getUniformValueLocation("visionRadius1");
+	GLint radiusLocation2 = multiVisionGeometryProgram.getUniformValueLocation("visionRadius2");
+
+	GLint centerLocation1 = multiVisionGeometryProgram.getUniformValueLocation("visionCenter1");
+	GLint centerLocation2 = multiVisionGeometryProgram.getUniformValueLocation("visionCenter2");
+
+	// draw multi visible objects
+	for (size_t i = 0; i < duplicatesGL_SL.size(); i++) {
+		GLSL_Duplicate duplicate = duplicatesGL_SL[i];
+		GLSL_Object object = duplicate.getGLSL_Square();
+		Light* light1 = duplicate.getLight1();
+		Light* light2 = duplicate.getLight2();
+
+		glUniform1f(radiusLocation1, light1->getRadius());
+		glUniform1f(radiusLocation2, light2->getRadius());
+
+		glUniform2f(centerLocation1, light1->getSource().x, light1->getSource().y);
+		glUniform2f(centerLocation2, light2->getSource().x, light2->getSource().y);
+
+		glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
 	}
 }
 
@@ -224,8 +271,9 @@ void Renderer::drawSquare(float x, float y, float width, float height, Color col
 // =========================================================== //
 
 
-void Renderer::drawSquare(Square square, Light& light, Color color) {
-	visibleObjects[light.getID()].push_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color, offset, vertices));
+void Renderer::drawSquare(Square square, Light* light, Color color) {
+	geometryPackets.emplace_back(light, square, color);
+	//visibleObjects[lightID].push_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color, offset, vertices));
 }
 
 // =========================================================== //
@@ -324,6 +372,47 @@ void  Renderer::drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color co
 	lightTriangles.emplace_back(p1, p2, p3, color, offset, vertices);
 }
 
+void Renderer::filterPackets() {
+	// extract duplicate blocks, which are being visible by multiple lights
+	for (size_t i = 0; i < geometryPackets.size(); i++) {
+
+		GeometryPacket packet = geometryPackets[i];
+		bool flag = true;
+
+		// we must go from zero because if we don't it will add duplicated block to visibleObjects, (packet == geometryPackets[j]) won't be fulfilled because we can't see elements behind current element
+		// but now we have more duplicates then their real number is
+		for (size_t j = 0; j < geometryPackets.size(); j++) {
+			if (i == j) {
+				continue;
+			}else if (packet == geometryPackets[j]) {
+				Duplicate duplicate(packet.getBlock(), packet.getColor(), packet.getLight(), geometryPackets[j].getLight());
+				bool dFlag = true;
+				for (size_t k = 0; k < duplicates.size(); k++) {
+					if (duplicate == duplicates[k]) {
+						dFlag = false;
+						break;
+					}
+				}
+				if (dFlag) {
+					duplicates.push_back(duplicate);
+				}
+				flag = false;
+				break;
+			}
+		}
+
+		if (flag) {
+			Square square = packet.getBlock();
+			visibleObjects[packet.getLight()->getID()].emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), packet.getColor(), offset, vertices));
+		}
+	}
+
+	for (size_t i = 0; i < duplicates.size(); i++) {
+		Square square = duplicates[i].getBlock();
+		duplicatesGL_SL.emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), duplicates[i].getColor(), offset, vertices), duplicates[i].getLight1(), duplicates[i].getLight2());
+	}
+}
+
 //void Renderer::drawLight(float x, float y, float width, float height, Color color) {
 //	lightObject.emplace_back(x, y, width, height, color, lightOffset, lightVertices);
 //}
@@ -347,6 +436,16 @@ void Renderer::reset() {
 
 	offset = 0;
 	textureOffset = 0;
+
+	if (mode == RenderMode::SHADOWS) {
+		for (auto& x : visibleObjects) {
+			x.second.clear();
+		}
+
+		geometryPackets.clear();
+		duplicates.clear();
+		duplicatesGL_SL.clear();
+	}
 }
 
 bool Renderer::check() {
@@ -354,22 +453,13 @@ bool Renderer::check() {
 }
 
 // setters
-void Renderer::setVision(glm::vec2 visionCenter, float visionRadius) {
-	setVisionCenter(visionCenter);
-	setVisionRadius(visionRadius);
-}
-
-void Renderer::setVisionCenter(glm::vec2 visionCenter) {
-	this->lightSource = visionCenter;
-}
-
-void Renderer::setVisionRadius(float visionRadius) {
-	this->lightRadius = visionRadius;
-}
-
 void Renderer::setLights(std::vector<Light*>& lights) {
 	for (size_t i = 0; i < lights.size(); i++) {
 		visibleObjects[lights[i]->getID()] = std::vector<GLSL_Object>();
 	}
 	this->lights = lights;
+}
+
+void Renderer::setMode(RenderMode mode) {
+	this->mode = mode;
 }
