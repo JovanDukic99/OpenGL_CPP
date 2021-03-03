@@ -68,9 +68,10 @@ public:
 	// inits
 	void init(Camera2D& camera);
 
+	// ========================== < NON-LIGHT DRAWING > ========================== //
+
 	// draw square
 	void drawSquare(float x, float y, float width, float height, Color color = WHITE);
-	void drawSquare(Square square, Light* lightID, Color color = WHITE);
 	void drawSquare(Square square, Color color);
 	void drawSquare(Square square);
 
@@ -103,14 +104,15 @@ public:
 	void drawTexture(Square square, GLTexture texture);
 	void drawTexture(Square square, TextureAtlas textureAtlas, int textureIndex);
 
+	// ========================== < LIGHT DRAWING > ========================== //
+
 	// draw light mask
 	void drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
 
+	void drawSquare(Light* light, Square square, Color color);
+
 	// draw light
 	void filterPackets();
-	void drawLight(float x, float y, float width, float height, Color color);
-	void drawLight(Light light, Color color);
-	void drawLight(Light light);
 
 	// being / end
 	void begin();

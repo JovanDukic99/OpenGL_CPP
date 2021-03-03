@@ -9,27 +9,31 @@ private:
 
 	int ID;
 	int radius;
+	float intensity;
 
 	Square bounds;
 	glm::vec2 source;
 public:
 	// constructors
 	Light();
-	Light(int radius, glm::vec2 source, Color color);
+	Light(int radius, float intensity, glm::vec2 source, Color color);
 
 	// init
-	void init(int radius, glm::vec2 source, Color color);
+	void init(int radius, float intensity, glm::vec2 source, Color color);
 
 	// setters
 	void setSource(glm::vec2 source);
 	void setColor(Color color);
 	void setRadius(int radius);
+	void setIntensity(float intensity);
 
 	// getters
 	glm::vec2 getSource() const;
 	Square getBounds() const;
+	Color getColor() const;
 	int getID() const;
 	int getRadius() const;
+	float getIntensity() const;
 private:
 	// update
 	void updateBounds();

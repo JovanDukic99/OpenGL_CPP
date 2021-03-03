@@ -14,16 +14,20 @@ uniform vec2 visionCenter1;
 uniform float visionRadius2; 
 uniform vec2 visionCenter2;
 
+uniform float intensity1;
+uniform float intensity2;
+
 void main() {
-    float factor1 = length(fragmentPosition - visionCenter1) / visionRadius1;
-    float factor2 = length(fragmentPosition - visionCenter2) / visionRadius2;
+    float dist1 = length(fragmentPosition - visionCenter1) / visionRadius1;
+    float dist2 = length(fragmentPosition - visionCenter2) / visionRadius2;
     
-    float intensity1 = pow(0.01f, factor1) - 0.01f;
-    float intensity2 = pow(0.01f, factor2) - 0.01f;
+    float factor1 = pow(0.01f, dist1) - 0.01f;
+    float factor2 = pow(0.01f, dist2) - 0.01f;
 
-    float intensity = intensity1 + intensity2;
+    float factor = factor1 + factor2;
+    float intensity = (intensity1 + intensity2) * 0.5f;
 
-    intensity = clamp(intensity, 0.0f, 1.0f);
+    factor = clamp(factor, 0.0f, 1.0f);
     
-    color = fragmentColor * intensity;
+    color = fragmentColor * factor * intensity;
 }

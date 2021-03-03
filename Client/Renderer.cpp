@@ -159,7 +159,6 @@ void Renderer::draw() {
 		drawMultiVisibleObjects();
 		multiVisionGeometryProgram.unuse();
 
-
 		unbindVertexArray();
 	}
 
@@ -209,11 +208,13 @@ void Renderer::drawVisibleObjects() {
 	// draw geometry
 	GLint radiusLocation = visionGeometryProgram.getUniformValueLocation("visionRadius");
 	GLint centerLocation = visionGeometryProgram.getUniformValueLocation("visionCenter");
+	GLint intensityLocation = visionGeometryProgram.getUniformValueLocation("intensity");
 
 	for (size_t i = 0; i < lights.size(); i++) {
 		Light* light = lights[i];
 
 		glUniform1f(radiusLocation, light->getRadius());
+		glUniform1f(intensityLocation, light->getIntensity());
 		glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
 
 		std::vector<GLSL_Object> visionVector = visibleObjects[light->getID()];
@@ -226,11 +227,16 @@ void Renderer::drawVisibleObjects() {
 }
 
 void Renderer::drawMultiVisibleObjects() {
+	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+
 	GLint radiusLocation1 = multiVisionGeometryProgram.getUniformValueLocation("visionRadius1");
 	GLint radiusLocation2 = multiVisionGeometryProgram.getUniformValueLocation("visionRadius2");
 
 	GLint centerLocation1 = multiVisionGeometryProgram.getUniformValueLocation("visionCenter1");
 	GLint centerLocation2 = multiVisionGeometryProgram.getUniformValueLocation("visionCenter2");
+
+	GLint intensityLocation1 = multiVisionGeometryProgram.getUniformValueLocation("intensity1");
+	GLint intensityLocation2 = multiVisionGeometryProgram.getUniformValueLocation("intensity2");
 
 	// draw multi visible objects
 	for (size_t i = 0; i < duplicatesGL_SL.size(); i++) {
@@ -238,6 +244,9 @@ void Renderer::drawMultiVisibleObjects() {
 		GLSL_Object object = duplicate.getGLSL_Square();
 		Light* light1 = duplicate.getLight1();
 		Light* light2 = duplicate.getLight2();
+
+		glUniform1f(intensityLocation1, light1->getIntensity());
+		glUniform1f(intensityLocation2, light2->getIntensity());
 
 		glUniform1f(radiusLocation1, light1->getRadius());
 		glUniform1f(radiusLocation2, light2->getRadius());
@@ -267,16 +276,6 @@ void Renderer::uploadTextureUnit() {
 void Renderer::drawSquare(float x, float y, float width, float height, Color color) {
 	geometryObjects.emplace_back(GLSL_Square(x, y, width, height, color, offset, vertices));
 }
-
-// =========================================================== //
-
-
-void Renderer::drawSquare(Square square, Light* light, Color color) {
-	geometryPackets.emplace_back(light, square, color);
-	//visibleObjects[lightID].push_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color, offset, vertices));
-}
-
-// =========================================================== //
 
 void Renderer::drawSquare(Square square, Color color) {
 	drawSquare(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color);
@@ -370,6 +369,11 @@ void Renderer::drawTexture(Square square, TextureAtlas textureAtlas, int texture
 // draw light mask
 void  Renderer::drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color) {
 	lightTriangles.emplace_back(p1, p2, p3, color, offset, vertices);
+}
+
+// draw light objects
+void Renderer::drawSquare(Light* light, Square square, Color color) {
+	geometryPackets.emplace_back(light, square, color);
 }
 
 void Renderer::filterPackets() {

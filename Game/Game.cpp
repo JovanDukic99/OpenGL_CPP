@@ -46,8 +46,8 @@ void Game::initComponents() {
 	renderer.init(camera);
 	renderer.setMode(RenderMode::SHADOWS);
 
-	mouseLight.init(3 * UNIT_WIDTH, glm::vec2(160, 160), WHITE);
-	playerLight.init(6 * UNIT_WIDTH, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
+	mouseLight.init(3 * UNIT_WIDTH, 1.2f, glm::vec2(160, 160), WHITE);
+	playerLight.init(20 * UNIT_WIDTH, 1.2f, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
 
 	squarePathID = -1;
 
@@ -282,10 +282,10 @@ void Game::draw() {
 	drawBlocks();
 	drawPlayer();
 	drawLights();
-	drawGrid();
+	//drawGrid();
 
-	renderer.drawTexture(player->getBounds(), player->getTexture());
-	renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
+	//renderer.drawTexture(player->getBounds(), player->getTexture());
+	//renderer.drawTexture(160.0f, 160.0f, 60.0f, 60.0f, bubbleTexture);
 
 	renderer.end();
 
@@ -316,7 +316,7 @@ void Game::drawLights() {
 		Utils::createEdgePoints(light, edges, edgePoints);
 		Utils::rayTracing(edges, edgePoints, intersectionPoints, lightSource);
 
-		drawLightArea(intersectionPoints, lightSource);
+		drawLightArea(intersectionPoints, lightSource, light->getColor());
 
 		for (size_t i = 0; i < visibleEdgeBlocks.size(); i++) {
 			Block edgeBlock = visibleEdgeBlocks[i];
@@ -324,24 +324,24 @@ void Game::drawLights() {
 			searchSpace.setVisibility(matrixPosition.y, matrixPosition.x, Visibility::INVISIBLE);
 		}
 
-		drawEdges(edges);
+		//drawEdges(edges);
 
 		visibleEdgeBlocks.clear();
 	}
 }
 
-void Game::drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2& visionCenter) {
+void Game::drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2& visionCenter, Color lightColor) {
 	for (size_t i = 0; i < intersectionPoints.size(); i++) {
 		if (i != intersectionPoints.size() - 1) {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
 			glm::vec2 point2 = intersectionPoints[i + 1].getPosition();
-			renderer.drawLightMask(visionCenter, point1, point2);
+			renderer.drawLightMask(visionCenter, point1, point2, lightColor);
 			renderer.drawCircle(point1, 5.0f, 3, RED);
 			renderer.drawLine(point1, visionCenter, WHITE);
 		}
 		else {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
-			renderer.drawLightMask(visionCenter, intersectionPoints[0].getPosition(), point1);
+			renderer.drawLightMask(visionCenter, intersectionPoints[0].getPosition(), point1, lightColor);
 			renderer.drawCircle(point1, 5.0f, 3, YELLOW);
 			renderer.drawLine(point1, visionCenter, WHITE);
 		}
@@ -373,18 +373,18 @@ void Game::drawBlocks() {
 		for (size_t j = 0; j < blocks.size(); j++) {
 			Block block = blocks[j];
 			if (Collision::squareCollision(light->getBounds(), block.getBounds())) {
-				renderer.drawSquare(block.getBounds(), light, GREEN);
+				renderer.drawSquare(light, block.getBounds(), GREEN);
 			}
 		}
 	}
 
-	for (size_t i = 0; i < blocks.size(); i++) {
+	/*for (size_t i = 0; i < blocks.size(); i++) {
 		if (cameraCulling(blocks[i].getBounds())) {
 			renderer.drawSquare(blocks[i].getBounds(), GREEN);
 		}
-	}
+	}*/
 
-	if (squarePathID != -1) {
+	/*if (squarePathID != -1) {
 		for (size_t i = squarePathID; i < squarePath.size(); i++) {
 			if (i == squarePath.size() - 1) {
 				renderer.drawSquare(squarePath[squarePath.size() - 1], RED);
@@ -393,11 +393,14 @@ void Game::drawBlocks() {
 				renderer.drawSquare(squarePath[i]);
 			}
 		}
-	}
+	}*/
 }
 
 void Game::drawPlayer() {
-	renderer.drawSquare(player->getBounds(), &playerLight, BLUE);
+	if (Collision::squareCollision(mouseLight.getBounds(), player->getBounds())) {
+		renderer.drawSquare(&mouseLight, player->getBounds(), BLUE);
+	}
+	renderer.drawSquare(&playerLight, player->getBounds(), BLUE);
 }
 
 void Game::updatePlayerPath(std::vector<Point> playerPath) {

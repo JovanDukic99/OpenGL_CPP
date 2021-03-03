@@ -9,17 +9,11 @@ out vec4 color;
 
 // uniform
 uniform float visionRadius;
+uniform float intensity;
 uniform vec2 visionCenter;
 
 void main() {
-    float factor = length(fragmentPosition - visionCenter) / visionRadius;
-    float intensity = pow(0.01f, factor) - 0.01f;
-    color = fragmentColor * intensity;
-
-
-    // if(factor < 1){
-    //     color = fragmentColor;
-    // }else{
-    //     color = fragmentColor * 0.5f;
-    // }
+    float dist = length(fragmentPosition - visionCenter) / visionRadius;
+    float factor = pow(0.01f, dist) - 0.01f;
+    color = fragmentColor * factor * intensity;
 }
