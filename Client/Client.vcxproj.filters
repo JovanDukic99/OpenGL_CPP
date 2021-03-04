@@ -234,13 +234,13 @@
     <ClCompile Include="Block.cpp">
       <Filter>Source Files\A%2a</Filter>
     </ClCompile>
-    <ClCompile Include="GeometryPacket.cpp">
+    <ClCompile Include="LightPacket.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="Duplicate.cpp">
+    <ClCompile Include="LightOverlap.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="GLSL_Duplicate.cpp">
+    <ClCompile Include="GLSL_LightOverlap.cpp">
       <Filter>Source Files\Shadows</Filter>
     </ClCompile>
   </ItemGroup>
@@ -410,13 +410,13 @@
     <ClInclude Include="Block.h">
       <Filter>Header Files\A%2a</Filter>
     </ClInclude>
-    <ClInclude Include="GeometryPacket.h">
+    <ClInclude Include="LightPacket.h">
       <Filter>Header Files\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="Duplicate.h">
+    <ClInclude Include="LightOverlap.h">
       <Filter>Header Files\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="GLSL_Duplicate.h">
+    <ClInclude Include="GLSL_LightOverlap.h">
       <Filter>Header Files\Shadows</Filter>
     </ClInclude>
   </ItemGroup>

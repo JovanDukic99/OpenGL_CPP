@@ -12,9 +12,9 @@
 #include "ShaderProgram.h"
 #include "GLTexture.h"
 #include "TextureAtlas.h"
-#include "Duplicate.h"
-#include "GLSL_Duplicate.h"
-#include "GeometryPacket.h"
+#include "LightOverlap.h"
+#include "GLSL_LightOverlap.h"
+#include "LightPacket.h"
 #include <vector>
 #include <unordered_map>
 
@@ -27,19 +27,22 @@ class Renderer
 {
 private:
 	std::vector<GLSL_Object> geometryObjects;
+	std::vector<GLSL_Square> lightObjects;
 	std::vector<GLSL_Triangle> lightTriangles;
 	std::vector<GLSL_Texture> textureObjects;
 
 	std::vector<Vertex> vertices;
+	std::vector<Vertex> lightVertices;
 	std::vector<Vertex> textureVetrices;
 
-	std::unordered_map<int, std::vector<GLSL_Object>> visibleObjects;
+	std::unordered_map<int, std::vector<GLSL_Object>> visibleArea;
 
 	std::vector<Light*> lights;
 
-	std::vector<GeometryPacket> geometryPackets;
-	std::vector<GLSL_Duplicate> duplicatesGL_SL;
-	std::vector<Duplicate> duplicates;
+	std::vector<LightPacket> lightPackets;
+	std::vector<LightOverlap> lightOverlaps;
+
+	std::vector<GLSL_LightOverlap> glOverlaps;
 
 	// non shadow programs
 	ShaderProgram geometryProgram;
@@ -58,6 +61,7 @@ private:
 
 	int offset;
 	int textureOffset;
+	int lightOffset;
 
 	RenderMode mode;
 public:
@@ -108,11 +112,8 @@ public:
 
 	// draw light mask
 	void drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
-
+	void drawLight(Light* light);
 	void drawSquare(Light* light, Square square, Color color);
-
-	// draw light
-	void filterPackets();
 
 	// being / end
 	void begin();
@@ -148,6 +149,9 @@ private:
 
 	// helper
 	bool check();
+
+	// draw light
+	void filterLightPackets();
 };
 
 

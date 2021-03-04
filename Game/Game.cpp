@@ -46,8 +46,8 @@ void Game::initComponents() {
 	renderer.init(camera);
 	renderer.setMode(RenderMode::SHADOWS);
 
-	mouseLight.init(3 * UNIT_WIDTH, 1.2f, glm::vec2(160, 160), WHITE);
-	playerLight.init(20 * UNIT_WIDTH, 1.2f, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
+	mouseLight.init(3 * UNIT_WIDTH, 1.0f, glm::vec2(160, 160), WHITE);
+	playerLight.init(20 * UNIT_WIDTH, 1.0f, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
 
 	squarePathID = -1;
 

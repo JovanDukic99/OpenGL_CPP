@@ -9,9 +9,9 @@ out vec4 color;
 
 // uniform
 uniform float visionRadius1;
-uniform vec2 visionCenter1;
-
 uniform float visionRadius2; 
+
+uniform vec2 visionCenter1;
 uniform vec2 visionCenter2;
 
 uniform float intensity1;

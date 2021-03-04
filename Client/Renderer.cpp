@@ -106,7 +106,7 @@ void Renderer::begin() {
 }
 
 void Renderer::end() {
-	filterPackets();
+	filterLightPackets();
 	uploadVertexData();
 	draw();
 }
@@ -158,6 +158,25 @@ void Renderer::draw() {
 		multiVisionGeometryProgram.use();
 		drawMultiVisibleObjects();
 		multiVisionGeometryProgram.unuse();
+
+		// draw light
+		visionGeometryProgram.use();
+
+		GLint radiusLocation = visionGeometryProgram.getUniformValueLocation("visionRadius");
+		GLint centerLocation = visionGeometryProgram.getUniformValueLocation("visionCenter");
+		GLint intensityLocation = visionGeometryProgram.getUniformValueLocation("intensity");
+
+		for (size_t i = 0; i < lights.size(); i++) {
+			Light* light = lights[i];
+
+			glUniform1f(radiusLocation, light->getRadius());
+			glUniform1f(intensityLocation, light->getIntensity());
+			glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
+		}
+
+		drawGeometry();
+		visionGeometryProgram.unuse();
+
 
 		unbindVertexArray();
 	}
@@ -217,11 +236,11 @@ void Renderer::drawVisibleObjects() {
 		glUniform1f(intensityLocation, light->getIntensity());
 		glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
 
-		std::vector<GLSL_Object> visionVector = visibleObjects[light->getID()];
+		std::vector<GLSL_Object> visibleVector = visibleArea[light->getID()];
 
-		for (size_t i = 0; i < visionVector.size(); i++) {
-			GLSL_Object object = visionVector[i];
-			glDrawArrays(object.getMode(), object.getOffset(), object.getVertexNumber());
+		for (size_t i = 0; i < visibleVector.size(); i++) {
+			GLSL_Object visibleObject = visibleVector[i];
+			glDrawArrays(visibleObject.getMode(), visibleObject.getOffset(), visibleObject.getVertexNumber());
 		}
 	}
 }
@@ -239,11 +258,11 @@ void Renderer::drawMultiVisibleObjects() {
 	GLint intensityLocation2 = multiVisionGeometryProgram.getUniformValueLocation("intensity2");
 
 	// draw multi visible objects
-	for (size_t i = 0; i < duplicatesGL_SL.size(); i++) {
-		GLSL_Duplicate duplicate = duplicatesGL_SL[i];
-		GLSL_Object object = duplicate.getGLSL_Square();
-		Light* light1 = duplicate.getLight1();
-		Light* light2 = duplicate.getLight2();
+	for (size_t i = 0; i < glOverlaps.size(); i++) {
+		GLSL_LightOverlap glOverlap= glOverlaps[i];
+		GLSL_Object object = glOverlap.getGLSL_Square();
+		Light* light1 = glOverlap.getLight1();
+		Light* light2 = glOverlap.getLight2();
 
 		glUniform1f(intensityLocation1, light1->getIntensity());
 		glUniform1f(intensityLocation2, light2->getIntensity());
@@ -371,49 +390,46 @@ void  Renderer::drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color co
 	lightTriangles.emplace_back(p1, p2, p3, color, offset, vertices);
 }
 
-// draw light objects
-void Renderer::drawSquare(Light* light, Square square, Color color) {
-	geometryPackets.emplace_back(light, square, color);
+void Renderer::drawLight(Light* light) {
+	Square bounds = light->getBounds();
+	lightObjects.emplace_back(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), bounds.getColor(), lightOffset, lightVertices);
 }
 
-void Renderer::filterPackets() {
-	// extract duplicate blocks, which are being visible by multiple lights
-	for (size_t i = 0; i < geometryPackets.size(); i++) {
+// draw light objects
+void Renderer::drawSquare(Light* light, Square square, Color color) {
+	square.setColor(color);
+	lightPackets.emplace_back(light, square);
+}
 
-		GeometryPacket packet = geometryPackets[i];
+void Renderer::filterLightPackets() {
+	// extract duplicate blocks, which are being visible by multiple lights
+	for (size_t i = 0; i < lightPackets.size(); i++) {
+
+		LightPacket lightPacket = lightPackets[i];
 		bool flag = true;
 
 		// we must go from zero because if we don't it will add duplicated block to visibleObjects, (packet == geometryPackets[j]) won't be fulfilled because we can't see elements behind current element
 		// but now we have more duplicates then their real number is
-		for (size_t j = 0; j < geometryPackets.size(); j++) {
+		for (size_t j = 0; j < lightPackets.size(); j++) {
 			if (i == j) {
 				continue;
-			}else if (packet == geometryPackets[j]) {
-				Duplicate duplicate(packet.getBlock(), packet.getColor(), packet.getLight(), geometryPackets[j].getLight());
-				bool dFlag = true;
-				for (size_t k = 0; k < duplicates.size(); k++) {
-					if (duplicate == duplicates[k]) {
-						dFlag = false;
-						break;
-					}
-				}
-				if (dFlag) {
-					duplicates.push_back(duplicate);
-				}
+			}else if (lightPacket == lightPackets[j]) {
+				// this is wrong way we have duplicates of overlaps!
+				lightOverlaps.emplace_back(lightPacket.getBlock(), lightPacket.getLight(), lightPackets[j].getLight());
 				flag = false;
 				break;
 			}
 		}
 
 		if (flag) {
-			Square square = packet.getBlock();
-			visibleObjects[packet.getLight()->getID()].emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), packet.getColor(), offset, vertices));
+			Square square = lightPacket.getBlock();
+			visibleArea[lightPacket.getLight()->getID()].emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), square.getColor(), offset, vertices));
 		}
 	}
 
-	for (size_t i = 0; i < duplicates.size(); i++) {
-		Square square = duplicates[i].getBlock();
-		duplicatesGL_SL.emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), duplicates[i].getColor(), offset, vertices), duplicates[i].getLight1(), duplicates[i].getLight2());
+	for (size_t i = 0; i < lightOverlaps.size(); i++) {
+		Square square = lightOverlaps[i].getBlock();
+		glOverlaps.emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), square.getColor(), offset, vertices), lightOverlaps[i].getLight1(), lightOverlaps[i].getLight2());
 	}
 }
 
@@ -432,23 +448,26 @@ void Renderer::filterPackets() {
 // reset
 void Renderer::reset() {
 	vertices.clear();
+	lightVertices.clear();
 	textureVetrices.clear();
 
 	geometryObjects.clear();
 	textureObjects.clear();
 	lightTriangles.clear();
+	lightObjects.clear();
 
 	offset = 0;
 	textureOffset = 0;
+	lightOffset = 0;
 
 	if (mode == RenderMode::SHADOWS) {
-		for (auto& x : visibleObjects) {
+		for (auto& x : visibleArea) {
 			x.second.clear();
 		}
 
-		geometryPackets.clear();
-		duplicates.clear();
-		duplicatesGL_SL.clear();
+		lightPackets.clear();
+		lightOverlaps.clear();
+		glOverlaps.clear();
 	}
 }
 
@@ -459,7 +478,7 @@ bool Renderer::check() {
 // setters
 void Renderer::setLights(std::vector<Light*>& lights) {
 	for (size_t i = 0; i < lights.size(); i++) {
-		visibleObjects[lights[i]->getID()] = std::vector<GLSL_Object>();
+		visibleArea[lights[i]->getID()] = std::vector<GLSL_Object>();
 	}
 	this->lights = lights;
 }
