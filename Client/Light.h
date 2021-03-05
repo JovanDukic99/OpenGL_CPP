@@ -2,6 +2,12 @@
 #include "Square.h"
 #include <glm/glm.hpp>
 #include <vector>
+#include <SDL/SDL.h>
+
+#define TIME_STEP 15
+#define MILISECONDS 1000.0f
+#define UPDATE_STEP 30.0f
+
 class Light
 {
 private:
@@ -9,7 +15,14 @@ private:
 
 	int ID;
 	int radius;
+	int radiusStep;
 	float intensity;
+	float intensityStep;
+	Uint32 timer;
+	bool flip;
+
+	int maxRadius;
+	float maxIntensity;
 
 	Square bounds;
 	glm::vec2 source;
@@ -20,6 +33,7 @@ public:
 
 	// init
 	void init(int radius, float intensity, glm::vec2 source, Color color);
+	void calculateSteps();
 
 	// setters
 	void setSource(glm::vec2 source);
@@ -35,10 +49,18 @@ public:
 	int getID() const;
 	int getRadius() const;
 	float getIntensity() const;
+
+	// update
+	void update(Uint32 frameTime);
 private:
 	// update
 	void updateBounds();
 	void updateDimensions();
 	void updatePosition();
+
+	// setters
+	void setFlip(bool flip);
+	void setMaxRadius(int maxRadius);
+	void setMaxIntensity(float maxIntensity);
 };
 

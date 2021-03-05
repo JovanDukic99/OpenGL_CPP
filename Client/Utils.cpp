@@ -60,11 +60,6 @@ void Utils::loadMSP(std::string filePath, std::vector<Block>& blocks, std::vecto
 			else {
 				searchSpace[i][j] = Node(i, j, BlockType::NONE);
 			}
-
-			// LIGHT
-			if (r == 255 && g == 255 && b == 0 && a == 255) {
-				
-			}
 		}
 	}
 }
@@ -105,7 +100,7 @@ void Utils::loadMSPL(std::string filePath, std::vector<Light*>& lights, std::vec
 
 			// LIGHT
 			if (r == 255 && g == 255 && b == 0 && a == 255) {
-				Light* light = new Light(10 * unitWidth, 1.0f, glm::vec2(x, y), YELLOW);
+				Light* light = lightGenerator(x, y, unitWidth, unitHeight);
 				lights.push_back(light);
 			}
 		}
@@ -326,6 +321,37 @@ void Utils::rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePo
 	}
 
 	std::sort(intersectionPoints.begin(), intersectionPoints.end(), sortCriteria);
+}
+Light* Utils::lightGenerator(float x, float y, float unitWidth, float unitHeight) {
+	Light* light = nullptr;
+
+	int r = rand() % 255 + 1; // from 1 to 255
+	int g = rand() % 255 + 1; // from 1 to 255
+	int b = rand() % 255 + 1; // from 1 to 255
+	int a = 255;
+
+	float radius = (rand() % (int)  (5 * unitWidth)) + (5 * unitWidth); // from 5 * unitWidth to 10 * unitWidth
+	float intensity = 0.0f;
+	int factor = rand() % 3; // from 0 to 2
+
+	switch (factor)
+	{
+	case 0:
+		intensity = 1.0f;
+		break;
+	case 1:
+		intensity = 1.2f;
+		break;
+	case 2:
+		intensity = 1.4f;
+		break;
+	default:
+		break;
+	}
+
+	light = new Light(radius, intensity, glm::vec2(x, y), Color(r, g, b, a));
+
+	return light;
 }
 glm::vec2 Utils::lineIntersection(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 d, bool* check) {
 	glm::vec2 r = b - a;

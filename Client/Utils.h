@@ -23,6 +23,7 @@ public:
 	static void createLightEdges(Light* light, std::vector<Edge*>& edges);
 	static void createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints);
 	static void rayTracing(std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints, std::vector<LightPoint>& intersectionPoints, glm::vec2 p);
+	static Light* lightGenerator(float x, float y, float unitWidth, float unitHeight);
 	static std::vector<Point> convertToSquarePath(std::vector<Point> points, float mapHeight, float unitWidth, float unitHeight);
 	static std::vector<Point>& convertToPlayerPath(std::vector<Point>& points, float endX, float endY);
 

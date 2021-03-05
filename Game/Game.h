@@ -59,9 +59,6 @@ private:
 	Light mouseLight;
 	Light playerLight;
 
-	float timer = 0.0f;
-	float alpha = 255.0f;
-	bool flip = true;
 	int squarePathID;
 public:
 	Game(std::string title, int screenWidth, int screenHeight);
@@ -78,7 +75,7 @@ private:
 	void updateCameraPosition(int xrel, int yrel);
 	void updatePlayer(float deltaTime);
 	void updateCamera(float deltaTime);
-	void updateLight(float frameTime);
+	void updateLight(Uint32 frameTime);
 	void updateWindowState(Uint32 flag);
 	void zoom(int zoomY);
 	void update(float deltaTime);

@@ -235,45 +235,16 @@ void Game::updateCamera(float deltaTime) {
 	camera.update();
 }
 
-void Game::updateLight(float frameTime) {
+void Game::updateLight(Uint32 frameTime) {
 	mouseLight.setSource(camera.convertScreenToWorld(inputManager.getMouseCoords()));
 	playerLight.setSource(player->getCenter());
 
-	float intensity = mouseLight.getIntensity();
-	int radius = mouseLight.getRadius();
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
 
-
-	timer += frameTime;
-
-	// approximately every 5 seconds turn off / on
-	if (timer >= MILISECONDS * 0.05f) {
-		if (flip) {
-			intensity = intensity - 0.01f;
-			radius = radius - 6;
-			if (intensity <= 0) {
-				mouseLight.setIntensity(0.0f);
-				mouseLight.setRadius(0);
-				flip = false;
-			}
-			else {
-				mouseLight.setIntensity(intensity);
-				mouseLight.setRadius(radius);
-			}
+		if (light != &playerLight && light != &mouseLight) {
+			light->update(frameTime);
 		}
-		else {
-			intensity = intensity + 0.01f;
-			radius = radius + 6;
-			if (intensity >= 1.0f) {
-				mouseLight.setIntensity(1.0f);
-				mouseLight.setRadius(10 * UNIT_WIDTH);
-				flip = true;
-			}
-			else {
-				mouseLight.setIntensity(intensity);
-				mouseLight.setRadius(radius);
-			}
-		}
-		timer = 0.0f;
 	}
 }
 
