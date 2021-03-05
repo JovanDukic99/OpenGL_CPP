@@ -53,13 +53,12 @@ void Game::initComponents() {
 
 	lights.emplace_back(&playerLight);
 	lights.emplace_back(&mouseLight);
-
-	renderer.setLights(lights);
 }
 
 void Game::initLevel(std::string filePath) {
-	Utils::loadMASP(filePath, blocks, edgeBlocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
+	Utils::loadMSPL(filePath, lights, blocks, edgeBlocks, searchSpace, UNIT_WIDTH, UNIT_HEIGHT);
 	algorithm.setSearchSpace(&searchSpace);
+	renderer.setLights(lights);
 }
 
 void Game::run() {
@@ -70,6 +69,7 @@ void Game::run() {
 		processInput();
 		update(time.getDeltaTime());
 		draw();
+		//reset();
 	}
 }
 
@@ -183,6 +183,10 @@ void Game::search() {
 	algorithm.reset();
 }
 
+void Game::reset() {
+	
+}
+
 void Game::calculateFPS() {
 	time.calculateFPS();
 }
@@ -234,6 +238,43 @@ void Game::updateCamera(float deltaTime) {
 void Game::updateLight(float frameTime) {
 	mouseLight.setSource(camera.convertScreenToWorld(inputManager.getMouseCoords()));
 	playerLight.setSource(player->getCenter());
+
+	float intensity = mouseLight.getIntensity();
+	int radius = mouseLight.getRadius();
+
+
+	timer += frameTime;
+
+	// approximately every 5 seconds turn off / on
+	if (timer >= MILISECONDS * 0.05f) {
+		if (flip) {
+			intensity = intensity - 0.01f;
+			radius = radius - 6;
+			if (intensity <= 0) {
+				mouseLight.setIntensity(0.0f);
+				mouseLight.setRadius(0);
+				flip = false;
+			}
+			else {
+				mouseLight.setIntensity(intensity);
+				mouseLight.setRadius(radius);
+			}
+		}
+		else {
+			intensity = intensity + 0.01f;
+			radius = radius + 6;
+			if (intensity >= 1.0f) {
+				mouseLight.setIntensity(1.0f);
+				mouseLight.setRadius(10 * UNIT_WIDTH);
+				flip = true;
+			}
+			else {
+				mouseLight.setIntensity(intensity);
+				mouseLight.setRadius(radius);
+			}
+		}
+		timer = 0.0f;
+	}
 }
 
 void Game::updateWindowState(Uint32 flag) {
@@ -296,6 +337,10 @@ void Game::drawLights() {
 	for (size_t i = 0; i < lights.size(); i++) {
 		Light* light = lights[i];
 
+		if (!cameraCulling(light->getBounds())) {
+			continue;
+		}
+
 		renderer.drawLight(light);
 
 		for (size_t i = 0; i < edgeBlocks.size(); i++) {
@@ -338,14 +383,14 @@ void Game::drawLightArea(std::vector<LightPoint>& intersectionPoints, glm::vec2&
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
 			glm::vec2 point2 = intersectionPoints[i + 1].getPosition();
 			renderer.drawLightMask(visionCenter, point1, point2, lightColor);
-			renderer.drawCircle(point1, 5.0f, 3, RED);
-			renderer.drawLine(point1, visionCenter, WHITE);
+			//renderer.drawCircle(point1, 5.0f, 3, RED);
+			//renderer.drawLine(point1, visionCenter, WHITE);
 		}
 		else {
 			glm::vec2 point1 = intersectionPoints[i].getPosition();
 			renderer.drawLightMask(visionCenter, intersectionPoints[0].getPosition(), point1, lightColor);
-			renderer.drawCircle(point1, 5.0f, 3, YELLOW);
-			renderer.drawLine(point1, visionCenter, WHITE);
+			//renderer.drawCircle(point1, 5.0f, 3, YELLOW);
+			//renderer.drawLine(point1, visionCenter, WHITE);
 		}
 	}
 }
@@ -372,8 +417,12 @@ void Game::drawEdges(std::vector<Edge*> edges) {
 void Game::drawBlocks() {
 	for (size_t i = 0; i < lights.size(); i++) {
 		Light* light = lights[i];
+		if (!cameraCulling(light->getBounds())) {
+			continue;
+		}
 		for (size_t j = 0; j < blocks.size(); j++) {
 			Block block = blocks[j];
+
 			if (Collision::squareCollision(light->getBounds(), block.getBounds())) {
 				renderer.drawSquare(light, block.getBounds(), GREEN);
 			}

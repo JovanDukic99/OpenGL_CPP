@@ -24,6 +24,7 @@ public:
 	// setters
 	void setSource(glm::vec2 source);
 	void setColor(Color color);
+	void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a = 255);
 	void setRadius(int radius);
 	void setIntensity(float intensity);
 

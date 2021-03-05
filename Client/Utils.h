@@ -17,7 +17,8 @@ class Utils
 public:
 	// static methods
 	static void loadMap(std::string filePath, std::vector<Square>& blocks, float unitWidth, float unitHeight);
-	static void loadMASP(std::string filePath, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight);
+	static void loadMSP(std::string filePath, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight);
+	static void loadMSPL(std::string filePath, std::vector<Light*>& lights, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight);
 	static void createEdges(SearchSpace& searchSpace, std::vector<Block>& blockEdges, std::vector<Edge*>& edges, float mapHeight, float unitWidth, float unitHeight);
 	static void createLightEdges(Light* light, std::vector<Edge*>& edges);
 	static void createEdgePoints(Light* light, std::vector<Edge*>& edges, std::vector<glm::vec2>& edgePoints);

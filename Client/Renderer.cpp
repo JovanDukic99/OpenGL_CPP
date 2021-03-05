@@ -154,6 +154,7 @@ void Renderer::draw() {
 }
 
 void Renderer::drawLight() {
+	// this must be a way of drawing lights, otherwise space between visible blocks won't be filled with color
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
 
 	GLint radiusLocation = visionGeometryProgram.getUniformValueLocation("visionRadius");

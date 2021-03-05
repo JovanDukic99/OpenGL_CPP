@@ -92,6 +92,7 @@ private:
 	void drawBlocks();
 	void drawPlayer();
 	void search();
+	void reset();
 	void updatePlayerPath(std::vector<Point> path);
 	void updateSquarePath(std::vector<Point> path);
 	bool checkCollision(float x, float y);

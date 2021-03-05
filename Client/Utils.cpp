@@ -27,7 +27,7 @@ void Utils::loadMap(std::string filePath, std::vector<Square>& blocks, float uni
 	}
 }
 
-void Utils::loadMASP(std::string filePath, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
+void Utils::loadMSP(std::string filePath, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
 	Image image = ImageLoader::loadImage(filePath);
 
 	float mapHeight = image.getHeight() * unitHeight;
@@ -46,16 +46,67 @@ void Utils::loadMASP(std::string filePath, std::vector<Block>& blocks, std::vect
 			float y = mapHeight - unitHeight * (i + 1);
 			float x = j * unitWidth;
 
+			// EDGE
 			if (r == 0 && g == 0 && b == 0 && a == 255) {
 				searchSpace[i][j] = Node(i, j, BlockType::EDGE);
 				blockEdges.emplace_back(Square(x, y, unitWidth, unitHeight), glm::vec2(j, i));
 			}
+			// BLOCK
 			else if(r == 0 && g == 255 && b == 0 && a == 255) {
 				searchSpace[i][j] = Node(i, j, BlockType::BLOCK);
 				blocks.emplace_back(Square(x, y, unitWidth, unitHeight), glm::vec2(j, i));
 			}
+			// EMPTY SPACE
 			else {
 				searchSpace[i][j] = Node(i, j, BlockType::NONE);
+			}
+
+			// LIGHT
+			if (r == 255 && g == 255 && b == 0 && a == 255) {
+				
+			}
+		}
+	}
+}
+
+void Utils::loadMSPL(std::string filePath, std::vector<Light*>& lights, std::vector<Block>& blocks, std::vector<Block>& blockEdges, SearchSpace& searchSpace, float unitWidth, float unitHeight) {
+	Image image = ImageLoader::loadImage(filePath);
+
+	float mapHeight = image.getHeight() * unitHeight;
+
+	searchSpace.init(image.getHeight(), image.getWidth());
+
+	for (int i = 0; i < image.getHeight(); i++) {
+		for (int j = 0; j < image.getWidth(); j++) {
+			int pixel = image[i][j];
+
+			int r = (pixel >> 24) & 0xff;
+			int g = (pixel >> 16) & 0xff;
+			int b = (pixel >> 8) & 0xff;
+			int a = pixel & 0xff;
+
+			float y = mapHeight - unitHeight * (i + 1);
+			float x = j * unitWidth;
+
+			// EDGE
+			if (r == 0 && g == 0 && b == 0 && a == 255) {
+				searchSpace[i][j] = Node(i, j, BlockType::EDGE);
+				blockEdges.emplace_back(Square(x, y, unitWidth, unitHeight), glm::vec2(j, i));
+			}
+			// BLOCK
+			else if (r == 0 && g == 255 && b == 0 && a == 255) {
+				searchSpace[i][j] = Node(i, j, BlockType::BLOCK);
+				blocks.emplace_back(Square(x, y, unitWidth, unitHeight), glm::vec2(j, i));
+			}
+			// EMPTY SPACE
+			else {
+				searchSpace[i][j] = Node(i, j, BlockType::NONE);
+			}
+
+			// LIGHT
+			if (r == 255 && g == 255 && b == 0 && a == 255) {
+				Light* light = new Light(10 * unitWidth, 1.0f, glm::vec2(x, y), YELLOW);
+				lights.push_back(light);
 			}
 		}
 	}

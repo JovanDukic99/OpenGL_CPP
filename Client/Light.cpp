@@ -45,6 +45,10 @@ void Light::setColor(Color color) {
 	bounds.setColor(color);
 }
 
+void Light::setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a) {
+	bounds.setColor(r, g, b, a);
+}
+
 // getters
 glm::vec2 Light::getSource() const {
 	return source;
