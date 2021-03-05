@@ -46,7 +46,7 @@ void Game::initComponents() {
 	renderer.init(camera);
 	renderer.setMode(RenderMode::SHADOWS);
 
-	mouseLight.init(3 * UNIT_WIDTH, 1.0f, glm::vec2(160, 160), WHITE);
+	mouseLight.init(3 * UNIT_WIDTH, 1.0f, glm::vec2(160, 160), RED);
 	playerLight.init(20 * UNIT_WIDTH, 1.0f, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
 
 	squarePathID = -1;
@@ -295,6 +295,8 @@ void Game::draw() {
 void Game::drawLights() {
 	for (size_t i = 0; i < lights.size(); i++) {
 		Light* light = lights[i];
+
+		renderer.drawLight(light);
 
 		for (size_t i = 0; i < edgeBlocks.size(); i++) {
 			Block edgeBlock = edgeBlocks[i];

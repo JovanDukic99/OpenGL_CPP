@@ -37,5 +37,7 @@ public:
 private:
 	// update
 	void updateBounds();
+	void updateDimensions();
+	void updatePosition();
 };
 

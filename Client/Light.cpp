@@ -72,6 +72,15 @@ float Light::getIntensity() const {
 
 // update
 void Light::updateBounds() {
-	bounds.setProperties((source - radius * 1.0f), glm::vec2(2 * radius, 2 * radius));
+	updateDimensions();
+	updatePosition();
+}
+
+void Light::updateDimensions() {
+	bounds.setDimensions(glm::vec2(2 * radius, 2 * radius));
+}
+
+void Light::updatePosition() {
+	bounds.setPosition((source - radius * 1.0f));
 }
 

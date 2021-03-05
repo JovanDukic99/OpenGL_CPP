@@ -27,7 +27,7 @@ class Renderer
 {
 private:
 	std::vector<GLSL_Object> geometryObjects;
-	std::vector<GLSL_Square> lightObjects;
+	std::vector<GLSL_Light> lightObjects;
 	std::vector<GLSL_Triangle> lightTriangles;
 	std::vector<GLSL_Texture> textureObjects;
 
@@ -36,6 +36,7 @@ private:
 	std::vector<Vertex> textureVetrices;
 
 	std::unordered_map<int, std::vector<GLSL_Object>> visibleArea;
+	std::unordered_map<int, std::vector<GLSL_Object>> lightArea;
 
 	std::vector<Light*> lights;
 
@@ -51,10 +52,6 @@ private:
 	// shadow programs
 	ShaderProgram visionGeometryProgram;
 	ShaderProgram visionTextureProgram;
-
-	// multi shadow programs
-	ShaderProgram multiVisionGeometryProgram;
-	ShaderProgram multiVisionTextureProgram;
 
 	GLuint vertexArrays[2];
 	GLuint vertexBuffers[2];
@@ -149,9 +146,6 @@ private:
 
 	// helper
 	bool check();
-
-	// draw light
-	void filterLightPackets();
 };
 
 
