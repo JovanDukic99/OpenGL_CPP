@@ -136,54 +136,45 @@ void Renderer::draw() {
 		drawLightMask();
 		geometryProgram.unuse();
 
-		// draw visible objects
+		// draw visible objects and light
 		visionGeometryProgram.use();
 		drawVisibleObjects();
+		drawLight();
 		visionGeometryProgram.unuse();
 
-		// draw light
-		visionGeometryProgram.use();
+		bindVertexArray(vertexArrays[1]);
 
-		glBlendFunc(GL_DST_ALPHA, GL_ONE);
-		//glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
-
-		GLint radiusLocation = visionGeometryProgram.getUniformValueLocation("visionRadius");
-		GLint centerLocation = visionGeometryProgram.getUniformValueLocation("visionCenter");
-		GLint intensityLocation = visionGeometryProgram.getUniformValueLocation("intensity");
-
-		for (size_t i = 0; i < lights.size(); i++) {
-			Light* light = lights[i];
-
-			glUniform1f(radiusLocation, light->getRadius());
-			glUniform1f(intensityLocation, light->getIntensity());
-			glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
-
-
-			std::vector<GLSL_Object> lightVector = lightArea[light->getID()];
-
-			for (size_t i = 0; i < lightVector.size(); i++) {
-				GLSL_Object visibleObject = lightVector[i];
-				glDrawArrays(visibleObject.getMode(), visibleObject.getOffset(), visibleObject.getVertexNumber());
-			}
-		}
-
-		visionGeometryProgram.unuse();
+		// draw texture
+		visionTextureProgram.use();	
+		drawVisibleTexture();
+		visionTextureProgram.unuse();
 
 		unbindVertexArray();
 	}
+}
 
-	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+void Renderer::drawLight() {
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
 
-	//bindVertexArray(vertexArrays[1]);
-	//// draw texture
-	//visionTextureProgram.use();
+	GLint radiusLocation = visionGeometryProgram.getUniformValueLocation("visionRadius");
+	GLint centerLocation = visionGeometryProgram.getUniformValueLocation("visionCenter");
+	GLint intensityLocation = visionGeometryProgram.getUniformValueLocation("intensity");
 
-	//glUniform1f(visionRadiusLocation, lightRadius);
-	//glUniform2f(visionCenterLocation, lightSource.x, lightSource.y);
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
 
-	//uploadTextureUnit();
-	//drawTexture();
-	//visionTextureProgram.unuse();
+		glUniform1f(radiusLocation, light->getRadius());
+		glUniform1f(intensityLocation, light->getIntensity());
+		glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
+
+
+		std::vector<GLSL_Object> lightVector = lightArea[light->getID()];
+
+		for (size_t i = 0; i < lightVector.size(); i++) {
+			GLSL_Object visibleObject = lightVector[i];
+			glDrawArrays(visibleObject.getMode(), visibleObject.getOffset(), visibleObject.getVertexNumber());
+		}
+	}
 }
 
 void Renderer::drawGeometry() {
@@ -234,6 +225,33 @@ void Renderer::drawVisibleObjects() {
 			glDrawArrays(visibleObject.getMode(), visibleObject.getOffset(), visibleObject.getVertexNumber());
 		}
 	}
+}
+
+void Renderer::drawVisibleTexture() {
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	uploadTextureUnit();
+
+	GLint radiusLocation = visionTextureProgram.getUniformValueLocation("visionRadius");
+	GLint centerLocation = visionTextureProgram.getUniformValueLocation("visionCenter");
+	GLint intensityLocation = visionTextureProgram.getUniformValueLocation("intensity");
+
+	for (size_t i = 0; i < lights.size(); i++) {
+		Light* light = lights[i];
+
+		glUniform1f(radiusLocation, light->getRadius());
+		glUniform1f(intensityLocation, light->getIntensity());
+		glUniform2f(centerLocation, light->getSource().x, light->getSource().y);
+
+		std::vector<GLSL_Texture> textureVector = visibleTextureArea[light->getID()];
+
+		for (size_t i = 0; i < textureVector.size(); i++) {
+			GLSL_Texture visibleTexture = textureVector[i];
+			glBindTexture(GL_TEXTURE_2D, visibleTexture.getTextureID());
+			glDrawArrays(visibleTexture.getMode(), visibleTexture.getOffset(), visibleTexture.getVertexNumber());
+		}
+	}
+
 }
 
 void Renderer::bindVertexArray(GLuint vertexArrayID) {
@@ -344,37 +362,29 @@ void Renderer::drawTexture(Square square, TextureAtlas textureAtlas, int texture
 	drawTexture(square.getX(), square.getY(), square.getWidth(), square.getHeight(), textureAtlas, textureIndex);
 }
 
-// draw light mask
-void  Renderer::drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color) {
-	lightTriangles.emplace_back(p1, p2, p3, color, offset, vertices);
-}
-
+// draw light
 void Renderer::drawLight(Light* light) {
 	Square square = light->getBounds();
 	lightArea[light->getID()].emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), square.getColor(), offset, vertices));
 }
 
-// draw light objects
+// draw light mask
+void  Renderer::drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color) {
+	lightTriangles.emplace_back(p1, p2, p3, color, offset, vertices);
+}
+
+// draw vivible objects
 void Renderer::drawSquare(Light* light, Square square, Color color) {
 	visibleArea[light->getID()].emplace_back(GLSL_Square(square.getX(), square.getY(), square.getWidth(), square.getHeight(), color, offset, vertices));
 }
 
-//void Renderer::drawLight(float x, float y, float width, float height, Color color) {
-//	lightObject.emplace_back(x, y, width, height, color, lightOffset, lightVertices);
-//}
-//
-//void Renderer::drawLight(Light light, Color color) {
-//	drawLight(light.getX(), light.getY(), light.getWidth(), light.getHeight(), color);
-//}
-//
-//void Renderer::drawLight(Light light) {
-//	drawLight(light.getX(), light.getY(), light.getWidth(), light.getHeight(), light.getColor());
-//}
+void Renderer::drawTexture(Light* light, Square square, GLTexture texture) {
+	visibleTextureArea[light->getID()].emplace_back(GLSL_Texture(square.getX(), square.getY(), square.getWidth(), square.getHeight(), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), texture, textureOffset, textureVetrices));
+}
 
 // reset
 void Renderer::reset() {
 	vertices.clear();
-	lightVertices.clear();
 	textureVetrices.clear();
 
 	geometryObjects.clear();
@@ -384,10 +394,13 @@ void Renderer::reset() {
 
 	offset = 0;
 	textureOffset = 0;
-	lightOffset = 0;
 
 	if (mode == RenderMode::SHADOWS) {
 		for (auto& x : visibleArea) {
+			x.second.clear();
+		}
+
+		for (auto& x : visibleTextureArea) {
 			x.second.clear();
 		}
 
@@ -395,9 +408,6 @@ void Renderer::reset() {
 			x.second.clear();
 		}
 
-		lightPackets.clear();
-		lightOverlaps.clear();
-		glOverlaps.clear();
 	}
 }
 
@@ -409,6 +419,7 @@ bool Renderer::check() {
 void Renderer::setLights(std::vector<Light*>& lights) {
 	for (size_t i = 0; i < lights.size(); i++) {
 		visibleArea[lights[i]->getID()] = std::vector<GLSL_Object>();
+		visibleTextureArea[lights[i]->getID()] = std::vector<GLSL_Texture>();
 	}
 	this->lights = lights;
 }

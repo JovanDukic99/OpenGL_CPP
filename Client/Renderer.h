@@ -12,9 +12,6 @@
 #include "ShaderProgram.h"
 #include "GLTexture.h"
 #include "TextureAtlas.h"
-#include "LightOverlap.h"
-#include "GLSL_LightOverlap.h"
-#include "LightPacket.h"
 #include <vector>
 #include <unordered_map>
 
@@ -32,18 +29,13 @@ private:
 	std::vector<GLSL_Texture> textureObjects;
 
 	std::vector<Vertex> vertices;
-	std::vector<Vertex> lightVertices;
 	std::vector<Vertex> textureVetrices;
 
 	std::unordered_map<int, std::vector<GLSL_Object>> visibleArea;
+	std::unordered_map<int, std::vector<GLSL_Texture>> visibleTextureArea;	
 	std::unordered_map<int, std::vector<GLSL_Object>> lightArea;
 
 	std::vector<Light*> lights;
-
-	std::vector<LightPacket> lightPackets;
-	std::vector<LightOverlap> lightOverlaps;
-
-	std::vector<GLSL_LightOverlap> glOverlaps;
 
 	// non shadow programs
 	ShaderProgram geometryProgram;
@@ -58,7 +50,6 @@ private:
 
 	int offset;
 	int textureOffset;
-	int lightOffset;
 
 	RenderMode mode;
 public:
@@ -111,6 +102,7 @@ public:
 	void drawLightMask(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, Color color = WHITE);
 	void drawLight(Light* light);
 	void drawSquare(Light* light, Square square, Color color);
+	void drawTexture(Light* light, Square square, GLTexture texture);
 
 	// being / end
 	void begin();
@@ -127,11 +119,12 @@ private:
 
 	// draw
 	void draw();
+	void drawLight();
 	void drawGeometry();
 	void drawTexture();
+	void drawVisibleTexture();
 	void drawLightMask();
 	void drawVisibleObjects();
-	void drawMultiVisibleObjects();
 
 	// bind / unbind
 	void bindVertexArray(GLuint vertexArrayID);

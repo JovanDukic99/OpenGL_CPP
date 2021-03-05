@@ -46,8 +46,8 @@ void Game::initComponents() {
 	renderer.init(camera);
 	renderer.setMode(RenderMode::SHADOWS);
 
-	mouseLight.init(3 * UNIT_WIDTH, 1.0f, glm::vec2(160, 160), RED);
-	playerLight.init(20 * UNIT_WIDTH, 1.0f, glm::vec2(START_PLAYER_X, START_PLAYER_Y), WHITE);
+	mouseLight.init(10 * UNIT_WIDTH, 1.0f, glm::vec2(160, 160), RED);
+	playerLight.init(20 * UNIT_WIDTH, 1.0f, glm::vec2(START_PLAYER_X, START_PLAYER_Y), BLUE);
 
 	squarePathID = -1;
 
@@ -403,6 +403,7 @@ void Game::drawPlayer() {
 		renderer.drawSquare(&mouseLight, player->getBounds(), BLUE);
 	}
 	renderer.drawSquare(&playerLight, player->getBounds(), BLUE);
+	renderer.drawTexture(&playerLight, player->getBounds(), player->getTexture());
 }
 
 void Game::updatePlayerPath(std::vector<Point> playerPath) {

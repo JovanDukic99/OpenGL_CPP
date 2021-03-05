@@ -234,15 +234,6 @@
     <ClCompile Include="Block.cpp">
       <Filter>Source Files\A%2a</Filter>
     </ClCompile>
-    <ClCompile Include="LightPacket.cpp">
-      <Filter>Source Files\Shadows</Filter>
-    </ClCompile>
-    <ClCompile Include="LightOverlap.cpp">
-      <Filter>Source Files\Shadows</Filter>
-    </ClCompile>
-    <ClCompile Include="GLSL_LightOverlap.cpp">
-      <Filter>Source Files\Shadows</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -409,15 +400,6 @@
     </ClInclude>
     <ClInclude Include="Block.h">
       <Filter>Header Files\A%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="LightPacket.h">
-      <Filter>Header Files\Shadows</Filter>
-    </ClInclude>
-    <ClInclude Include="LightOverlap.h">
-      <Filter>Header Files\Shadows</Filter>
-    </ClInclude>
-    <ClInclude Include="GLSL_LightOverlap.h">
-      <Filter>Header Files\Shadows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
