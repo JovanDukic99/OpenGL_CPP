@@ -1,14 +1,32 @@
+# Prerequisites
+*.d
 
-*.db-wal
-*.db
-*.db-shm
-*.opendb
-*.ipch
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
 *.exe
-.vs/Testing/v16/.suo
-*.obj
-*.log
-*.obj
-*.idb
-*.pdb
-*.ilk
+*.out
+*.app
