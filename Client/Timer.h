@@ -5,7 +5,7 @@
 #define DESIRED_FRAMETIME (MILISECONDS / DESIRED_FPS)
 #define MAX_STEPS 6
 #define MAX_PRINT_MARKER 10
-class Time
+class Timer
 {
 private:
 	unsigned int index;
@@ -17,7 +17,7 @@ private:
 	float deltaTime;
 	float frameTime;
 public:
-	Time();
+	Timer();
 	void calculateFPS();
 	void printFPS();
 	float getFPS();

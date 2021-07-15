@@ -1,12 +1,12 @@
-#include "Time.h"
+#include "Timer.h"
 #include <SDL/SDL.h>
 #include <iostream>
 
-Time::Time() : index(0), count(0), samples(), previousTime(0), fps(0.0f), deltaTime(0.0f), frameTime(0.0f), printMarker(0) {
+Timer::Timer() : index(0), count(0), samples(), previousTime(0), fps(0.0f), deltaTime(0.0f), frameTime(0.0f), printMarker(0) {
 
 }
 
-void Time::calculateFPS() {
+void Timer::calculateFPS() {
 	// get current time
 	int currentTime = SDL_GetTicks();
 	// calculate framteTime (ms/frame)
@@ -46,7 +46,7 @@ void Time::calculateFPS() {
 	deltaTime = frameTime / DESIRED_FRAMETIME;
 }
 
-void Time::printFPS() {
+void Timer::printFPS() {
 	if (printMarker == 10) {
 		std::cout << "FPS: " << fps << std::endl;
 		printMarker = 0;
@@ -56,20 +56,20 @@ void Time::printFPS() {
 	}
 }
 
-float Time::getDeltaTime() {
+float Timer::getDeltaTime() {
 	return deltaTime;
 }
 
 
-float Time::getFPS() {
+float Timer::getFPS() {
 	return fps;
 }
 
-float Time::getFrameTime() {
+float Timer::getFrameTime() {
 	return frameTime;
 }
 
-float Time::getTime() {
+float Timer::getTime() {
 	return SDL_GetTicks();
 }
 

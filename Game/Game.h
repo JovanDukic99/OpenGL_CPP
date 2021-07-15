@@ -16,7 +16,7 @@
 #include <TileSheet.h>
 #include <TextureAtlas.h>
 #include <Block.h>
-#include <Time.h>
+#include <Timer.h>
 #include <string>
 #include <vector>
 #include "Player.h"
@@ -44,7 +44,7 @@ private:
 	Camera2D camera;
 	InputManager inputManager;
 	Player* player;
-	Time time;
+	Timer time;
 	SearchSpace searchSpace;
 	AStarAlgorithm algorithm;
 	TileSheet tileSheet;

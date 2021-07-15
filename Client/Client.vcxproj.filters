@@ -213,7 +213,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\texture</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
+    <ClCompile Include="Timer.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="Edge.cpp">
@@ -380,7 +380,7 @@
     <ClInclude Include="Animation.h">
       <Filter>Header Files\texture</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="Timer.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="Edge.h">

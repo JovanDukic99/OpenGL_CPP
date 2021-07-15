@@ -32,7 +32,7 @@
     <ClCompile Include="GLSL_Circle.cpp" />
     <ClCompile Include="GLSL_Triangle.cpp" />
     <ClCompile Include="LightPoint.cpp" />
-    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="GLSL_Light.cpp" />
     <ClCompile Include="GLSL_Object.cpp" />
     <ClCompile Include="GLSL_Texture.cpp" />
@@ -83,7 +83,7 @@
     <ClInclude Include="EngineConfig.h" />
     <ClInclude Include="GLSL_Triangle.h" />
     <ClInclude Include="LightPoint.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="GLSL_Light.h" />
     <ClInclude Include="GLSL_Object.h" />
     <ClInclude Include="GLSL_Texture.h" />

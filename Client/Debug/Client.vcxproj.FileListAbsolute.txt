@@ -1,2 +1,0 @@
-D:\Users\Jovan\C++\Testing\Debug\Client.pdb
-D:\Users\Jovan\C++\Testing\Client\Debug\Client.pdb
