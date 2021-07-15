@@ -1,3 +1,3 @@
 # OpenGL_CPP
-Custom game engine made in OpenGL.
+Custom game engine made in OpenGL (currently fixing errors).
  
