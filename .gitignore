@@ -64,3 +64,4 @@ Client/Debug/Client.tlog/CL.command.1.tlog
 *.tlog
 Game/Debug/Game.tlog/CL.read.1.tlog
 Game/Debug/Game.tlog/CL.command.1.tlog
+*.tlog
