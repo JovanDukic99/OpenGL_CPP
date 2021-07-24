@@ -1,3 +1,3 @@
 # TestGit
-Shadow branch is the latest.  
-Client project contains game engine made in openGL.
+Client project contains game engine made in OpenGL.<br>
+Game project is the actual game (an example to be precise).
